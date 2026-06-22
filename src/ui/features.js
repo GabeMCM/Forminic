@@ -275,7 +275,7 @@ export const features = {
       elements.soundState.textContent = `NOTA ${index + 1} VAZIA`;
       return;
     }
-    if (!store.state.pedalActive) audioEngine.dampVoices(0.12);
+    audioEngine.dampVoices(store.state.pedalActive ? 0.85 : 0.32);
     store.state.tonic = item.tonic;
     store.state.octave = item.octave;
     store.state.degrees = new Set(item.degrees);

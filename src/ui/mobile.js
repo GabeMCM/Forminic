@@ -3,6 +3,7 @@ import { GLOBAL_TOKENS, MUSIC_TOKENS } from '../tokens/master.tokens.js';
 import { STATE_ACTION_TOKENS } from '../state/state.tokens.js';
 import { renderer } from './renderer.js';
 import { events } from './events.js';
+import { audioEngine } from '../audio/engine.js';
 
 const root = document.querySelector('#mobileInstrument');
 const wheel = document.querySelector('#mobileWheel');
@@ -20,6 +21,8 @@ const addStageButton = document.querySelector('#mobileAddStage');
 let panel = 'degrees';
 let touchStartX = null;
 let wheelGesture = null;
+let activePerformanceTouch = null;
+let performanceReleasedAt = 0;
 
 function currentPerformanceIndex() {
   const active = store.state.activePerformanceSlot;
@@ -76,8 +79,9 @@ function renderStrip() {
   const performance = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
   tabs.querySelector('[data-mobile-panel="degrees"]').hidden = performance;
   tabs.querySelector('[data-mobile-panel="memories"]').hidden = performance;
+  tabs.querySelector('[data-mobile-panel="notes"]').hidden = !performance;
   tabs.querySelector('[data-mobile-panel="bases"]').hidden = !performance;
-  if (performance) panel = 'bases';
+  if (performance && panel !== 'notes' && panel !== 'bases') panel = 'notes';
 
   tabs.querySelectorAll('button').forEach(button => {
     button.classList.toggle('active', button.dataset.mobilePanel === panel);
@@ -105,6 +109,16 @@ function renderStrip() {
         <small>M${String(index + 1).padStart(2, '0')}</small>${memory.name}
       </button>
     ` : '').join('') || '<span class="mobile-empty">NENHUMA MEMÓRIA SALVA</span>';
+  } else if (panel === 'notes') {
+    strip.innerHTML = store.state.performanceMemories.map((item, index) => item ? `
+      <div class="mobile-saved-note ${store.state.activePerformanceSlot === index ? 'active' : ''}">
+        <button data-mobile-performance="${index}" type="button">
+          <small>P${String(index + 1).padStart(2, '0')}</small>
+          <strong>${item.displayName}</strong>
+        </button>
+        <button class="mobile-note-delete" data-mobile-delete="${index}" type="button" aria-label="Excluir ${item.displayName}">×</button>
+      </div>
+    ` : '').join('') || '<span class="mobile-empty">NENHUMA NOTA NO CA</span>';
   } else {
     strip.innerHTML = store.state.baseMemories.map((item, index) => item ? `
       <button class="mobile-chip base ${store.state.activeBaseSlot === index ? 'active' : ''}"
@@ -178,6 +192,7 @@ function switchToWheelButton(button) {
   const action = button.dataset.action;
   if (performanceIndex !== undefined) {
     events.featureHandlers?.recallPerformanceMemory(Number(performanceIndex));
+    activePerformanceTouch = Number(performanceIndex);
   } else if (action) {
     const previous = [...store.state.activeActions].find(active =>
       active.startsWith('tonic') || active.startsWith('smartTonic')
@@ -242,7 +257,20 @@ function init() {
     const performanceButton = event.target.closest('[data-mobile-performance]');
     const memoryButton = event.target.closest('[data-mobile-memory]');
     const baseButton = event.target.closest('[data-mobile-base]');
-    if (performanceButton) events.featureHandlers?.recallPerformanceMemory(Number(performanceButton.dataset.mobilePerformance));
+    const deleteButton = event.target.closest('[data-mobile-delete]');
+    if (deleteButton) {
+      const index = Number(deleteButton.dataset.mobileDelete);
+      store.dispatch(STATE_ACTION_TOKENS.SAVE_PERFORMANCE_MEMORY, { index, memory: null });
+      if (store.state.activePerformanceSlot === index) {
+        store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_PERFORMANCE_SLOT, null);
+      }
+      render();
+      return;
+    }
+    if (performanceButton && Date.now() - performanceReleasedAt > 240) {
+      events.featureHandlers?.recallPerformanceMemory(Number(performanceButton.dataset.mobilePerformance));
+      window.setTimeout(() => audioEngine.dampVoices(store.state.pedalActive ? 1.8 : 0.48), 180);
+    }
     if (memoryButton) events.recallMemory(Number(memoryButton.dataset.mobileMemory), true);
     if (baseButton) events.featureHandlers?.toggleBaseMemory(Number(baseButton.dataset.mobileBase));
     window.setTimeout(render, 0);
@@ -264,15 +292,34 @@ function init() {
     if (!wheelGesture?.lastButton && Math.abs(distance) > 42) stepWheel(distance < 0 ? 1 : -1);
     wheelGesture = null;
     root.classList.remove('wheel-armed');
+    if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE && activePerformanceTouch !== null) {
+      audioRelease();
+    }
   });
   wheelZone.addEventListener('pointercancel', () => {
     touchStartX = null;
     wheelGesture = null;
     root.classList.remove('wheel-armed');
+    audioRelease();
   });
+  strip.addEventListener('pointerdown', event => {
+    const performanceButton = event.target.closest('[data-mobile-performance]');
+    if (!performanceButton || event.target.closest('[data-mobile-delete]')) return;
+    activePerformanceTouch = Number(performanceButton.dataset.mobilePerformance);
+    events.featureHandlers?.recallPerformanceMemory(activePerformanceTouch);
+  });
+  strip.addEventListener('pointerup', audioRelease);
+  strip.addEventListener('pointercancel', audioRelease);
   store.subscribe(render);
   window.addEventListener('resize', render);
   render();
+}
+
+function audioRelease() {
+  if (activePerformanceTouch === null) return;
+  activePerformanceTouch = null;
+  performanceReleasedAt = Date.now();
+  audioEngine.dampVoices(store.state.pedalActive ? 1.8 : 0.48);
 }
 
 document.addEventListener('DOMContentLoaded', init);
