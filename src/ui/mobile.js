@@ -15,9 +15,11 @@ const harmonyLabel = document.querySelector('#mobileHarmonyLabel');
 const strip = document.querySelector('#mobileContextStrip');
 const tabs = document.querySelector('#mobileContextTabs');
 const soundSelect = document.querySelector('#mobileSoundSet');
+const addStageButton = document.querySelector('#mobileAddStage');
 
 let panel = 'degrees';
 let touchStartX = null;
+let wheelGesture = null;
 
 function currentPerformanceIndex() {
   const active = store.state.activePerformanceSlot;
@@ -82,10 +84,20 @@ function renderStrip() {
   });
 
   if (panel === 'degrees') {
-    strip.innerHTML = MUSIC_TOKENS.DEGREES.map(([name], index) => `
-      <button class="mobile-chip ${store.state.degrees.has(index) ? 'active' : ''}"
-        data-action="degree${index}" type="button">${name}</button>
-    `).join('');
+    strip.innerHTML = MUSIC_TOKENS.DEGREES.slice(0, 12).map(([name], index) => {
+      const flatIndex = 12 + index * 2;
+      const sharpIndex = flatIndex + 1;
+      return `
+        <div class="mobile-degree-family">
+          <button class="mobile-chip degree-natural ${store.state.degrees.has(index) ? 'active' : ''}"
+            data-action="degree${index}" type="button">${name}</button>
+          <button class="mobile-chip degree-altered ${store.state.degrees.has(flatIndex) ? 'active' : ''}"
+            data-action="degree${flatIndex}" type="button">${MUSIC_TOKENS.DEGREES[flatIndex][0]}</button>
+          <button class="mobile-chip degree-altered ${store.state.degrees.has(sharpIndex) ? 'active' : ''}"
+            data-action="degree${sharpIndex}" type="button">${MUSIC_TOKENS.DEGREES[sharpIndex][0]}</button>
+        </div>
+      `;
+    }).join('');
   } else if (panel === 'memories') {
     strip.innerHTML = store.state.memories.map((memory, index) => memory ? `
       <button class="mobile-chip memory ${store.state.currentMemoryIndex === index ? 'active' : ''}"
@@ -117,6 +129,7 @@ function render() {
     ? `${store.state.performanceMemories.filter(Boolean).length} NOTAS PRONTAS`
     : `OITAVA ${store.state.octave} · ${store.state.degrees.size} GRAUS`;
   soundSelect.value = store.state.soundSet;
+  addStageButton.hidden = performance;
   root.querySelectorAll('[data-workspace]').forEach(button => {
     button.classList.toggle('active', button.dataset.workspace === store.state.workspace);
   });
@@ -143,6 +156,68 @@ function stepWheel(direction) {
   render();
 }
 
+function wheelNoteFromPoint(clientX, clientY) {
+  const buttons = [...wheel.querySelectorAll('.mobile-wheel-note')];
+  let closest = null;
+  let closestDistance = Infinity;
+  buttons.forEach(button => {
+    const rect = button.getBoundingClientRect();
+    const distance = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - (rect.top + rect.height / 2));
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closest = button;
+    }
+  });
+  return closestDistance < 55 ? closest : null;
+}
+
+function switchToWheelButton(button) {
+  if (!button || wheelGesture?.lastButton === button) return;
+  wheelGesture.lastButton = button;
+  const performanceIndex = button.dataset.mobilePerformance;
+  const action = button.dataset.action;
+  if (performanceIndex !== undefined) {
+    events.featureHandlers?.recallPerformanceMemory(Number(performanceIndex));
+  } else if (action) {
+    const previous = [...store.state.activeActions].find(active =>
+      active.startsWith('tonic') || active.startsWith('smartTonic')
+    );
+    events.activate(action);
+    if (previous && previous !== action) store.state.activeActions.delete(previous);
+    store.state.activeActions.delete(action);
+  }
+  render();
+}
+
+function handleWheelMove(event) {
+  if (!wheelGesture || wheelGesture.pointerId !== event.pointerId) return;
+  const rect = wheelZone.getBoundingClientRect();
+  const distanceFromCenter = Math.hypot(
+    event.clientX - (rect.left + rect.width / 2),
+    event.clientY - (rect.top + rect.height / 2)
+  );
+  const centerRadius = Math.min(rect.width, rect.height) * 0.19;
+  if (distanceFromCenter <= centerRadius) {
+    wheelGesture.armed = true;
+    const trackedAction = store.state.pointerActions.get(event.pointerId);
+    if (trackedAction) {
+      store.state.pointerActions.delete(event.pointerId);
+      store.state.activeActions.delete(trackedAction);
+    }
+    centerShape.textContent = 'ESCOLHA A PRÓXIMA NOTA';
+    root.classList.add('wheel-armed');
+    return;
+  }
+  if (wheelGesture.armed) {
+    const target = wheelNoteFromPoint(event.clientX, event.clientY);
+    if (target) {
+      wheelGesture.armed = false;
+      root.classList.remove('wheel-armed');
+      switchToWheelButton(target);
+    }
+  }
+}
+
 function init() {
   if (!root) return;
   soundSelect.innerHTML = Object.values(MUSIC_TOKENS.SOUND_SETS)
@@ -157,6 +232,12 @@ function init() {
     panel = button.dataset.mobilePanel;
     renderStrip();
   });
+  addStageButton.addEventListener('click', () => {
+    if (store.state.tonic === null) return;
+    events.featureHandlers?.captureInNextPerformanceSlot();
+    addStageButton.classList.add('saved');
+    window.setTimeout(() => addStageButton.classList.remove('saved'), 480);
+  });
   root.addEventListener('click', event => {
     const performanceButton = event.target.closest('[data-mobile-performance]');
     const memoryButton = event.target.closest('[data-mobile-memory]');
@@ -168,12 +249,26 @@ function init() {
   });
   wheelZone.addEventListener('pointerdown', event => {
     touchStartX = event.clientX;
+    wheelGesture = {
+      pointerId: event.pointerId,
+      armed: false,
+      lastButton: event.target.closest('.mobile-wheel-note'),
+    };
+    wheelZone.setPointerCapture?.(event.pointerId);
   });
+  wheelZone.addEventListener('pointermove', handleWheelMove);
   wheelZone.addEventListener('pointerup', event => {
     if (touchStartX === null) return;
     const distance = event.clientX - touchStartX;
     touchStartX = null;
-    if (Math.abs(distance) > 42) stepWheel(distance < 0 ? 1 : -1);
+    if (!wheelGesture?.lastButton && Math.abs(distance) > 42) stepWheel(distance < 0 ? 1 : -1);
+    wheelGesture = null;
+    root.classList.remove('wheel-armed');
+  });
+  wheelZone.addEventListener('pointercancel', () => {
+    touchStartX = null;
+    wheelGesture = null;
+    root.classList.remove('wheel-armed');
   });
   store.subscribe(render);
   window.addEventListener('resize', render);
