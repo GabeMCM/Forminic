@@ -1,14 +1,4 @@
-:root {
-  --paper: #f2efe8;
-  --ink: #181816;
-  --muted: #77736a;
-  --line: #cbc6bb;
-  --acid: #d9ff38;
-  --acid-dark: #c4ec20;
-  --dark-panel: #252521;
-  --red: #ff5c46;
-  --shadow: 0 10px 30px rgba(24, 24, 22, 0.09);
-}
+@import "src/tokens/theme.tokens.css";
 
 * {
   box-sizing: border-box;
@@ -3617,3 +3607,40 @@ body[data-theme="light"] .tonic-add:hover {
   color: var(--gold);
   box-shadow: 0 7px 22px rgba(0, 0, 0, 0.42);
 }
+/* Rhythm Editor */
+.rhythm-grid-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.rhythm-track {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 4px;
+}
+
+.rhythm-step {
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rhythm-step:hover {
+  border-color: var(--ink);
+}
+
+.beat-strong-down { background: var(--ink); color: var(--paper); }
+.beat-light-down { background: var(--muted); color: var(--paper); }
+.beat-strong-up { background: var(--gold); color: var(--ink); }
+.beat-light-up { background: #e5bd75; color: var(--ink); }
+.beat-muted { background: var(--red); color: var(--paper); }
+.beat-pause { background: transparent; color: var(--ink); }

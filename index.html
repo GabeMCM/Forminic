@@ -43,6 +43,11 @@
             <select id="soundSet" aria-label="Set de som">
               <option value="piano">PIANO · GRAND CONCERT</option>
               <option value="pianoSoft">PIANO · FELT</option>
+              <option value="guitarNylon">VIOLÃO · NYLON</option>
+              <option value="guitarSteel">VIOLÃO · AÇO</option>
+              <option value="synthPad">SYNTH · WARM PAD</option>
+              <option value="synthLead">SYNTH · BRIGHT LEAD</option>
+              <option value="organ">ÓRGÃO · ELETRIC</option>
             </select>
           </label>
           <span class="status-pill" id="audioStatus">
@@ -119,10 +124,10 @@
           <span class="section-number">02</span>
           <div>
             <h2>GRAUS</h2>
-            <p>ATIVE ATÉ QUATRO CORES HARMÔNICAS</p>
+            <p>ATIVE ATÉ OITO CORES HARMÔNICAS</p>
           </div>
           <div class="selection-meter">
-            <span id="degreeCount">0</span><span>/ 4 ATIVOS</span>
+            <span id="degreeCount">0</span><span>/ 8 ATIVOS</span>
           </div>
         </div>
         <div class="key-grid degree-grid" id="degreeKeys"></div>
@@ -153,6 +158,9 @@
                 <span>RITMO</span>
                 <select id="rhythmPreset"></select>
               </label>
+              <button class="icon-button" type="button" id="openRhythmEditor" title="Editar Ritmo" style="width:24px;height:24px;margin-left:4px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z"/></svg>
+              </button>
               <label>
                 <span>BPM</span>
                 <input id="tempoControl" type="number" min="50" max="220" step="1" value="108" />
@@ -574,7 +582,30 @@
       </form>
     </dialog>
 
-    <script src="rhythm-presets.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="/src/main.js"></script>
+    <dialog id="rhythmDialog" class="modal">
+      <div class="dialog-header">
+        <h2 id="rhythmDialogTitle">EDITOR DE RITMO</h2>
+        <button class="close-button" type="button" id="closeRhythmDialog" aria-label="Fechar">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="dialog-content">
+        <form id="rhythmForm">
+          <label>
+            <span>NOME DO RITMO</span>
+            <input type="text" id="rhythmNameInput" required maxlength="24" placeholder="Ex: Meu Groove" />
+          </label>
+          <div class="rhythm-grid-editor">
+            <div id="rhythmGridA" class="rhythm-track"></div>
+            <div id="rhythmGridB" class="rhythm-track"></div>
+          </div>
+        </form>
+      </div>
+      <div class="dialog-actions">
+        <button class="text-button" type="button" id="cancelRhythm">CANCELAR</button>
+        <button class="text-button" type="submit" form="rhythmForm">SALVAR RITMO</button>
+      </div>
+    </dialog>
   </body>
 </html>

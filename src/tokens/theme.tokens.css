@@ -1,0 +1,25 @@
+:root {
+  --paper: #f2efe8;
+  --ink: #181816;
+  --muted: #77736a;
+  --line: #cbc6bb;
+  --acid: #d9ff38;
+  --acid-dark: #c4ec20;
+  --dark-panel: #252521;
+  --red: #ff5c46;
+  --gold: #d6a85f;
+  --shadow: 0 10px 30px rgba(24, 24, 22, 0.09);
+}
+
+body[data-theme="light"] {
+  --paper: #fbfaf6;
+  --ink: #11110f;
+  --muted: #88837a;
+  --line: #e3dec9;
+  --acid: #c4ec20;
+  --acid-dark: #a3d115;
+  --dark-panel: #ffffff;
+  --red: #e6402e;
+  --gold: #b9873f;
+  --shadow: 0 8px 24px rgba(17, 17, 15, 0.05);
+}
