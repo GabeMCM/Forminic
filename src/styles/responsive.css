@@ -1,0 +1,72 @@
+﻿@media (max-width: 960px) {
+  .app-shell { padding: 0 22px; }
+  .hero { grid-template-columns: 1fr; gap: 22px; }
+  .key-grid { grid-template-columns: repeat(6, 1fr); }
+  .memory-grid { grid-template-columns: repeat(6, 1fr); }
+  .tonic-links { grid-template-columns: 1fr; }
+  .tonic-link-grid { grid-template-columns: repeat(6, 1fr); }
+  .performance-row { grid-template-columns: 1fr; }
+  .performance-effects-grid { grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); }
+  .performance-heading { grid-column: 1 / -1; }
+}
+
+@media (max-width: 1160px) {
+  .topbar-actions { gap: 9px; }
+  .sound-set-control > span { display: none; }
+  .performance-label { font-size: 17px; }
+  .performance-copy { font-size: 7px; }
+}
+
+@media (max-width: 620px) {
+  .app-shell { padding: 0 12px; }
+  .topbar { height: 62px; }
+  .text-button, .status-pill, .sound-set-control > span { display: none; }
+  .hero { padding: 34px 0 28px; }
+  h1 { font-size: clamp(42px, 15vw, 64px); }
+  .instrument { padding: 16px; }
+  .section-heading { flex-wrap: wrap; }
+  .smart-controls { width: 100%; margin: 8px 0 0; }
+  .octave-controls { width: 100%; margin: 8px 0 0; justify-content: space-between; }
+  .key-grid { grid-template-columns: repeat(4, 1fr); }
+  .memory-grid { grid-template-columns: repeat(3, 1fr); }
+  .tonic-link-grid { grid-template-columns: repeat(4, 1fr); }
+  .note-key { height: 69px; }
+  .performance-row { grid-template-columns: 1fr; }
+  .performance-effects-grid { grid-template-columns: repeat(2, 1fr); }
+  .performance-heading { grid-column: auto; }
+  footer > span { display: none; }
+  footer { justify-content: center; }
+  .mapping-list { grid-template-columns: 1fr; }
+  .mapping-group-grid { grid-template-columns: 1fr; }
+  .mapping-toolbar { grid-template-columns: 1fr; }
+  .mapping-legend { padding-bottom: 0; }
+  .shortcut-capture { grid-template-columns: 1fr; }
+  .shortcut-capture-actions { justify-content: flex-end; }
+  .smart-command-heading { display: block; }
+  .smart-command-heading small { display: block; margin-top: 6px; text-align: left; }
+  .smart-command-options { grid-template-columns: 1fr; }
+  #helpDialog > .dialog-header { padding: 22px 18px 16px; }
+  .guide-nav { padding-inline: 18px; }
+  .guide-section {
+    grid-template-columns: 1fr;
+    padding: 28px 18px;
+  }
+  .guide-section-number { width: 31px; height: 31px; }
+  .guide-quick-grid,
+  .guide-cards,
+  .guide-shortcuts { grid-template-columns: 1fr; }
+  .guide-content { max-height: calc(100vh - 220px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   CONCERT EDITION â€” visual skin
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+

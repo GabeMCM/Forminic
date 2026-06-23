@@ -1,0 +1,454 @@
+﻿dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 32px));
+  padding: 28px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+dialog::-webkit-scrollbar {
+  display: none;
+}
+
+dialog::backdrop {
+  background: rgba(24, 24, 22, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.close-button {
+  width: 38px;
+  height: 38px;
+  font-size: 30px;
+  font-weight: 200;
+}
+
+.dialog-copy {
+  max-width: 520px;
+  margin: 16px 0 24px;
+  color: var(--muted);
+  font-family: Georgia, serif;
+  line-height: 1.5;
+}
+
+.mapping-list {
+  max-height: 430px;
+  display: block;
+  overflow: auto;
+  padding-right: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mapping-list::-webkit-scrollbar {
+  display: none;
+}
+
+.mapping-group {
+  margin-bottom: 16px;
+}
+
+.mapping-group-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+  padding: 0 8px;
+  background: #171715;
+  color: var(--gold);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.mapping-group-header small {
+  color: var(--muted);
+  font-size: 7px;
+}
+
+.mapping-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.mapping-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 43px;
+  padding: 7px 8px 7px 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mapping-item:hover,
+.mapping-item.listening {
+  border-color: var(--ink);
+}
+
+.mapping-item.listening {
+  background: var(--acid);
+}
+
+.mapping-item-context {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mapping-item-key {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.mapping-change {
+  color: var(--gold);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.mapping-function {
+  min-width: 0;
+  padding-right: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mapping-item .keycap {
+  flex: 0 0 auto;
+  max-width: 110px;
+}
+
+.mapping-toolbar {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.smart-command-settings {
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid rgba(214, 168, 95, 0.24);
+  border-radius: 10px;
+  background: rgba(214, 168, 95, 0.045);
+}
+
+.smart-command-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.smart-command-heading span,
+.smart-command-heading strong {
+  display: block;
+}
+
+.smart-command-heading span {
+  color: var(--gold);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.smart-command-heading strong {
+  margin-top: 4px;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.smart-command-heading small {
+  max-width: 220px;
+  color: var(--muted);
+  font-family: Georgia, serif;
+  text-align: right;
+}
+
+.smart-command-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.smart-command-option {
+  display: flex;
+  gap: 10px;
+  min-height: 105px;
+  padding: 13px;
+  border: 1px solid rgba(238, 233, 223, 0.1);
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.smart-command-option:has(input:checked) {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.smart-command-option input {
+  margin-top: 2px;
+  accent-color: var(--gold);
+}
+
+.smart-command-option span > strong,
+.smart-command-option span > small,
+.smart-command-option span > em {
+  display: block;
+}
+
+.smart-command-option span > strong {
+  color: var(--ivory);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.smart-command-option span > small {
+  margin-top: 8px;
+  color: #b8b1a5;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.smart-command-option span > em {
+  margin-top: 7px;
+  color: var(--muted);
+  font-family: Georgia, serif;
+  font-size: 10px;
+}
+
+.smart-command-settings kbd {
+  padding: 2px 5px;
+  border: 1px solid rgba(238, 233, 223, 0.18);
+  border-radius: 4px;
+  background: #0d0d0c;
+  color: var(--gold);
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+}
+
+.smart-command-shared {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.smart-command-shared span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.mapping-toolbar label > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.mapping-toolbar input {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid rgba(238, 233, 223, 0.14);
+  border-radius: 7px;
+  background: #0e0e0d;
+  color: var(--ivory);
+}
+
+.mapping-legend {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+}
+
+.legend-dot.composer { background: var(--gold); }
+.legend-dot.stage { background: #8ab9c9; }
+
+.shortcut-capture {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid rgba(214, 168, 95, 0.48);
+  border-radius: 10px;
+  background: rgba(214, 168, 95, 0.08);
+}
+
+.shortcut-capture > div > span,
+.shortcut-capture > div > strong {
+  display: block;
+}
+
+.shortcut-capture > div > span {
+  color: var(--gold);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.shortcut-capture > div > strong {
+  margin-top: 4px;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.shortcut-capture output {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0 12px;
+  border: 1px dashed rgba(238, 233, 223, 0.28);
+  border-radius: 7px;
+  color: var(--ivory);
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.shortcut-capture-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.shortcut-capture-actions button {
+  min-height: 34px;
+  padding-inline: 10px;
+}
+
+.topbar-actions,
+.section-heading > div,
+.tonic-links,
+.tonic-link-grid,
+.memory-grid,
+.performance-row {
+  min-width: 0;
+}
+
+.sound-set-control select,
+.tonic-link-select select,
+.rhythm-config select {
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.primary-button {
+  background: var(--ink);
+  color: white;
+}
+
+.secondary-button {
+  background: transparent;
+}
+
+.help-steps {
+  display: grid;
+  gap: 7px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: guide;
+}
+
+.help-steps li {
+  position: relative;
+  min-height: 62px;
+  padding: 12px 12px 12px 58px;
+  border: 1px solid var(--line);
+  counter-increment: guide;
+}
+
+.help-steps li::before {
+  content: "0" counter(guide);
+  position: absolute;
+  left: 13px;
+  top: 13px;
+  font-family: Georgia, serif;
+  font-size: 21px;
+}
+
+.help-steps strong,
+.help-steps span {
+  display: block;
+}
+
+.help-steps strong {
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.help-steps span {
+  color: var(--muted);
+  font-family: Georgia, serif;
+  font-size: 13px;
+}
+

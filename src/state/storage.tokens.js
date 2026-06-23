@@ -1,0 +1,22 @@
+export const STORAGE_KEYS = {
+  BINDINGS: "instrument-bindings",
+  MEMORIES: "instrument-memories",
+  TONIC_LINKS: "instrument-tonic-links",
+  SMART_MODE: "instrument-smart-mode",
+  SMART_COMMAND_MODE: "instrument-smart-command-mode",
+  FIELD_LETTER: "instrument-field-letter",
+  FIELD_ACCIDENTAL: "instrument-field-accidental",
+  FIELD_MINOR: "instrument-field-minor",
+  SMART_LINKS: "instrument-smart-links",
+  THEME: "instrument-theme",
+  SOUND_SET: "instrument-sound-set",
+  RHYTHM_PRESET: "instrument-rhythm-preset",
+  RHYTHM_TEMPO: "instrument-rhythm-tempo",
+  WORKSPACE: "instrument-workspace",
+  PERFORMANCE_MEMORIES: "instrument-performance-memories",
+  BASE_MEMORIES: "instrument-base-memories",
+  SETS: "instrument-sets",
+  ACTIVE_SET_ID: "instrument-active-set-id",
+  DIRECTIONAL_MIGRATION: "instrument-directional-migration",
+  PERSONAL_DEFAULT_BINDINGS: "instrument-personal-default-bindings"
+};

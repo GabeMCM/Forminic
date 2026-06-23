@@ -1,0 +1,634 @@
+﻿
+LineNumber Line                                                               
+---------- ----                                                               
+         1 @import "src/tokens/theme.tokens.css";                             
+         7 body {                                                             
+        18 button,                                                            
+        19 input {                                                            
+        23 button {                                                           
+        27 .app-shell {                                                       
+        34 .topbar {                                                          
+        42 .brand {                                                           
+        53 .brand-mark {                                                      
+        63 .topbar-actions {                                                  
+        69 .theme-switch {                                                    
+        77 .theme-switch input {                                              
+        83 .theme-track {                                                     
+        96 .theme-track svg {                                                 
+       106 .theme-track i {                                                   
+       117 .theme-switch input:checked + .theme-track i {                     
+       121 .theme-switch input:focus-visible + .theme-track {                 
+       126 .theme-label {                                                     
+       133 .sound-set-control {                                               
+       142 .sound-set-control select {                                        
+       154 .text-button,                                                      
+       155 .icon-button,                                                      
+       156 .close-button {                                                    
+       162 .text-button {                                                     
+       170 .icon-button {                                                     
+       177 .icon-button svg {                                                 
+       184 .status-pill {                                                     
+       196 .status-dot {                                                      
+       204 .hero {                                                            
+       211 .eyebrow {                                                         
+       219 h1 {                                                               
+       228 h1 em {                                                            
+       233 .intro {                                                           
+       242 #helpDialog {                                                      
+       251 #helpDialog:not([open]) {                                          
+       255 #helpDialog > .dialog-header {                                     
+       259 #helpDialog > .dialog-actions {                                    
+       266 .guide-nav {                                                       
+       276 .guide-nav a {                                                     
+       288 .guide-nav a:hover {                                               
+       293 .guide-content {                                                   
+       304 .guide-content::-webkit-scrollbar,                                 
+       305 .guide-nav::-webkit-scrollbar {                                    
+       309 .guide-section {                                                   
+       318 .guide-section-number {                                            
+       330 .guide-section h3 {                                                
+       338 .guide-quick-grid,                                                 
+       339 .guide-cards {                                                     
+       345 .guide-quick-grid article,                                         
+       346 .guide-cards article {                                             
+       354 .guide-quick-grid strong {                                         
+       362 .guide-quick-grid span {                                           
+       371 .guide-cards {                                                     
+       375 .guide-cards h4 {                                                  
+       382 .guide-cards p,                                                    
+       383 .guide-lead,                                                       
+       384 .guide-example p {                                                 
+       392 .guide-example,                                                    
+       393 .guide-tip {                                                       
+       400 .guide-example span,                                               
+       401 .guide-tip strong {                                                
+       408 .guide-example strong {                                            
+       416 .guide-shortcuts {                                                 
+       423 .guide-shortcuts div {                                             
+       434 .guide-shortcuts dt {                                              
+       441 .guide-shortcuts dd {                                              
+       448 .guide-tip {                                                       
+       454 .guide-tip span {                                                  
+       460 .instrument {                                                      
+       467 .section-heading {                                                 
+       475 .section-heading.compact {                                         
+       479 .section-number {                                                  
+       491 .section-heading h2 {                                              
+       497 .section-heading p {                                               
+       505 .octave-controls {                                                 
+       512 .smart-controls {                                                  
+       516 .smart-toggle {                                                    
+       527 .smart-toggle input {                                              
+       531 .field-controls {                                                  
+       538 .field-controls button {                                           
+       549 .field-controls button.active {                                    
+       555 .field-controls strong {                                           
+       562 .smart-tonic-grid {                                                
+       566 .smart-tonic-grid .tonic-key {                                     
+       570 .tonic-cell {                                                      
+       575 .tonic-cell .tonic-key {                                           
+       579 .tonic-add {                                                       
+       604 .tonic-cell:hover .tonic-add,                                      
+       605 .tonic-add:focus-visible {                                         
+       609 .tonic-add:hover {                                                 
+       617 .scale-degree {                                                    
+       626 .tonic-key.active .scale-degree {                                  
+       630 .control-key {                                                     
+       644 .keycap,                                                           
+       645 .wide-keycap {                                                     
+       659 .keycap {                                                          
+       667 .octave-readout {                                                  
+       672 .octave-readout strong {                                           
+       680 .octave-readout span {                                             
+       687 .key-grid {                                                        
+       693 .note-key {                                                        
+       707 .note-key:hover {                                                  
+       711 .note-key:active,                                                  
+       712 .note-key.active {                                                 
+       718 .tonic-key.active {                                                
+       726 .tonic-key.active .keycap {                                        
+       733 .degree-key.active {                                               
+       737 .note-name {                                                       
+       744 .note-key .keycap {                                                
+       757 .instrument .note-key .keycap,                                     
+       758 .instrument .control-key .keycap,                                  
+       759 .instrument .memory-slot .keycap,                                  
+       760 .instrument .performance-key .wide-keycap,                         
+       761 .instrument .performance-memory-slot .keycap,                      
+       762 .instrument .base-memory-slot .keycap {                            
+       770 .instrument .control-key {                                         
+       774 .instrument .control-key .keycap {                                 
+       783 .instrument .note-key:hover .keycap,                               
+       784 .instrument .note-key:focus-visible .keycap,                       
+       785 .instrument .control-key:hover .keycap,                            
+       786 .instrument .control-key:focus-visible .keycap,                    
+       787 .instrument .memory-slot:hover .keycap,                            
+       788 .instrument .memory-slot:focus-within .keycap,                     
+       789 .instrument .performance-key:hover .wide-keycap,                   
+       790 .instrument .performance-key:focus-visible .wide-keycap,           
+       791 .instrument .performance-memory-slot:hover .keycap,                
+       792 .instrument .performance-memory-slot:focus-within .keycap,         
+       793 .instrument .base-memory-slot:hover .keycap,                       
+       794 .instrument .base-memory-slot:focus-within .keycap {               
+       799 .instrument .control-key:hover .keycap,                            
+       800 .instrument .control-key:focus-visible .keycap {                   
+       804 .instrument .keycap,                                               
+       805 .instrument .wide-keycap {                                         
+       813 @media (hover: none) {                                             
+       824 .degree-key {                                                      
+       828 .degree-family {                                                   
+       834 .degree-alterations {                                              
+       840 .degree-key.altered {                                              
+       847 .degree-key.altered .note-name {                                   
+       851 .degree-key.altered .interval {                                    
+       857 .degree-key .note-name {                                           
+       863 .degree-key .interval {                                            
+       872 .degree-key.active .interval {                                     
+       876 .degree-key.blocked {                                              
+       880 @keyframes blocked {                                               
+       884 .divider {                                                         
+       890 .selection-meter {                                                 
+       901 .selection-meter #degreeCount {                                    
+       908 .selection-meter #memoryCount {                                    
+       915 .memory-grid {                                                     
+       921 .memory-slot {                                                     
+       930 .memory-slot.saved {                                               
+       935 .memory-recall {                                                   
+       944 .memory-number {                                                   
+       952 .memory-name {                                                     
+       963 .memory-key {                                                      
+       969 .memory-save {                                                     
+       984 .memory-save.replace {                                             
+       994 .memory-save.replace:hover {                                       
+       999 .memory-save svg {                                                 
+      1009 .memory-edit {                                                     
+      1024 .memory-slot.saved .memory-save {                                  
+      1028 .memory-name-field {                                               
+      1032 .memory-name-field span {                                          
+      1041 .memory-name-field input {                                         
+      1053 .tonic-links {                                                     
+      1062 .tonic-links-copy strong,                                          
+      1063 .tonic-links-copy span {                                           
+      1067 .tonic-links-copy strong {                                         
+      1072 .tonic-links-copy span {                                           
+      1080 .tonic-link-grid {                                                 
+      1086 .tonic-link-select {                                               
+      1090 .tonic-link-select span {                                          
+      1098 .tonic-link-select select {                                        
+      1109 .performance-row {                                                 
+      1116 .performance-heading {                                             
+      1129 .performance-heading > .section-number {                           
+      1134 .performance-heading > .section-number + div {                     
+      1140 .performance-heading h2 {                                          
+      1145 .performance-heading p {                                           
+      1150 .rhythm-config {                                                   
+      1159 .rhythm-config label {                                             
+      1163 .rhythm-config label > span {                                      
+      1172 .rhythm-config select,                                             
+      1173 .rhythm-config input {                                             
+      1185 .rhythm-config input {                                             
+      1189 .rhythm-key.latched {                                              
+      1194 .rhythm-key.variation-active {                                     
+      1199 .rhythm-key.variation-active .wide-keycap {                        
+      1203 .performance-key {                                                 
+      1216 .performance-label,                                                
+      1217 .performance-copy {                                                
+      1222 .performance-key:active,                                           
+      1223 .performance-key.active {                                          
+      1228 .rhythm-key {                                                      
+      1232 .rhythm-up {                                                       
+      1236 .effect-key {                                                      
+      1242 .effect-key.active {                                               
+      1246 .performance-label {                                               
+      1252 .performance-copy {                                                
+      1260 .performance-copy i {                                              
+      1265 .wide-keycap {                                                     
+      1276 footer {                                                           
+      1287 .sound-state {                                                     
+      1294 .wave {                                                            
+      1301 .wave i {                                                          
+      1307 body.sounding .wave i {                                            
+      1311 body.sounding .wave i:nth-child(2) { animation-delay: -200ms; }    
+      1312 body.sounding .wave i:nth-child(3) { animation-delay: -400ms; }    
+      1313 body.sounding .wave i:nth-child(4) { animation-delay: -100ms; }    
+      1314 body.sounding .wave i:nth-child(5) { animation-delay: -300ms; }    
+      1316 @keyframes wave {                                                  
+      1320 dialog {                                                           
+      1330 dialog::backdrop {                                                 
+      1335 .dialog-header {                                                   
+      1340 .dialog-header h2 {                                                
+      1347 .close-button {                                                    
+      1354 .dialog-copy {                                                     
+      1362 .mapping-list {                                                    
+      1371 .mapping-list::-webkit-scrollbar {                                 
+      1375 .mapping-group {                                                   
+      1379 .mapping-group-header {                                            
+      1395 .mapping-group-header small {                                      
+      1400 .mapping-group-grid {                                              
+      1406 .mapping-item {                                                    
+      1418 .mapping-item:hover,                                               
+      1419 .mapping-item.listening {                                          
+      1423 .mapping-item.listening {                                          
+      1427 .mapping-item-context {                                            
+      1436 .mapping-item-key {                                                
+      1442 .mapping-change {                                                  
+      1448 .mapping-function {                                                
+      1459 .mapping-item .keycap {                                            
+      1464 .mapping-toolbar {                                                 
+      1472 .smart-command-settings {                                          
+      1480 .smart-command-heading {                                           
+      1487 .smart-command-heading span,                                       
+      1488 .smart-command-heading strong {                                    
+      1492 .smart-command-heading span {                                      
+      1499 .smart-command-heading strong {                                    
+      1506 .smart-command-heading small {                                     
+      1513 .smart-command-options {                                           
+      1519 .smart-command-option {                                            
+      1529 .smart-command-option:has(input:checked) {                         
+      1534 .smart-command-option input {                                      
+      1539 .smart-command-option span > strong,                               
+      1540 .smart-command-option span > small,                                
+      1541 .smart-command-option span > em {                                  
+      1545 .smart-command-option span > strong {                              
+      1551 .smart-command-option span > small {                               
+      1559 .smart-command-option span > em {                                  
+      1566 .smart-command-settings kbd {                                      
+      1576 .smart-command-shared {                                            
+      1583 .smart-command-shared span {                                       
+      1590 .mapping-toolbar label > span {                                    
+      1599 .mapping-toolbar input {                                           
+      1609 .mapping-legend {                                                  
+      1618 .legend-dot {                                                      
+      1626 .legend-dot.composer { background: var(--gold); }                  
+      1627 .legend-dot.stage { background: #8ab9c9; }                         
+      1629 .shortcut-capture {                                                
+      1641 .shortcut-capture > div > span,                                    
+      1642 .shortcut-capture > div > strong {                                 
+      1646 .shortcut-capture > div > span {                                   
+      1653 .shortcut-capture > div > strong {                                 
+      1660 .shortcut-capture output {                                         
+      1673 .shortcut-capture-actions {                                        
+      1678 .shortcut-capture-actions button {                                 
+      1683 .topbar-actions,                                                   
+      1684 .section-heading > div,                                            
+      1685 .tonic-links,                                                      
+      1686 .tonic-link-grid,                                                  
+      1687 .memory-grid,                                                      
+      1688 .performance-row {                                                 
+      1692 .sound-set-control select,                                         
+      1693 .tonic-link-select select,                                         
+      1694 .rhythm-config select {                                            
+      1699 .dialog-actions {                                                  
+      1706 .primary-button,                                                   
+      1707 .secondary-button {                                                
+      1717 .primary-button {                                                  
+      1722 .secondary-button {                                                
+      1726 .help-steps {                                                      
+      1735 .help-steps li {                                                   
+      1743 .help-steps li::before {                                           
+      1752 .help-steps strong,                                                
+      1753 .help-steps span {                                                 
+      1757 .help-steps strong {                                               
+      1762 .help-steps span {                                                 
+      1768 @media (max-width: 960px) {                                        
+      1779 @media (max-width: 1160px) {                                       
+      1786 @media (max-width: 620px) {                                        
+      1826 @media (prefers-reduced-motion: reduce) {                          
+      1838 .workspace-switcher {                                              
+      1848 .workspace-tab {                                                   
+      1861 .workspace-tab span {                                              
+      1868 .workspace-tab.active {                                            
+      1873 .workspace-tab.active span {                                       
+      1877 .performance-workspace {                                           
+      1881 .performance-stage-header {                                        
+      1890 .set-manager {                                                     
+      1900 .set-manager-head {                                                
+      1907 .set-manager-head h3 {                                             
+      1914 .set-manager-head > div > span {                                   
+      1922 .set-manager-actions {                                             
+      1927 .set-smart-controls {                                              
+      1933 .set-nav-button {                                                  
+      1948 .set-nav-button:hover:not(:disabled) {                             
+      1953 .set-nav-button:disabled {                                         
+      1958 .set-nav-button span {                                             
+      1963 .set-nav-button small {                                            
+      1969 .set-position {                                                    
+      1980 .set-position strong,                                              
+      1981 .set-position span {                                               
+      1985 .set-position strong {                                             
+      1992 .set-position span {                                               
+      2004 .set-manager-actions button {                                      
+      2008 .set-list {                                                        
+      2015 .set-card {                                                        
+      2028 .set-card[draggable="true"] {                                      
+      2032 .set-card.dragging {                                               
+      2038 .set-card.drag-over {                                              
+      2043 .set-drag-handle {                                                 
+      2052 .set-card:hover {                                                  
+      2057 .set-card.active {                                                 
+      2065 .set-card-index {                                                  
+      2072 .set-card h4 {                                                     
+      2084 .set-card-stats {                                                  
+      2094 .set-card-stats strong {                                           
+      2102 .set-card-date {                                                   
+      2111 .set-card-delete {                                                 
+      2127 .set-card-delete:hover {                                           
+      2132 .set-empty {                                                       
+      2143 .set-empty[hidden],                                                
+      2144 .set-list[hidden] {                                                
+      2148 .set-empty span {                                                  
+      2154 .set-empty strong {                                                
+      2161 .set-empty p {                                                     
+      2168 body[data-theme="light"] .set-manager {                            
+      2175 body[data-theme="light"] .set-card {                               
+      2182 body[data-theme="light"] .set-card.active {                        
+      2189 body[data-theme="light"] .set-nav-button,                          
+      2190 body[data-theme="light"] .set-position {                           
+      2195 body[data-theme="light"] .set-card h4,                             
+      2196 body[data-theme="light"] .set-empty strong {                       
+      2200 body[data-theme="light"] .set-empty {                              
+      2204 @media (max-width: 960px) {                                        
+      2210 @media (max-width: 620px) {                                        
+      2219 .performance-stage-header h2 {                                     
+      2227 .performance-stage-header h2 em {                                  
+      2233 .stage-current {                                                   
+      2240 .stage-current span,                                               
+      2241 .stage-current strong,                                             
+      2242 .stage-current small {                                             
+      2246 .stage-current span {                                              
+      2253 .stage-current strong {                                            
+      2260 .stage-current small {                                             
+      2266 .stage-instructions {                                              
+      2273 .stage-instructions p {                                            
+      2282 .stage-instructions strong {                                       
+      2286 .performance-memory-grid {                                         
+      2292 .base-instructions {                                               
+      2296 .base-memory-grid {                                                
+      2302 .base-memory-slot {                                                
+      2312 .base-memory-slot.saved {                                          
+      2319 .base-memory-slot.active {                                         
+      2324 .base-memory-slot.active::after {                                  
+      2335 .base-memory-slot .stage-slot-number {                             
+      2339 .base-memory-slot .stage-slot-note {                               
+      2343 .capture-options {                                                 
+      2349 .capture-option {                                                  
+      2360 .capture-option:hover {                                            
+      2365 .capture-option span,                                              
+      2366 .capture-option strong,                                            
+      2367 .capture-option small {                                            
+      2371 .capture-option span {                                             
+      2378 .capture-option strong {                                           
+      2385 .capture-option small {                                            
+      2391 .capture-option:disabled {                                         
+      2396 .performance-memory-slot {                                         
+      2407 .performance-memory-slot:hover {                                   
+      2412 .performance-memory-slot.saved {                                   
+      2419 .performance-memory-slot.active {                                  
+      2424 .stage-slot-number {                                               
+      2431 .stage-slot-clear {                                                
+      2448 .stage-slot-clear:hover {                                          
+      2453 .stage-slot-note {                                                 
+      2467 .stage-slot-detail {                                               
+      2479 .stage-slot-actions {                                              
+      2489 .stage-slot-actions > span:first-child {                           
+      2496 .performance-memory-slot.empty,                                    
+      2497 .base-memory-slot.empty {                                          
+      2505 .performance-memory-slot.empty .stage-slot-number,                 
+      2506 .base-memory-slot.empty .stage-slot-number {                       
+      2513 .empty-slot-symbol {                                               
+      2526 .performance-memory-slot.empty .stage-slot-detail,                 
+      2527 .performance-memory-slot.empty .stage-slot-actions,                
+      2528 .base-memory-slot.empty .stage-slot-detail,                        
+      2529 .base-memory-slot.empty .stage-slot-actions {                      
+      2533 body[data-theme="light"] .performance-memory-slot.empty,           
+      2534 body[data-theme="light"] .base-memory-slot.empty {                 
+      2539 body[data-theme="light"] .empty-slot-symbol {                      
+      2544 .stage-slot-actions .keycap {                                      
+      2549 .stage-performance {                                               
+      2560 @media (max-width: 960px) {                                        
+      2568 @media (max-width: 620px) {                                        
+      2596 html {                                                             
+      2601 body {                                                             
+      2610 body::before {                                                     
+      2623 .app-shell {                                                       
+      2628 .topbar {                                                          
+      2633 .brand {                                                           
+      2641 .brand-mark {                                                      
+      2647 .topbar-actions {                                                  
+      2655 .text-button {                                                     
+      2661 .text-button:hover,                                                
+      2662 .icon-button:hover {                                               
+      2666 .sound-set-control select,                                         
+      2667 .status-pill {                                                     
+      2674 .sound-set-control {                                               
+      2678 .status-dot {                                                      
+      2683 .hero {                                                            
+      2689 .hero::after {                                                     
+      2702 .eyebrow {                                                         
+      2706 h1 {                                                               
+      2713 h1 em {                                                            
+      2718 .intro {                                                           
+      2724 .instrument {                                                      
+      2738 .instrument::before,                                               
+      2739 .instrument::after {                                               
+      2749 .instrument::before { left: 15px; }                                
+      2750 .instrument::after { right: 15px; }                                
+      2752 .section-heading {                                                 
+      2756 .section-number {                                                  
+      2764 .section-heading h2 {                                              
+      2771 .section-heading p,                                                
+      2772 .selection-meter,                                                  
+      2773 .tonic-links-copy span {                                           
+      2777 .divider {                                                         
+      2781 .control-key,                                                      
+      2782 .smart-toggle,                                                     
+      2783 .field-controls button {                                           
+      2789 .control-key,                                                      
+      2790 .field-controls button {                                           
+      2794 .control-key:hover,                                                
+      2795 .field-controls button:hover {                                     
+      2799 .field-controls strong,                                            
+      2800 .octave-readout strong,                                            
+      2801 .selection-meter #degreeCount,                                     
+      2802 .selection-meter #memoryCount {                                    
+      2806 .field-controls button.active {                                    
+      2812 .keycap,                                                           
+      2813 .wide-keycap {                                                     
+      2821 .note-key {                                                        
+      2831 .note-key:hover {                                                  
+      2838 .note-key:active,                                                  
+      2839 .note-key.active {                                                 
+      2846 .tonic-key.active {                                                
+      2854 .tonic-key.active .keycap {                                        
+      2861 .tonic-key.active .scale-degree {                                  
+      2865 .degree-key.altered {                                              
+      2871 .degree-key.altered .note-name {                                   
+      2875 .degree-key.active .note-name,                                     
+      2876 .degree-key.altered.active .note-name {                            
+      2880 .tonic-links {                                                     
+      2888 .tonic-link-select select,                                         
+      2889 .rhythm-config select,                                             
+      2890 .rhythm-config input {                                             
+      2897 .memory-slot {                                                     
+      2904 .memory-slot:hover {                                               
+      2909 .memory-slot.saved {                                               
+      2916 .memory-number,                                                    
+      2917 .memory-save {                                                     
+      2921 .memory-name {                                                     
+      2925 .memory-edit {                                                     
+      2932 .performance-row {                                                 
+      2940 .performance-heading {                                             
+      2946 .performance-key {                                                 
+      2953 .rhythm-key {                                                      
+      2959 .rhythm-up {                                                       
+      2965 .performance-key:hover {                                           
+      2969 .performance-key.active,                                           
+      2970 .rhythm-key.latched,                                               
+      2971 .rhythm-key.variation-active {                                     
+      2979 .effect-key {                                                      
+      2986 .effect-key.active {                                               
+      2990 footer {                                                           
+      2994 .sound-state {                                                     
+      2998 dialog {                                                           
+      3007 dialog::backdrop {                                                 
+      3011 .mapping-item,                                                     
+      3012 .help-steps li {                                                   
+      3018 .mapping-item.listening {                                          
+      3023 .memory-name-field input,                                          
+      3024 .memory-name-field select {                                        
+      3031 .primary-button,                                                   
+      3032 .secondary-button {                                                
+      3036 .primary-button {                                                  
+      3042 .secondary-button {                                                
+      3047 @media (max-width: 960px) {                                        
+      3053 @media (max-width: 620px) {                                        
+      3100 body[data-theme="light"] {                                         
+      3119 body[data-theme="light"]::before {                                 
+      3127 body[data-theme="light"] .topbar {                                 
+      3131 body[data-theme="light"] .brand,                                   
+      3132 body[data-theme="light"] .icon-button,                             
+      3133 body[data-theme="light"] .text-button {                            
+      3137 body[data-theme="light"] .topbar-actions {                         
+      3142 body[data-theme="light"] .theme-track {                            
+      3147 body[data-theme="light"] .theme-track i {                          
+      3152 body[data-theme="light"] .sound-set-control select,                
+      3153 body[data-theme="light"] .status-pill {                            
+      3159 body[data-theme="light"] h1 {                                      
+      3164 body[data-theme="light"] h1 em,                                    
+      3165 body[data-theme="light"] .eyebrow,                                 
+      3166 body[data-theme="light"] .sound-state {                            
+      3170 body[data-theme="light"] .instrument {                             
+      3181 body[data-theme="light"] .note-key {                               
+      3190 body[data-theme="light"] .note-key:hover {                         
+      3195 body[data-theme="light"] .note-key.active,                         
+      3196 body[data-theme="light"] .tonic-key.active {                       
+      3202 body[data-theme="light"] .tonic-key.active .scale-degree {         
+      3206 body[data-theme="light"] .degree-key.altered {                     
+      3211 body[data-theme="light"] .degree-key.altered .note-name {          
+      3215 body[data-theme="light"] .degree-key.altered.active .note-name {   
+      3219 body[data-theme="light"] .tonic-links,                             
+      3220 body[data-theme="light"] .performance-row,                         
+      3221 body[data-theme="light"] .stage-performance {                      
+      3226 body[data-theme="light"] .tonic-link-select select,                
+      3227 body[data-theme="light"] .rhythm-config select,                    
+      3228 body[data-theme="light"] .rhythm-config input,                     
+      3229 body[data-theme="light"] .field-controls button,                   
+      3230 body[data-theme="light"] .control-key {                            
+      3236 body[data-theme="light"] .memory-slot,                             
+      3237 body[data-theme="light"] .performance-memory-slot,                 
+      3238 body[data-theme="light"] .base-memory-slot {                       
+      3243 body[data-theme="light"] .memory-slot.saved,                       
+      3244 body[data-theme="light"] .performance-memory-slot.saved {          
+      3250 body[data-theme="light"] .base-memory-slot.saved {                 
+      3256 body[data-theme="light"] .memory-name,                             
+      3257 body[data-theme="light"] .stage-slot-note {                        
+      3261 body[data-theme="light"] .performance-heading {                    
+      3265 body[data-theme="light"] .performance-key,                         
+      3266 body[data-theme="light"] .rhythm-key,                              
+      3267 body[data-theme="light"] .rhythm-up {                              
+      3275 body[data-theme="light"] .effect-key {                             
+      3282 body[data-theme="light"] .performance-key.active,                  
+      3283 body[data-theme="light"] .rhythm-key.latched,                      
+      3284 body[data-theme="light"] .rhythm-key.variation-active {            
+      3289 body[data-theme="light"] dialog {                                  
+      3297 body[data-theme="light"] dialog::backdrop {                        
+      3301 body[data-theme="light"] .mapping-group-header,                    
+      3302 body[data-theme="light"] #helpDialog > .dialog-actions {           
+      3306 body[data-theme="light"] .mapping-item,                            
+      3307 body[data-theme="light"] .help-steps li,                           
+      3308 body[data-theme="light"] .guide-quick-grid article,                
+      3309 body[data-theme="light"] .guide-cards article,                     
+      3310 body[data-theme="light"] .guide-shortcuts div {                    
+      3315 body[data-theme="light"] .mapping-toolbar input,                   
+      3316 body[data-theme="light"] .memory-name-field input,                 
+      3317 body[data-theme="light"] .memory-name-field select,                
+      3318 body[data-theme="light"] .smart-command-settings kbd {             
+      3324 body[data-theme="light"] .smart-command-settings,                  
+      3325 body[data-theme="light"] .shortcut-capture,                        
+      3326 body[data-theme="light"] .guide-example,                           
+      3327 body[data-theme="light"] .guide-tip {                              
+      3331 body[data-theme="light"] .smart-command-option {                   
+      3335 body[data-theme="light"] .smart-command-option:has(input:checked) {
+      3340 body[data-theme="light"] .smart-command-option span > strong,      
+      3341 body[data-theme="light"] .guide-section h3,                        
+      3342 body[data-theme="light"] .guide-example strong,                    
+      3343 body[data-theme="light"] .dialog-header h2 {                       
+      3347 body[data-theme="light"] .smart-command-option span > small,       
+      3348 body[data-theme="light"] .guide-cards p,                           
+      3349 body[data-theme="light"] .guide-lead,                              
+      3350 body[data-theme="light"] .guide-example p,                         
+      3351 body[data-theme="light"] .guide-tip span {                         
+      3356 body[data-theme="light"] {                                         
+      3375 body[data-theme="light"] .brand-mark {                             
+      3381 body[data-theme="light"] .theme-track i,                           
+      3382 body[data-theme="light"] .status-dot {                             
+      3386 body[data-theme="light"] h1 em,                                    
+      3387 body[data-theme="light"] .eyebrow,                                 
+      3388 body[data-theme="light"] .sound-state,                             
+      3389 body[data-theme="light"] .section-number,                          
+      3390 body[data-theme="light"] .memory-number,                           
+      3391 body[data-theme="light"] .memory-save,                             
+      3392 body[data-theme="light"] .stage-slot-number,                       
+      3393 body[data-theme="light"] .set-card-index {                         
+      3397 body[data-theme="light"] .workspace-tab.active,                    
+      3398 body[data-theme="light"] .primary-button,                          
+      3399 body[data-theme="light"] .note-key.active,                         
+      3400 body[data-theme="light"] .tonic-key.active,                        
+      3401 body[data-theme="light"] .performance-key.active,                  
+      3402 body[data-theme="light"] .rhythm-key.latched,                      
+      3403 body[data-theme="light"] .rhythm-key.variation-active {            
+      3409 body[data-theme="light"] .instrument {                             
+      3416 body[data-theme="light"] .note-key,                                
+      3417 body[data-theme="light"] .memory-slot,                             
+      3418 body[data-theme="light"] .performance-memory-slot,                 
+      3419 body[data-theme="light"] .base-memory-slot,                        
+      3420 body[data-theme="light"] .set-card {                               
+      3424 body[data-theme="light"] .note-key:hover,                          
+      3425 body[data-theme="light"] .memory-slot:hover,                       
+      3426 body[data-theme="light"] .set-card:hover {                         
+      3430 body[data-theme="light"] .rhythm-key {                             
+      3436 body[data-theme="light"] .effect-key {                             
+      3442 body[data-theme="light"] .effect-key.active {                      
+      3447 body[data-theme="light"] .field-controls button.active,            
+      3448 body[data-theme="light"] .smart-command-option:has(input:checked) {
+      3454 body[data-theme="light"] .set-nav-button:hover:not(:disabled),     
+      3455 body[data-theme="light"] .tonic-add:hover {                        
+      3462 @media (max-width: 620px) {                                        
+      3599 .instrument .note-key .keycap,                                     
+      3600 .instrument .control-key .keycap,                                  
+      3601 .instrument .memory-slot .keycap,                                  
+      3602 .instrument .performance-key .wide-keycap,                         
+      3603 .instrument .performance-memory-slot .keycap,                      
+      3604 .instrument .base-memory-slot .keycap {                            
+      3611 .rhythm-grid-editor {                                              
+      3618 .rhythm-track {                                                    
+      3624 .rhythm-step {                                                     
+      3637 .rhythm-step:hover {                                               
+      3641 .beat-strong-down { background: var(--ink); color: var(--paper); } 
+      3642 .beat-light-down { background: var(--muted); color: var(--paper); }
+      3643 .beat-strong-up { background: var(--gold); color: var(--ink); }    
+      3644 .beat-light-up { background: #e5bd75; color: var(--ink); }         
+      3645 .beat-muted { background: var(--red); color: var(--paper); }       
+      3646 .beat-pause { background: transparent; color: var(--ink); }        
+
+

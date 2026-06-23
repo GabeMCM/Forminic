@@ -1,13 +1,23 @@
-# Instrumento — protótipo harmônico
+# Forminc — instrumento harmônico
 
-Protótipo web de um instrumento elétrico baseado em combinações de teclas.
+Instrumento web para tocar campos harmônicos, acordes e camadas sustentadas pelo teclado.
 
 O interruptor no topo alterna entre os temas Escuro e Claro. A preferência fica
 salva no navegador.
 
 ## Executar
 
-Abra `index.html` diretamente no navegador ou sirva a pasta com qualquer servidor HTTP local.
+Use o Vite pelo Yarn para carregar os módulos corretamente:
+
+```bash
+yarn dev
+```
+
+Para gerar a versão de produção:
+
+```bash
+yarn build
+```
 
 ## Controles padrão
 

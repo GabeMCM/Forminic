@@ -1,0 +1,430 @@
+﻿.octave-controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+}
+
+.smart-controls {
+  margin-left: auto;
+}
+
+.smart-mode-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 180px;
+  min-height: 35px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  isolation: isolate;
+  user-select: none;
+}
+
+.smart-mode-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.smart-mode-switch::before {
+  content: "";
+  position: absolute;
+  inset: 3px auto 3px 3px;
+  z-index: -1;
+  width: calc(50% - 3px);
+  background: var(--ink);
+  transition: transform 160ms ease;
+}
+
+.smart-mode-switch:has(input:checked)::before {
+  transform: translateX(100%);
+}
+
+.smart-mode-switch span {
+  display: grid;
+  place-items: center;
+  min-height: 27px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+.smart-mode-switch span:first-of-type,
+.smart-mode-switch:has(input:checked) span:last-of-type {
+  color: var(--acid);
+}
+
+.smart-mode-switch:has(input:checked) span:first-of-type {
+  color: var(--muted);
+}
+
+.field-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.field-controls button {
+  min-width: 27px;
+  height: 27px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.field-letter-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 27px);
+  gap: 3px;
+}
+
+.field-controls button.active,
+.field-letter-grid button.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--acid);
+}
+
+.field-controls strong {
+  min-width: 72px;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  text-align: center;
+}
+
+.smart-tonic-grid {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.smart-tonic-grid .tonic-key {
+  height: 92px;
+}
+
+.tonic-cell {
+  position: relative;
+  min-width: 0;
+}
+
+.tonic-cell .tonic-key {
+  width: 100%;
+}
+
+.tonic-add {
+  position: absolute;
+  z-index: 4;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(214, 168, 95, 0.48);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.07), transparent),
+    #151411;
+  color: var(--gold);
+  cursor: pointer;
+  font-family: Georgia, serif;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.76;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: opacity 120ms ease, transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.tonic-cell:hover .tonic-add,
+.tonic-add:focus-visible {
+  opacity: 1;
+}
+
+.tonic-add:hover {
+  border-color: #edc77e;
+  background: linear-gradient(145deg, #e5bd75, #b9873f);
+  color: #11110f;
+  transform: translateY(-1px) scale(1.06);
+  box-shadow: 0 8px 18px rgba(214, 168, 95, 0.2);
+}
+
+.scale-degree {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.tonic-key.active .scale-degree {
+  color: var(--paper);
+}
+
+.control-key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 35px;
+  padding: 4px 9px 4px 4px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.keycap,
+.wide-keycap {
+  display: grid;
+  place-items: center;
+  border: 1px solid #aaa59b;
+  background: #fbfaf6;
+  box-shadow: 0 2px 0 #aaa59b;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.keycap {
+  width: auto;
+  min-width: 25px;
+  max-width: 62px;
+  height: 25px;
+  padding: 0 5px;
+}
+
+.octave-readout {
+  min-width: 45px;
+  text-align: center;
+}
+
+.octave-readout strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.octave-readout span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(55px, 1fr));
+  gap: 7px;
+}
+
+.note-key {
+  position: relative;
+  min-width: 0;
+  height: 82px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 80ms ease, border-color 80ms ease, background 80ms ease;
+  user-select: none;
+  touch-action: none;
+}
+
+.note-key:hover {
+  border-color: var(--ink);
+}
+
+.note-key:active,
+.note-key.active {
+  transform: translateY(2px);
+  border-color: var(--ink);
+  background: var(--acid);
+}
+
+.tonic-key.active {
+  z-index: 1;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--acid);
+  box-shadow: inset 0 -5px 0 var(--acid);
+}
+
+.tonic-key.active .keycap {
+  border-color: var(--acid);
+  background: var(--acid);
+  color: var(--ink);
+  box-shadow: 0 2px 0 #8fa800;
+}
+
+.degree-key.active {
+  box-shadow: inset 0 -4px 0 var(--ink);
+}
+
+.note-name {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.note-key .keycap {
+  position: absolute;
+  right: 7px;
+  bottom: 8px;
+  width: auto;
+  min-width: 22px;
+  max-width: calc(100% - 14px);
+  height: 22px;
+  padding: 0 4px;
+  font-size: 9px;
+}
+
+/* Os atalhos ficam discretos no instrumento e aparecem como dicas no hover/foco. */
+.instrument .note-key .keycap,
+.instrument .control-key .keycap,
+.instrument .memory-slot .keycap,
+.instrument .performance-key .wide-keycap,
+.instrument .performance-memory-slot .keycap,
+.instrument .base-memory-slot .keycap {
+  z-index: 8;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(5px) scale(0.94);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.instrument .control-key {
+  position: relative;
+}
+
+.instrument .control-key .keycap {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 7px);
+  width: max-content;
+  max-width: 92px;
+  transform: translate(-50%, 5px) scale(0.94);
+}
+
+.instrument .note-key:hover .keycap,
+.instrument .note-key:focus-visible .keycap,
+.instrument .control-key:hover .keycap,
+.instrument .control-key:focus-visible .keycap,
+.instrument .memory-slot:hover .keycap,
+.instrument .memory-slot:focus-within .keycap,
+.instrument .performance-key:hover .wide-keycap,
+.instrument .performance-key:focus-visible .wide-keycap,
+.instrument .performance-memory-slot:hover .keycap,
+.instrument .performance-memory-slot:focus-within .keycap,
+.instrument .base-memory-slot:hover .keycap,
+.instrument .base-memory-slot:focus-within .keycap {
+  opacity: 0.92;
+  transform: translateY(0) scale(1);
+}
+
+.instrument .control-key:hover .keycap,
+.instrument .control-key:focus-visible .keycap {
+  transform: translate(-50%, 0) scale(1);
+}
+
+.instrument .keycap,
+.instrument .wide-keycap {
+  border-color: rgba(214, 168, 95, 0.5);
+  background: rgba(18, 17, 14, 0.94);
+  color: var(--gold);
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+@media (hover: none) {
+  .instrument .note-key .keycap,
+  .instrument .control-key .keycap,
+  .instrument .memory-slot .keycap,
+  .instrument .performance-key .wide-keycap,
+  .instrument .performance-memory-slot .keycap,
+  .instrument .base-memory-slot .keycap {
+    display: none;
+  }
+}
+
+.degree-key {
+  height: 65px;
+}
+
+.degree-family {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.degree-alterations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.degree-key.altered {
+  height: 47px;
+  padding: 7px 5px;
+  background: rgba(24, 24, 22, 0.035);
+  border-style: dashed;
+}
+
+.degree-key.altered .note-name {
+  font-size: 15px;
+}
+
+.degree-key.altered .interval {
+  margin-top: 3px;
+  font-size: 5px;
+  letter-spacing: 0.05em;
+}
+
+.degree-key .note-name {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.degree-key .interval {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.degree-key.active .interval {
+  color: var(--ink);
+}
+
+.degree-key.blocked {
+  animation: blocked 180ms linear 2;
+}
+
+@keyframes blocked {
+  50% { border-color: var(--red); color: var(--red); }
+}
+
+.divider {
+  height: 1px;
+  margin: 28px 0;
+  background: var(--line);
+}
+

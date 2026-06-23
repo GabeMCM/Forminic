@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Protótipo de instrumento harmônico controlado pelo teclado."
+      content="Forminc, instrumento harmônico para tocar campos, acordes e camadas pelo teclado."
     />
-    <title>Instrumento — Protótipo Harmônico</title>
+    <title>Forminc — Instrumento Harmônico</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Instrumento, início">
+        <a class="brand" href="#" aria-label="Forminc, início">
           <span class="brand-mark" aria-hidden="true"></span>
-          INSTRUMENTO
+          FORMINC
         </a>
         <div class="topbar-actions">
           <button class="text-button" id="helpButton" type="button">COMO TOCAR</button>
@@ -59,8 +59,8 @@
 
       <section class="hero">
         <div>
-          <p class="eyebrow">PROTÓTIPO 01 · HARMONIA GESTUAL</p>
-          <h1>Toque acordes.<br /><em>Molde o tempo.</em></h1>
+          <p class="eyebrow">FORMINC · CAMPO HARMÔNICO PERFORMÁVEL</p>
+          <h1>Escolha notas.<br /><em>Conduza acordes.</em></h1>
         </div>
       </section>
 
@@ -82,13 +82,23 @@
             <h2>TÔNICA</h2>
             <p id="tonicModeDescription">SELECIONE A NOTA PRINCIPAL</p>
           </div>
-          <div class="smart-controls">
-            <label class="smart-toggle">
+          <div class="smart-controls" aria-label="Modo das tônicas">
+            <label class="smart-mode-switch">
               <input id="smartModeToggle" type="checkbox" />
-              <span>TÔNICAS INTELIGENTES</span>
+              <span>CROMÁTICO</span>
+              <span>CAMPO</span>
             </label>
             <div class="field-controls" id="fieldControls" hidden>
               <button id="fieldFlat" type="button" aria-label="Campo bemol">♭</button>
+              <div class="field-letter-grid" id="fieldLetter" aria-label="Nota do campo harmônico">
+                <button type="button" data-field-letter="0">C</button>
+                <button type="button" data-field-letter="1">D</button>
+                <button type="button" data-field-letter="2">E</button>
+                <button type="button" data-field-letter="3">F</button>
+                <button type="button" data-field-letter="4">G</button>
+                <button type="button" data-field-letter="5">A</button>
+                <button type="button" data-field-letter="6">B</button>
+              </div>
               <strong id="fieldName">C MAIOR</strong>
               <button id="fieldSharp" type="button" aria-label="Campo sustenido">♯</button>
               <button id="fieldMinor" type="button">MENOR</button>
@@ -151,7 +161,7 @@
             <span class="section-number">04</span>
             <div>
               <h2>PERFORMANCE</h2>
-              <p>ESCOLHA O GROOVE</p>
+              <p>PEDAL E EFEITOS AO VIVO</p>
             </div>
             <div class="rhythm-config">
               <label>
@@ -165,25 +175,9 @@
                 <span>BPM</span>
                 <input id="tempoControl" type="number" min="50" max="220" step="1" value="108" />
               </label>
-              <button class="rhythm-mini-button" id="autoRhythmButton" type="button">AUTO</button>
-              <button class="rhythm-mini-button" id="rhythmVariationButton" type="button">A / B</button>
             </div>
           </div>
-          <button class="performance-key rhythm-key rhythm-down" data-action="rhythmDown" type="button">
-            <span class="performance-label" id="rhythmPrimaryLabel">SUSTENTAR</span>
-            <span class="performance-copy" id="rhythmPrimaryCopy">SEGURE PARA MANTER</span>
-            <span class="wide-keycap">ESPAÇO</span>
-          </button>
-          <button class="performance-key rhythm-key rhythm-up" data-action="rhythmUp" type="button">
-            <span class="performance-label" id="rhythmSecondaryLabel">TOQUE</span>
-            <span class="performance-copy" id="rhythmSecondaryCopy">ATAQUE CURTO</span>
-            <span class="wide-keycap">ENTER</span>
-          </button>
-          <button class="performance-key effect-key" data-action="effect" type="button">
-            <span class="performance-label">BEND</span>
-            <span class="performance-copy">SEGURE PARA <i>ESTICAR</i> +2</span>
-            <span class="wide-keycap">SHIFT</span>
-          </button>
+          <div class="performance-effects-grid" id="performanceEffectsGrid"></div>
         </div>
       </section>
 
@@ -224,7 +218,7 @@
             <span class="section-number">03</span>
             <div>
               <h2>PERFORMANCE</h2>
-              <p>RITMO E EXPRESSÃO AO VIVO</p>
+              <p>PEDAL E EFEITOS AO VIVO</p>
             </div>
             <div class="rhythm-config">
               <label>
@@ -235,25 +229,9 @@
                 <span>BPM</span>
                 <input id="stageTempoControl" type="number" min="50" max="220" step="1" value="108" />
               </label>
-              <button class="rhythm-mini-button" id="stageAutoRhythmButton" type="button">AUTO</button>
-              <button class="rhythm-mini-button" id="stageRhythmVariationButton" type="button">A / B</button>
             </div>
           </div>
-          <button class="performance-key rhythm-key rhythm-down" data-stage-action="rhythmDown" type="button">
-            <span class="performance-label">SUSTENTAR</span>
-            <span class="performance-copy">SEGURE PARA MANTER</span>
-            <span class="wide-keycap">ESPAÇO</span>
-          </button>
-          <button class="performance-key rhythm-key rhythm-up" data-stage-action="rhythmUp" type="button">
-            <span class="performance-label">TOQUE</span>
-            <span class="performance-copy">ATAQUE CURTO</span>
-            <span class="wide-keycap">ENTER</span>
-          </button>
-          <button class="performance-key effect-key" data-stage-action="effect" type="button">
-            <span class="performance-label">BEND</span>
-            <span class="performance-copy">SEGURE PARA <i>ESTICAR</i> +2</span>
-            <span class="wide-keycap">SHIFT</span>
-          </button>
+          <div class="performance-effects-grid" id="stagePerformanceEffectsGrid"></div>
         </div>
 
         <section class="set-manager">
@@ -330,34 +308,16 @@
       <section class="smart-command-settings">
         <div class="smart-command-heading">
           <div>
-            <span>COMANDOS FIXOS · TÔNICAS INTELIGENTES</span>
-            <strong>Escolha como navegar pelo campo harmônico</strong>
+            <span>TÔNICAS INTELIGENTES</span>
+            <strong>Campo harmônico controlado pela interface</strong>
           </div>
-          <small>Estas teclas não participam do remapeamento comum.</small>
-        </div>
-        <div class="smart-command-options">
-          <label class="smart-command-option">
-            <input type="radio" name="smartCommandMode" value="note" />
-            <span>
-              <strong>POR NOME DA NOTA</strong>
-              <small><kbd>C–B</kbd> escolhem a nota dentro do campo atual. <kbd>Shift+C–B</kbd> mudam a tonalidade.</small>
-              <em>Ex.: em C, B é VII; depois de Shift+F, B passa a ser IV.</em>
-            </span>
-          </label>
-          <label class="smart-command-option">
-            <input type="radio" name="smartCommandMode" value="position" />
-            <span>
-              <strong>POR POSIÇÃO · CLÁSSICO</strong>
-              <small><kbd>1–7</kbd> escolhem I–VII. <kbd>C–B</kbd> mudam diretamente a tonalidade.</small>
-              <em>Os números permanecem ligados à posição, independentemente da nota exibida.</em>
-            </span>
-          </label>
+          <small>Enquanto CAMPO estiver ativo, estes comandos passam na frente do remapeamento.</small>
         </div>
         <div class="smart-command-shared">
-          <span><kbd>←</kbd> bemol</span>
-          <span><kbd>→</kbd> sustenido</span>
-          <span><kbd>↑</kbd> maior</span>
-          <span><kbd>↓</kbd> menor</span>
+          <span><kbd>C D E F G A S/B</kbd> tocam notas do campo</span>
+          <span><kbd>SHIFT + NOTA</kbd> troca o campo</span>
+          <span><kbd>← / →</kbd> ♯ / ♭</span>
+          <span><kbd>↑ / ↓</kbd> maior / menor</span>
         </div>
       </section>
       <div class="shortcut-capture" id="shortcutCapture" hidden>
@@ -381,7 +341,7 @@
     <dialog id="helpDialog">
       <div class="dialog-header">
         <div>
-          <p class="eyebrow">MANUAL DO INSTRUMENTO</p>
+          <p class="eyebrow">MANUAL DO FORMINC</p>
           <h2>Super guia</h2>
         </div>
         <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
@@ -403,7 +363,7 @@
             <div class="guide-quick-grid">
               <article><strong>1</strong><span>Escolha uma tônica.</span></article>
               <article><strong>2</strong><span>Ative até quatro graus ou chame uma memória.</span></article>
-              <article><strong>3</strong><span>Use Espaço para tocar ou iniciar o ritmo.</span></article>
+              <article><strong>3</strong><span>Pressione uma nota; use Espaço apenas como pedal.</span></article>
             </div>
           </div>
         </section>
@@ -446,14 +406,14 @@
             <h3>Navegue pelo campo harmônico</h3>
             <p class="guide-lead">Quando ativado, os botões representam posições I–VII, não notas fixas. As memórias acompanham a posição ao mudar o campo.</p>
             <dl class="guide-shortcuts">
-              <div><dt>C D E F G A B</dt><dd>Escolhem a nota dentro do campo atual</dd></div>
-              <div><dt>SHIFT + C–B</dt><dd>Mudam a tonalidade do campo</dd></div>
-              <div><dt>← / →</dt><dd>Aplicam bemol ou sustenido</dd></div>
+              <div><dt>C D E F G A S/B</dt><dd>Tocam a nota correspondente dentro do campo atual</dd></div>
+              <div><dt>SHIFT + NOTA</dt><dd>Troca a tonalidade do campo</dd></div>
+              <div><dt>← / →</dt><dd>Aplicam sustenido ou bemol</dd></div>
               <div><dt>↑ / ↓</dt><dd>Escolhem maior ou menor</dd></div>
             </dl>
             <div class="guide-tip">
               <strong>ALTERNATIVA</strong>
-              <span>No mapeador, você pode voltar ao modo clássico: 1–7 escolhem as posições e C–B mudam a tonalidade.</span>
+              <span>No modo CAMPO, as teclas são fixas: graus usam 1–= e Shift alterna natural, sustenido e bemol.</span>
             </div>
           </div>
         </section>
@@ -490,12 +450,11 @@
             <p class="eyebrow">PERFORMANCE AO VIVO</p>
             <h3>Ritmo, timbre e expressão</h3>
             <dl class="guide-shortcuts">
-              <div><dt>ESPAÇO</dt><dd>Sustenta enquanto estiver pressionado</dd></div>
-              <div><dt>ENTER</dt><dd>Dispara um toque curto com cauda natural</dd></div>
+              <div><dt>ESPAÇO</dt><dd>Liga/desliga o pedal sustain</dd></div>
               <div><dt>SHIFT</dt><dd>Bend de dois semitons</dd></div>
               <div><dt>BPM</dt><dd>Ajusta a velocidade dos presets</dd></div>
             </dl>
-            <p class="guide-lead">Sustentar, Toque e Bend podem ser remapeados. No celular, os três controles permanecem ao alcance do polegar e respondem diretamente ao toque.</p>
+            <p class="guide-lead">As notas tocam ao pressionar e soltam como um piano. Com o pedal ativo, o som continua após soltar a tecla.</p>
           </div>
         </section>
 
@@ -582,7 +541,7 @@
       </form>
     </dialog>
 
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="src/main.js"></script>
     <dialog id="rhythmDialog" class="modal">
       <div class="dialog-header">
         <h2 id="rhythmDialogTitle">EDITOR DE RITMO</h2>
