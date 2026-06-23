@@ -18,5 +18,6 @@ export const STORAGE_KEYS = {
   SETS: "instrument-sets",
   ACTIVE_SET_ID: "instrument-active-set-id",
   DIRECTIONAL_MIGRATION: "instrument-directional-migration",
-  PERSONAL_DEFAULT_BINDINGS: "instrument-personal-default-bindings"
+  PERSONAL_DEFAULT_BINDINGS: "instrument-personal-default-bindings",
+  PERFORMANCE_40_MIGRATION: "instrument-performance-40-migration",
 };

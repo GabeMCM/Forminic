@@ -14,6 +14,7 @@ export const KEYBOARD_TOKENS = {
   MINUS: "Minus", EQUAL: "Equal",
   BRACKET_LEFT: "BracketLeft", BRACKET_RIGHT: "BracketRight",
   SEMICOLON: "Semicolon", QUOTE: "Quote", BACKSLASH: "Backslash",
+  COMMA: "Comma", PERIOD: "Period", SLASH: "Slash",
   SPACE: "Space", ENTER: "Enter",
   ARROW_DOWN: "ArrowDown", ARROW_UP: "ArrowUp", ARROW_LEFT: "ArrowLeft", ARROW_RIGHT: "ArrowRight",
   SHIFT_LEFT: "ShiftLeft", SHIFT_RIGHT: "ShiftRight",

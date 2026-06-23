@@ -2,7 +2,7 @@ export const UI_RENDERER_TOKENS = {
   SHORTCUT_LABELS: {
     Space: "ESPAÇO", Enter: "ENTER", ShiftLeft: "SHIFT", ShiftRight: "SHIFT",
     Minus: "−", Equal: "=", BracketLeft: "[", BracketRight: "]",
-    Semicolon: ";", Quote: "'", Backslash: "\\",
+    Semicolon: "Ç/;", Quote: "'", Backslash: "\\", Comma: ",", Period: ".", Slash: "/",
     ArrowUp: "CIMA", ArrowDown: "BAIXO", ArrowLeft: "ESQ", ArrowRight: "DIR",
   },
   COMPACT_PREFIXES: [

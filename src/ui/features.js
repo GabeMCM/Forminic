@@ -114,7 +114,7 @@ export const features = {
     const set = {
       id: `set-${now}-${Math.random().toString(36).slice(2, 8)}`,
       name: name.trim(),
-      notes: this.cloneSlots(store.state.performanceMemories, 20),
+      notes: this.cloneSlots(store.state.performanceMemories, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS),
       bases: this.cloneSlots(store.state.baseMemories, 10),
       createdAt: now,
       updatedAt: now,
@@ -130,7 +130,7 @@ export const features = {
     const set = store.state.sets.find(item => item.id === id);
     if (!set) return;
     this.stopBase();
-    store.state.performanceMemories = this.cloneSlots(set.notes, 20);
+    store.state.performanceMemories = this.cloneSlots(set.notes, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
     store.state.baseMemories = this.cloneSlots(set.bases, 10);
     store.state.activeSetId = id;
     store.state.activePerformanceSlot = null;
@@ -146,7 +146,7 @@ export const features = {
   updateActiveSet() {
     const set = store.state.sets.find(item => item.id === store.state.activeSetId);
     if (!set) return;
-    set.notes = this.cloneSlots(store.state.performanceMemories, 20);
+    set.notes = this.cloneSlots(store.state.performanceMemories, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
     set.bases = this.cloneSlots(store.state.baseMemories, 10);
     set.updatedAt = Date.now();
     store.saveSets();
@@ -430,6 +430,7 @@ export const features = {
     store.saveBindings();
     this.cancelShortcutCapture();
     renderer.renderKeys();
+    renderer.renderPerformanceEffects();
     renderer.renderPerformanceMemories();
     renderer.renderBaseMemories();
   },

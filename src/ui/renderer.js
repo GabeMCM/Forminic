@@ -178,7 +178,11 @@ export const renderer = {
   },
 
   renderPerformanceMemories() {
-    elements.performanceMemoryGrid.innerHTML = store.state.performanceMemories.map((item, index) => `
+    const lastFilled = store.state.performanceMemories.reduce((last, item, index) => item ? index : last, -1);
+    const visibleRows = Math.min(4, Math.max(1, Math.ceil((lastFilled + 2) / 10)));
+    const visibleSlots = visibleRows * 10;
+    elements.performanceMemoryGrid.dataset.rows = String(visibleRows);
+    elements.performanceMemoryGrid.innerHTML = store.state.performanceMemories.slice(0, visibleSlots).map((item, index) => `
       <article class="performance-memory-slot ${item ? "saved" : "empty"} ${store.state.activePerformanceSlot === index ? "active" : ""}" ${item ? `data-stage-recall="${index}"` : ""}>
         <span class="stage-slot-number">P${String(index + 1).padStart(2, "0")}</span>
         ${item ? `<button class="stage-slot-clear" data-stage-clear="${index}" type="button" aria-label="Limpar espaço ${index + 1}">×</button>` : ""}
@@ -329,6 +333,10 @@ export const renderer = {
       const action = element.dataset.stageAction;
       element.classList.toggle("active", store.state.activeActions.has(action));
       element.classList.toggle("latched", action === "rhythmDown" && store.state.pedalActive);
+      if (action === "rhythmDown") {
+        element.setAttribute("aria-pressed", String(store.state.pedalActive));
+        element.querySelector(".performance-copy").textContent = store.state.pedalActive ? "ATIVO · SOLTE PARA LIBERAR" : "DESATIVADO · ALONGA O FIM";
+      }
     });
 
     elements.octaveValue.textContent = store.state.octave;
@@ -341,6 +349,8 @@ export const renderer = {
       rDownBtn.classList.toggle("latched", store.state.pedalActive);
       // Wait, space is now just a pedal! We will toggle its visual state using "latched" class or "active"
       rDownBtn.classList.toggle("active", store.state.pedalActive);
+      rDownBtn.setAttribute("aria-pressed", String(store.state.pedalActive));
+      rDownBtn.querySelector(".performance-copy").textContent = store.state.pedalActive ? "ATIVO · SOLTE PARA LIBERAR" : "DESATIVADO · ALONGA O FIM";
     }
     
     elements.smartModeToggle.checked = store.state.smartMode;

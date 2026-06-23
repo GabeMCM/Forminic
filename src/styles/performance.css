@@ -90,12 +90,16 @@
 }
 
 .rhythm-key.latched {
-  outline: 3px solid var(--ink);
+  outline: 3px solid var(--gold);
   outline-offset: -5px;
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #11110f;
+  box-shadow: 0 0 24px rgba(214, 168, 95, 0.22);
 }
 
 .rhythm-key.latched .performance-label::after {
-  content: " ON";
+  content: " · ON";
   font-family: "Courier New", monospace;
   font-size: 0.58em;
 }

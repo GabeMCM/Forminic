@@ -18,8 +18,15 @@ function loadBindings() {
     if (semicolonOwner) migrated[semicolonOwner] = null;
     migrated.effect = KEYBOARD_TOKENS.SEMICOLON;
   }
-  if (!migrated.effectBendDown || migrated.effectBendDown === migrated.memory10) {
-    migrated.effectBendDown = KEYBOARD_TOKENS.SLASH;
+  if (storage.get(STORAGE_KEYS.PERFORMANCE_40_MIGRATION) !== GLOBAL_TOKENS.TRUE) {
+    Object.keys(DEFAULT_BINDINGS).forEach(action => {
+      if (action.startsWith(GLOBAL_TOKENS.ACTION_PERFORMANCE)) migrated[action] = DEFAULT_BINDINGS[action];
+    });
+    if (migrated.degree10 === KEYBOARD_TOKENS.BRACKET_LEFT) migrated.degree10 = null;
+    if (migrated.degree11 === KEYBOARD_TOKENS.BRACKET_RIGHT) migrated.degree11 = null;
+    migrated.effectBendDown = KEYBOARD_TOKENS.BRACKET_LEFT;
+    migrated.effect = KEYBOARD_TOKENS.BRACKET_RIGHT;
+    storage.set(STORAGE_KEYS.PERFORMANCE_40_MIGRATION, GLOBAL_TOKENS.TRUE);
   }
   const bindings = Object.fromEntries(Object.keys(DEFAULT_BINDINGS).map(action => [
     action,

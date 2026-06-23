@@ -488,6 +488,13 @@
     color: var(--ivory);
   }
 
+  .mobile-expression-key.pedal.active {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: #11110f;
+    box-shadow: 0 0 0 4px rgba(214,168,95,.08), 0 0 26px rgba(214,168,95,.24);
+  }
+
   .mobile-expression-key.active {
     border-color: var(--gold);
     background: var(--gold);

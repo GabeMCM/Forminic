@@ -56,7 +56,16 @@ export const events = {
   },
 
   findAction(shortcut) {
-    return Object.keys(store.state.bindings).find(action => store.state.bindings[action] === shortcut);
+    const matches = Object.keys(store.state.bindings).filter(action => store.state.bindings[action] === shortcut);
+    const shared = action => action === "rhythmDown" || action.startsWith("effect");
+    if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE) {
+      return matches.find(action => action.startsWith("performance") || action.startsWith("base"))
+        || matches.find(shared)
+        || null;
+    }
+    return matches.find(action => !action.startsWith("performance") && !action.startsWith("base") && !shared(action))
+      || matches.find(shared)
+      || null;
   },
 
   findActionFromEvent(event) {
@@ -264,6 +273,18 @@ export const events = {
   },
 
   handleKeyDown(event) {
+    if (store.state.remapping) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.code === "Escape") {
+        this.featureHandlers?.cancelShortcutCapture();
+        return;
+      }
+      if (!UI_EVENTS_TOKENS.MODIFIER_KEYS.includes(event.code)) {
+        this.featureHandlers?.setShortcutPreview(this.shortcutFromEvent(event));
+      }
+      return;
+    }
     if (event.repeat || event.target.closest(DOM_ELEMENTS_TOKENS.DIALOG) || event.target.matches("select, input, textarea")) return;
     if (this.handleSmartModeKeyDown(event)) return;
 

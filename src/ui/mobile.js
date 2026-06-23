@@ -147,7 +147,11 @@ function render() {
   root.querySelectorAll('[data-workspace]').forEach(button => {
     button.classList.toggle('active', button.dataset.workspace === store.state.workspace);
   });
-  root.querySelector('[data-action="rhythmDown"]')?.classList.toggle('active', store.state.pedalActive);
+  const mobilePedal = root.querySelector('[data-action="rhythmDown"]');
+  mobilePedal?.classList.toggle('active', store.state.pedalActive);
+  mobilePedal?.setAttribute('aria-pressed', String(store.state.pedalActive));
+  const pedalLabel = mobilePedal?.querySelector('strong');
+  if (pedalLabel) pedalLabel.textContent = store.state.pedalActive ? 'PEDAL ON' : 'PEDAL OFF';
   renderWheel();
   renderStrip();
 }
