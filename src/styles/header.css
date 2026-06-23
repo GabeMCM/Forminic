@@ -1,0 +1,26 @@
+@media (min-width: 621px) {
+  .app-shell {
+    padding-top: 76px;
+  }
+
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 120;
+    width: 100%;
+    max-width: none;
+    padding-inline: max(48px, calc((100vw - 1440px) / 2 + 48px));
+    background: color-mix(in srgb, var(--paper) 94%, #000 6%);
+    backdrop-filter: blur(18px);
+  }
+
+  .topbar-actions {
+    min-width: 0;
+  }
+
+  .workspace-switcher {
+    position: sticky;
+    top: 76px;
+    z-index: 110;
+  }
+}

@@ -1,4 +1,6 @@
 import { RHYTHM_TOKENS, RHYTHM_VALUES } from '../audio/rhythm.tokens.js';
+import { storage } from '../state/storage.js';
+import { STORAGE_KEYS } from '../state/storage.tokens.js';
 
 const { PAUSE: _, STRONG_DOWN: D, LIGHT_DOWN: d, STRONG_UP: U, LIGHT_UP: u, MUTED: x } = RHYTHM_VALUES;
 
@@ -126,3 +128,4 @@ window.RHYTHM_PRESETS = {
 };
 
 RHYTHM_TOKENS.PRESETS = window.RHYTHM_PRESETS;
+Object.assign(window.RHYTHM_PRESETS, storage.getJSON(STORAGE_KEYS.CUSTOM_RHYTHMS, {}) || {});

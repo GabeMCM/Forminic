@@ -2,6 +2,7 @@ import { store } from '../state/state.js';
 import { MUSIC_TOKENS, GLOBAL_TOKENS } from '../tokens/master.tokens.js';
 import { ENGINE_TOKENS } from './engine.tokens.js';
 import { WEB_AUDIO_TOKENS, JAVASCRIPT_TOKENS } from '../tokens/api.tokens.js';
+import { toneSpessaEngine } from './tone-spessa.js';
 
 let audioCtx = null;
 let masterGain = null;
@@ -56,19 +57,29 @@ function createPluckBuffer(frequency, preset) {
   const buffer = audioCtx.createBuffer(1, length, sampleRate);
   const data = buffer.getChannelData(0);
   
-  const noise = new Float32Array(Math.floor(sampleRate / frequency));
+  const period = Math.max(2, Math.floor(sampleRate / frequency));
+  const noise = new Float32Array(period);
+  const pickPosition = preset.engine === GLOBAL_TOKENS.ENGINE_GUITAR
+    ? (preset.id === "guitarNylon" ? 0.34 : 0.22)
+    : 0.28;
   for (let i = 0; i < noise.length; i++) {
-    noise[i] = (Math.random() * 2 - 1) * (preset.pickNoise || 0.5);
+    const burst = Math.random() * 2 - 1;
+    const pickComb = 1 - Math.cos((i / noise.length) * Math.PI * 2 * (1 / pickPosition));
+    const softened = preset.id === "guitarNylon" ? Math.sin((i / noise.length) * Math.PI) : 1;
+    noise[i] = burst * pickComb * softened * (preset.pickNoise || 0.5);
   }
   
   const damping = preset.damping || 0.99;
+  const brightnessLoss = preset.id === "guitarNylon" ? 0.72 : 0.55;
   let previous = 0;
+  let bridge = 0;
   for (let i = 0; i < length; i++) {
     if (i < noise.length) {
       data[i] = noise[i];
     } else {
       const current = data[i - noise.length];
-      const next = data[i] = (current + previous) * 0.5 * damping;
+      bridge = bridge * brightnessLoss + current * (1 - brightnessLoss);
+      const next = data[i] = ((current + previous) * 0.46 + bridge * 0.08) * damping;
       previous = next;
     }
   }
@@ -105,6 +116,7 @@ export const audioEngine = {
     
     reverbNode.connect(reverbGain);
     reverbGain.connect(masterGain);
+    toneSpessaEngine.init(audioCtx).catch(() => {});
   },
 
   get ctx() {
@@ -118,12 +130,37 @@ export const audioEngine = {
   stopAll(release = 0.06) {
     if (!audioCtx) return;
     [...voices].forEach(voice => this.stopVoice(voice, release));
+    toneSpessaEngine.panic?.();
     effectTimers.forEach(timer => window.clearInterval(timer));
     effectTimers.clear();
   },
 
   midiToFrequency(midi) {
     return 440 * Math.pow(2, (midi - 69) / 12);
+  },
+
+  previewRhythmGesture(direction = ENGINE_TOKENS.STRUM_DOWN, velocity = 0.8, muted = false, options = {}) {
+    this.init();
+    const root = store.state.tonic === null
+      ? 60
+      : (store.state.octave + 1) * 12 + store.state.tonic;
+    let notes = store.state.degrees.size
+      ? [root, ...[...store.state.degrees].slice(0, 4).map(index => root + MUSIC_TOKENS.DEGREES[index][1])]
+      : [root, root + 4, root + 7];
+    notes = [...new Set(notes)].sort((a, b) => direction === ENGINE_TOKENS.STRUM_DOWN ? a - b : b - a);
+    const now = options.scheduledAt ?? audioCtx.currentTime + 0.012;
+    if (options.bassThenChord) {
+      this.pluckString(root - 12, 0, 1, now, velocity * 0.95, false);
+      notes.forEach((midi, index) => {
+        this.pluckString(midi, index, notes.length, now + 0.12 + index * 0.008, velocity * 0.74, muted);
+      });
+      return;
+    }
+    const spacing = options.chord ? 0 : options.spacing ?? 0.012;
+    notes.forEach((midi, index) => {
+      this.pluckString(midi, index, notes.length, now + index * spacing, velocity * (index === 0 ? 1 : 0.9), muted);
+    });
+    if (options.staccato) window.setTimeout(() => this.dampRecentVoices(0.35, 0.12), 120);
   },
 
   dampVoices(release = 0.14) {
@@ -134,6 +171,13 @@ export const audioEngine = {
       const { gain, source } = voice;
       if (voice.stopping) return;
       voice.stopping = true;
+      if (voice.tone) {
+        toneSpessaEngine.stopVoice(voice, musicalRelease);
+        window.setTimeout(() => {
+          voices = voices.filter(item => item !== voice);
+        }, (musicalRelease + 0.1) * 1000);
+        return;
+      }
       if (typeof gain.gain.cancelAndHoldAtTime === JAVASCRIPT_TOKENS.TYPE_FUNCTION) {
         gain.gain.cancelAndHoldAtTime(now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + musicalRelease);
@@ -161,6 +205,10 @@ export const audioEngine = {
     const now = audioCtx.currentTime;
     voices.forEach(({ gain, startedAt = now }) => {
       if (now - startedAt > ageLimit) return;
+      if (gain?.gain?.rampTo) {
+        gain.gain.rampTo(0.001, release);
+        return;
+      }
       if (typeof gain.gain.cancelAndHoldAtTime === JAVASCRIPT_TOKENS.TYPE_FUNCTION) {
         gain.gain.cancelAndHoldAtTime(now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + release);
@@ -175,6 +223,11 @@ export const audioEngine = {
     if (!audioCtx || !voice || voice.stopping) return;
     voice.stopping = true;
     const now = audioCtx.currentTime;
+    if (voice.tone) {
+      toneSpessaEngine.stopVoice(voice, release);
+      voices = voices.filter(item => item !== voice);
+      return;
+    }
     voice.gain?.gain.cancelScheduledValues(now);
     voice.gain?.gain.setTargetAtTime(0.001, now, Math.max(0.01, release / 4));
     if (voice.source?.isOsc) {
@@ -192,6 +245,10 @@ export const audioEngine = {
     const now = audioCtx.currentTime;
     const target = active ? Math.pow(2, 2 / 12) : 1;
     voices.forEach(voice => {
+      if (voice.tone) {
+        toneSpessaEngine.bendVoice(voice, target, active ? 0.17 : 0.13);
+        return;
+      }
       if (!voice.source?.playbackRate) return;
       const from = voice.bendRatio || 1;
       voice.source.playbackRate.cancelScheduledValues(now);
@@ -203,6 +260,7 @@ export const audioEngine = {
 
   setVoiceGain(voice, value, time = 0.04) {
     if (!audioCtx || !voice.gain) return;
+    if (voice.tone) return toneSpessaEngine.setGain(voice, value, time);
     const now = audioCtx.currentTime;
     voice.gain.gain.cancelScheduledValues(now);
     voice.gain.gain.setTargetAtTime(Math.max(0.001, value), now, time);
@@ -210,6 +268,7 @@ export const audioEngine = {
 
   setVoiceFilter(voice, value, time = 0.05) {
     if (!audioCtx || !voice.filter) return;
+    if (voice.tone) return toneSpessaEngine.setFilter(voice, value, time);
     const now = audioCtx.currentTime;
     voice.filter.frequency.cancelScheduledValues(now);
     voice.filter.frequency.setTargetAtTime(Math.max(120, value), now, time);
@@ -219,6 +278,10 @@ export const audioEngine = {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
     voices.forEach(voice => {
+      if (voice.tone) {
+        toneSpessaEngine.bendVoice(voice, target, 0.12);
+        return;
+      }
       if (!voice.source?.playbackRate) return;
       const target = active ? ratio : 1;
       const from = voice.bendRatio || 1;
@@ -286,6 +349,21 @@ export const audioEngine = {
     const preset = MUSIC_TOKENS.SOUND_SETS[store.state.soundSet] || MUSIC_TOKENS.SOUND_SETS.piano;
     const startAt = scheduledAt ?? audioCtx.currentTime;
     const frequency = this.midiToFrequency(midi);
+
+    if (preset.engine !== GLOBAL_TOKENS.ENGINE_GUITAR && toneSpessaEngine.available) {
+      const polyphonyScale = 1 / Math.sqrt(Math.max(1, total));
+      const familyLevel = preset.engine === GLOBAL_TOKENS.ENGINE_PIANO ? 0.86
+        : preset.engine === GLOBAL_TOKENS.ENGINE_WIND ? 0.72
+          : preset.engine === GLOBAL_TOKENS.ENGINE_ORGAN ? 0.66
+            : 0.7;
+      const level = Math.min(0.88, Math.max(0.04, velocity * polyphonyScale * familyLevel));
+      const toneVoice = toneSpessaEngine.play(midi, index, total, startAt, level, muted, preset, audioCtx.currentTime);
+      if (toneVoice) {
+        voices.push(toneVoice);
+        while (voices.length > MAX_ACTIVE_VOICES) this.stopVoice(voices[0], 0.04);
+        return toneVoice;
+      }
+    }
     
     let source;
     let mainOutput;
@@ -420,7 +498,34 @@ export const audioEngine = {
       ? (index / (total - 1) - 0.5) * 0.72 + (Math.random() - 0.5) * 0.06
       : 0;
       
-    mainOutput.connect(filter).connect(gain).connect(pan);
+    if (preset.engine === GLOBAL_TOKENS.ENGINE_GUITAR) {
+      const air = audioCtx.createBiquadFilter();
+      air.type = WEB_AUDIO_TOKENS.FILTER_HIGHSHELF;
+      air.frequency.value = preset.id === "guitarNylon" ? 2600 : 4200;
+      air.gain.value = preset.id === "guitarNylon" ? -1.5 : 2.2;
+
+      const bodyLow = audioCtx.createBiquadFilter();
+      bodyLow.type = WEB_AUDIO_TOKENS.FILTER_PEAKING;
+      bodyLow.frequency.value = 115;
+      bodyLow.Q.value = 1.1;
+      bodyLow.gain.value = 3.2;
+
+      const bodyMid = audioCtx.createBiquadFilter();
+      bodyMid.type = WEB_AUDIO_TOKENS.FILTER_PEAKING;
+      bodyMid.frequency.value = preset.id === "guitarNylon" ? 360 : 520;
+      bodyMid.Q.value = 1.6;
+      bodyMid.gain.value = preset.id === "guitarNylon" ? 2.8 : 1.7;
+
+      const nasalCut = audioCtx.createBiquadFilter();
+      nasalCut.type = WEB_AUDIO_TOKENS.FILTER_PEAKING;
+      nasalCut.frequency.value = 950;
+      nasalCut.Q.value = 1.2;
+      nasalCut.gain.value = -2.4;
+
+      mainOutput.connect(filter).connect(air).connect(bodyLow).connect(bodyMid).connect(nasalCut).connect(gain).connect(pan);
+    } else {
+      mainOutput.connect(filter).connect(gain).connect(pan);
+    }
     pan.connect(bodyFilter.input);
     pan.connect(reverbNode);
     

@@ -10,4 +10,6 @@
 @import "src/styles/workspaces.css";
 @import "src/styles/theme-light.css";
 @import "src/styles/mobile.css";
+@import "src/styles/rhythm.css";
+@import "src/styles/header.css";
 

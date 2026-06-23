@@ -4,6 +4,7 @@ import { STATE_ACTION_TOKENS } from '../state/state.tokens.js';
 import { renderer } from './renderer.js';
 import { events } from './events.js';
 import { audioEngine } from '../audio/engine.js';
+import { rhythmEngine } from '../audio/rhythm.js';
 
 const root = document.querySelector('#mobileInstrument');
 const wheel = document.querySelector('#mobileWheel');
@@ -31,6 +32,7 @@ function currentPerformanceIndex() {
 }
 
 function wheelItems() {
+  if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM) return [];
   if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE) {
     const saved = store.state.performanceMemories
       .map((item, index) => item ? ({
@@ -77,11 +79,14 @@ function renderWheel() {
 
 function renderStrip() {
   const performance = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
+  const rhythm = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
   tabs.querySelector('[data-mobile-panel="degrees"]').hidden = performance;
-  tabs.querySelector('[data-mobile-panel="memories"]').hidden = performance;
+  tabs.querySelector('[data-mobile-panel="memories"]').hidden = performance || rhythm;
   tabs.querySelector('[data-mobile-panel="notes"]').hidden = !performance;
   tabs.querySelector('[data-mobile-panel="bases"]').hidden = !performance;
+  tabs.querySelector('[data-mobile-panel="rhythms"]').hidden = !rhythm;
   if (performance && panel !== 'notes' && panel !== 'bases') panel = 'notes';
+  if (rhythm) panel = 'rhythms';
 
   tabs.querySelectorAll('button').forEach(button => {
     button.classList.toggle('active', button.dataset.mobilePanel === panel);
@@ -119,6 +124,14 @@ function renderStrip() {
         <button class="mobile-note-delete" data-mobile-delete="${index}" type="button" aria-label="Excluir ${item.displayName}">×</button>
       </div>
     ` : '').join('') || '<span class="mobile-empty">NENHUMA NOTA NO CA</span>';
+  } else if (panel === 'rhythms') {
+    const presets = Object.entries(globalThis.RHYTHM_PRESETS || {}).filter(([, preset]) => !preset.manual);
+    strip.innerHTML = presets.map(([id, preset]) => `
+      <button class="mobile-chip memory ${store.state.rhythmPreset === id ? 'active' : ''}"
+        data-mobile-rhythm="${id}" type="button">
+        <small>${preset.bpm} BPM</small>${preset.name}
+      </button>
+    `).join('');
   } else {
     strip.innerHTML = store.state.baseMemories.map((item, index) => item ? `
       <button class="mobile-chip base ${store.state.activeBaseSlot === index ? 'active' : ''}"
@@ -132,18 +145,25 @@ function renderStrip() {
 function render() {
   if (!root) return;
   const performance = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
-  root.dataset.mode = performance ? 'performance' : 'composer';
-  modeLabel.textContent = performance ? 'CAMPO DE APRESENTAÇÃO' : 'CENTRO DE COMPOSIÇÃO';
-  centerOverline.textContent = performance ? 'ACORDE ATUAL' : 'TÔNICA';
+  const rhythm = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
+  root.dataset.mode = rhythm ? 'rhythm' : performance ? 'performance' : 'composer';
+  modeLabel.textContent = rhythm ? 'LABORATÓRIO DE RITMO' : performance ? 'CAMPO DE APRESENTAÇÃO' : 'CENTRO DE COMPOSIÇÃO';
+  centerOverline.textContent = rhythm ? 'RITMO ATUAL' : performance ? 'ACORDE ATUAL' : 'TÔNICA';
+  if (rhythm) {
+    const preset = rhythmEngine.currentPreset();
+    centerNote.textContent = preset.name;
+    centerShape.textContent = store.state.rhythmPlaying ? 'TOCANDO · TOQUE PARA PARAR' : `${preset.bpm} BPM · TOQUE PARA INICIAR`;
+  } else {
   centerNote.textContent = renderer.currentNoteName();
   centerShape.textContent = store.state.degrees.size
     ? renderer.memoryName([...store.state.degrees])
     : 'TÔNICA PURA';
+  }
   harmonyLabel.textContent = performance
     ? `${store.state.performanceMemories.filter(Boolean).length} NOTAS PRONTAS`
     : `OITAVA ${store.state.octave} · ${store.state.degrees.size} GRAUS`;
   soundSelect.value = store.state.soundSet;
-  addStageButton.hidden = performance;
+  addStageButton.hidden = performance || rhythm;
   root.querySelectorAll('[data-workspace]').forEach(button => {
     button.classList.toggle('active', button.dataset.workspace === store.state.workspace);
   });
@@ -261,6 +281,7 @@ function init() {
     const performanceButton = event.target.closest('[data-mobile-performance]');
     const memoryButton = event.target.closest('[data-mobile-memory]');
     const baseButton = event.target.closest('[data-mobile-base]');
+    const rhythmButton = event.target.closest('[data-mobile-rhythm]');
     const deleteButton = event.target.closest('[data-mobile-delete]');
     if (deleteButton) {
       const index = Number(deleteButton.dataset.mobileDelete);
@@ -277,6 +298,13 @@ function init() {
     }
     if (memoryButton) events.recallMemory(Number(memoryButton.dataset.mobileMemory), true);
     if (baseButton) events.featureHandlers?.toggleBaseMemory(Number(baseButton.dataset.mobileBase));
+    if (rhythmButton) {
+      const id = rhythmButton.dataset.mobileRhythm;
+      rhythmEngine.stopRhythm();
+      store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, id);
+      store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, globalThis.RHYTHM_PRESETS[id].bpm);
+      rhythmEngine.startRhythm();
+    }
     window.setTimeout(render, 0);
   });
   wheelZone.addEventListener('pointerdown', event => {
@@ -314,6 +342,10 @@ function init() {
   });
   strip.addEventListener('pointerup', audioRelease);
   strip.addEventListener('pointercancel', audioRelease);
+  document.querySelector('#mobileWheelCenter')?.addEventListener('click', () => {
+    if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM) rhythmEngine.toggleRhythm();
+    render();
+  });
   store.subscribe(render);
   window.addEventListener('resize', render);
   render();

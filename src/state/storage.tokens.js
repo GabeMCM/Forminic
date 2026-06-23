@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   THEME: "instrument-theme",
   SOUND_SET: "instrument-sound-set",
   RHYTHM_PRESET: "instrument-rhythm-preset",
+  RHYTHM_ENABLED: "instrument-rhythm-enabled",
   RHYTHM_TEMPO: "instrument-rhythm-tempo",
   WORKSPACE: "instrument-workspace",
   PERFORMANCE_MEMORIES: "instrument-performance-memories",
@@ -20,4 +21,6 @@ export const STORAGE_KEYS = {
   DIRECTIONAL_MIGRATION: "instrument-directional-migration",
   PERSONAL_DEFAULT_BINDINGS: "instrument-personal-default-bindings",
   PERFORMANCE_40_MIGRATION: "instrument-performance-40-migration",
+  CUSTOM_RHYTHMS: "instrument-custom-rhythms",
+  BASE_PRESET: "instrument-base-preset",
 };

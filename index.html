@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Forminc, instrumento harmônico para tocar campos, acordes e camadas pelo teclado."
+      content="Forminc, instrumento harmÃ´nico para tocar campos, acordes e camadas pelo teclado."
     />
-    <title>Forminc — Instrumento Harmônico</title>
+    <title>Forminc â€” Instrumento HarmÃ´nico</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Forminc, início">
+        <a class="brand" href="#" aria-label="Forminc, inÃ­cio">
           <span class="brand-mark" aria-hidden="true"></span>
           FORMINC
         </a>
@@ -41,28 +41,27 @@
           <label class="sound-set-control">
             <span>SET DE SOM</span>
             <select id="soundSet" aria-label="Set de som">
-              <option value="piano">PIANO · GRAND CONCERT</option>
-              <option value="pianoSoft">PIANO · FELT</option>
-              <option value="guitarNylon">VIOLÃO · NYLON</option>
-              <option value="guitarSteel">VIOLÃO · AÇO</option>
-              <option value="synthPad">SYNTH · WARM PAD</option>
-              <option value="synthLead">SYNTH · BRIGHT LEAD</option>
-              <option value="organ">ÓRGÃO · ELETRIC</option>
-              <option value="windFlute">SOPRO · FLAUTA</option>
-              <option value="windTrumpet">SOPRO · TROMPETE</option>
-              <option value="windSax">SOPRO · SAXOFONE</option>
+              <option value="piano">PIANO Â· GRAND CONCERT</option>
+              <option value="pianoSoft">PIANO Â· FELT</option>
+              <option value="synthPad">SYNTH Â· WARM PAD</option>
+              <option value="synthLead">SYNTH Â· BRIGHT LEAD</option>
+              <option value="organ">Ã“RGÃƒO Â· ELETRIC</option>
+              <option value="windFlute">SOPRO Â· FLAUTA</option>
+              <option value="windTrumpet">SOPRO Â· TROMPETE</option>
+              <option value="windSax">SOPRO Â· SAXOFONE</option>
             </select>
           </label>
           <span class="status-pill" id="audioStatus">
             <span class="status-dot"></span>
             ÁUDIO PRONTO
           </span>
+          <button class="panic-button" id="panicButton" type="button" title="Parar todo som imediatamente">PÂNICO</button>
         </div>
       </header>
 
       <section class="hero">
         <div>
-          <p class="eyebrow">FORMINC · CAMPO HARMÔNICO PERFORMÁVEL</p>
+          <p class="eyebrow">FORMINC Â· CAMPO HARMÃ”NICO PERFORMÃVEL</p>
           <h1>Escolha notas.<br /><em>Conduza acordes.</em></h1>
         </div>
       </section>
@@ -72,13 +71,17 @@
           <span>01</span>
           COMPOSITOR
         </button>
-        <button class="workspace-tab" data-workspace="performance" type="button">
+        <button class="workspace-tab" data-workspace="rhythm" type="button">
           <span>02</span>
-          APRESENTAÇÃO
+          RITMO / BASE
+        </button>
+        <button class="workspace-tab" data-workspace="performance" type="button">
+          <span>03</span>
+          APRESENTAÃ‡ÃƒO
         </button>
       </nav>
 
-      <section class="mobile-instrument" id="mobileInstrument" aria-label="Instrumento móvel">
+      <section class="mobile-instrument" id="mobileInstrument" aria-label="Instrumento mÃ³vel">
         <header class="mobile-instrument-head">
           <div>
             <span id="mobileModeLabel">COMPOSITOR</span>
@@ -86,15 +89,15 @@
           </div>
           <label class="mobile-sound">
             <span>TIMBRE</span>
-            <select id="mobileSoundSet" aria-label="Timbre móvel"></select>
+            <select id="mobileSoundSet" aria-label="Timbre mÃ³vel"></select>
           </label>
         </header>
 
         <div class="mobile-wheel-zone" id="mobileWheelZone">
           <div class="mobile-wheel" id="mobileWheel"></div>
           <button class="mobile-wheel-center" id="mobileWheelCenter" type="button">
-            <span id="mobileCenterOverline">TÔNICA</span>
-            <strong id="mobileCenterNote">—</strong>
+            <span id="mobileCenterOverline">TÃ”NICA</span>
+            <strong id="mobileCenterNote">â€”</strong>
             <small id="mobileCenterShape">TOQUE OU DESLIZE</small>
           </button>
           <button class="mobile-add-stage" id="mobileAddStage" type="button">
@@ -105,27 +108,29 @@
 
         <div class="mobile-context-tabs" id="mobileContextTabs">
           <button class="active" data-mobile-panel="degrees" type="button">GRAUS</button>
-          <button data-mobile-panel="memories" type="button">MEMÓRIAS</button>
+          <button data-mobile-panel="memories" type="button">MEMÃ“RIAS</button>
           <button data-mobile-panel="notes" type="button">NOTAS</button>
           <button data-mobile-panel="bases" type="button">BASES</button>
+          <button data-mobile-panel="rhythms" type="button">RITMOS</button>
         </div>
         <div class="mobile-context-strip" id="mobileContextStrip"></div>
 
         <div class="mobile-expression">
           <button class="mobile-expression-key bend-down" data-action="effectBendDown" type="button">
-            <span>↙</span><strong>BEND −</strong>
+            <span>â†™</span><strong>BEND âˆ’</strong>
           </button>
           <button class="mobile-expression-key pedal" data-action="rhythmDown" type="button">
-            <span>◉</span><strong>PEDAL</strong>
+            <span>â—‰</span><strong>PEDAL</strong>
           </button>
           <button class="mobile-expression-key bend-up" data-action="effect" type="button">
-            <span>↗</span><strong>BEND +</strong>
+            <span>â†—</span><strong>BEND +</strong>
           </button>
         </div>
 
         <nav class="mobile-mode-nav">
-          <button class="active" data-workspace="composer" type="button"><span>◌</span>COMPOR</button>
-          <button data-workspace="performance" type="button"><span>◉</span>TOCAR</button>
+          <button class="active" data-workspace="composer" type="button"><span>â—Œ</span>COMPOR</button>
+          <button data-workspace="rhythm" type="button"><span>â‰‹</span>RITMO</button>
+          <button data-workspace="performance" type="button"><span>â—‰</span>TOCAR</button>
         </nav>
       </section>
 
@@ -133,18 +138,18 @@
         <div class="section-heading">
           <span class="section-number">01</span>
           <div>
-            <h2>TÔNICA</h2>
+            <h2>TÃ”NICA</h2>
             <p id="tonicModeDescription">SELECIONE A NOTA PRINCIPAL</p>
           </div>
-          <div class="smart-controls" aria-label="Modo das tônicas">
+          <div class="smart-controls" aria-label="Modo das tÃ´nicas">
             <label class="smart-mode-switch">
               <input id="smartModeToggle" type="checkbox" />
-              <span>CROMÁTICO</span>
+              <span>CROMÃTICO</span>
               <span>CAMPO</span>
             </label>
             <div class="field-controls" id="fieldControls" hidden>
-              <button id="fieldFlat" type="button" aria-label="Campo bemol">♭</button>
-              <div class="field-letter-grid" id="fieldLetter" aria-label="Nota do campo harmônico">
+              <button id="fieldFlat" type="button" aria-label="Campo bemol">â™­</button>
+              <div class="field-letter-grid" id="fieldLetter" aria-label="Nota do campo harmÃ´nico">
                 <button type="button" data-field-letter="0">C</button>
                 <button type="button" data-field-letter="1">D</button>
                 <button type="button" data-field-letter="2">E</button>
@@ -154,14 +159,14 @@
                 <button type="button" data-field-letter="6">B</button>
               </div>
               <strong id="fieldName">C MAIOR</strong>
-              <button id="fieldSharp" type="button" aria-label="Campo sustenido">♯</button>
+              <button id="fieldSharp" type="button" aria-label="Campo sustenido">â™¯</button>
               <button id="fieldMinor" type="button">MENOR</button>
             </div>
           </div>
           <div class="octave-controls" aria-label="Controles de oitava">
             <button class="control-key" data-action="octaveDown" type="button">
               <span class="keycap">Z</span>
-              <span>OITAVA −</span>
+              <span>OITAVA âˆ’</span>
             </button>
             <div class="octave-readout">
               <strong id="octaveValue">4</strong>
@@ -176,8 +181,8 @@
         <div class="key-grid tonic-grid" id="tonicKeys"></div>
         <div class="tonic-links">
           <div class="tonic-links-copy">
-            <strong>FORMAS AUTOMÁTICAS</strong>
-            <span id="tonicLinksDescription">Escolha qual memória cada tônica deve carregar.</span>
+            <strong>FORMAS AUTOMÃTICAS</strong>
+            <span id="tonicLinksDescription">Escolha qual memÃ³ria cada tÃ´nica deve carregar.</span>
           </div>
           <div class="tonic-link-grid" id="tonicLinkGrid"></div>
         </div>
@@ -188,7 +193,7 @@
           <span class="section-number">02</span>
           <div>
             <h2>GRAUS</h2>
-            <p>ATIVE ATÉ OITO CORES HARMÔNICAS</p>
+            <p>ATIVE ATÃ‰ OITO CORES HARMÃ”NICAS</p>
           </div>
           <div class="selection-meter">
             <span id="degreeCount">0</span><span>/ 8 ATIVOS</span>
@@ -201,8 +206,8 @@
         <div class="section-heading compact">
           <span class="section-number">03</span>
           <div>
-            <h2>MEMÓRIAS</h2>
-            <p>SALVE E CHAME ATÉ 24 FORMAS HARMÔNICAS</p>
+            <h2>MEMÃ“RIAS</h2>
+            <p>SALVE E CHAME ATÃ‰ 24 FORMAS HARMÃ”NICAS</p>
           </div>
           <div class="selection-meter">
             <span id="memoryCount">0</span><span>/ 24 SALVAS</span>
@@ -222,6 +227,11 @@
                 <span>RITMO</span>
                 <select id="rhythmPreset"></select>
               </label>
+              <label>
+                <span>BASE</span>
+                <select id="basePreset"></select>
+              </label>
+              <button class="rhythm-enable-button" id="rhythmEnableButton" type="button">RITMO ON</button>
               <button class="icon-button" type="button" id="openRhythmEditor" title="Editar Ritmo" style="width:24px;height:24px;margin-left:4px;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z"/></svg>
               </button>
@@ -235,15 +245,15 @@
         </div>
       </section>
 
-      <section class="instrument performance-workspace" id="performanceWorkspace" aria-label="Campo de apresentação" hidden>
+      <section class="instrument performance-workspace" id="performanceWorkspace" aria-label="Campo de apresentaÃ§Ã£o" hidden>
         <div class="performance-stage-header">
           <div>
-            <p class="eyebrow">CAMPO DE APRESENTAÇÃO</p>
+            <p class="eyebrow">CAMPO DE APRESENTAÃ‡ÃƒO</p>
             <h2>Suas harmonias.<br /><em>Prontas para o palco.</em></h2>
           </div>
           <div class="stage-current" id="stageCurrent">
             <span>ESTADO DO COMPOSITOR</span>
-            <strong id="stageCurrentNote">NENHUMA TÔNICA</strong>
+            <strong id="stageCurrentNote">NENHUMA TÃ”NICA</strong>
             <small id="stageCurrentShape">Escolha uma nota no compositor</small>
           </div>
         </div>
@@ -251,8 +261,8 @@
         <div class="stage-instructions">
           <span class="section-number">01</span>
           <p>
-            No compositor, use o botão <strong>+</strong> sobre uma nota para enviá-la ao próximo espaço livre.
-            Aqui, cada espaço responde à tecla configurada; ritmo e efeito permanecem ao vivo.
+            No compositor, use o botÃ£o <strong>+</strong> sobre uma nota para enviÃ¡-la ao prÃ³ximo espaÃ§o livre.
+            Aqui, cada espaÃ§o responde Ã  tecla configurada; ritmo e efeito permanecem ao vivo.
           </p>
         </div>
 
@@ -262,7 +272,7 @@
           <span class="section-number">02</span>
           <p>
             <strong>Notas base</strong> permanecem soando ao fundo. Chame outra base para trocar,
-            ou pressione a base ativa novamente para desligá-la.
+            ou pressione a base ativa novamente para desligÃ¡-la.
           </p>
         </div>
         <div class="base-memory-grid" id="baseMemoryGrid"></div>
@@ -280,6 +290,11 @@
                 <select id="stageRhythmPreset"></select>
               </label>
               <label>
+                <span>BASE</span>
+                <select id="stageBasePreset"></select>
+              </label>
+              <button class="rhythm-enable-button" id="stageRhythmEnableButton" type="button">RITMO ON</button>
+              <label>
                 <span>BPM</span>
                 <input id="stageTempoControl" type="number" min="50" max="220" step="1" value="108" />
               </label>
@@ -291,22 +306,22 @@
         <section class="set-manager">
           <div class="set-manager-head">
             <div>
-              <p class="eyebrow">REPERTÓRIO · ORDEM DO SHOW</p>
+              <p class="eyebrow">REPERTÃ“RIO Â· ORDEM DO SHOW</p>
               <h3>Conjuntos</h3>
-              <span>Arraste para ordenar. Use ← e → para navegar durante a apresentação.</span>
+              <span>Arraste para ordenar. Use â† e â†’ para navegar durante a apresentaÃ§Ã£o.</span>
             </div>
             <div class="set-smart-controls">
               <button class="set-nav-button" id="previousSetButton" type="button" aria-label="Conjunto anterior">
-                <span>←</span>
+                <span>â†</span>
                 <small>ANTERIOR</small>
               </button>
               <div class="set-position" id="setPosition">
-                <strong>—</strong>
+                <strong>â€”</strong>
                 <span>SEM CONJUNTO</span>
               </div>
-              <button class="set-nav-button" id="nextSetButton" type="button" aria-label="Próximo conjunto">
-                <small>PRÓXIMO</small>
-                <span>→</span>
+              <button class="set-nav-button" id="nextSetButton" type="button" aria-label="PrÃ³ximo conjunto">
+                <small>PRÃ“XIMO</small>
+                <span>â†’</span>
               </button>
             </div>
             <div class="set-manager-actions">
@@ -320,20 +335,83 @@
           </div>
           <div class="set-list" id="setList"></div>
           <div class="set-empty" id="setEmpty">
-            <span>♪</span>
-            <strong>Seu repertório começa aqui</strong>
+            <span>â™ª</span>
+            <strong>Seu repertÃ³rio comeÃ§a aqui</strong>
             <p>Prepare notas e bases, depois salve tudo como um conjunto.</p>
           </div>
         </section>
       </section>
 
+      <section class="instrument rhythm-workspace" id="rhythmWorkspace" aria-label="Compositor de ritmos e bases" hidden>
+        <header class="rhythm-workspace-head">
+          <div>
+            <p class="eyebrow">LABORATÃ“RIO DE MOVIMENTO</p>
+            <h2>Ritmo e base.<br><em>Liberdade para construir.</em></h2>
+          </div>
+          <button class="secondary-button" id="newRhythmButton" type="button">LIMPAR CONSTRUÃ‡ÃƒO</button>
+        </header>
+        <form id="rhythmForm" class="rhythm-builder">
+          <div class="rhythm-builder-toolbar">
+            <label class="rhythm-name-field"><span>NOME</span><input type="text" id="rhythmNameInput" required maxlength="24" placeholder="Ex.: Pulso aberto"></label>
+            <label><span>TIPO</span><select id="rhythmTypeInput"><option value="rhythm">RITMO LIVRE</option><option value="base">BASE PROGRAMADA</option></select></label>
+            <label><span>BPM</span><input id="rhythmBpmInput" type="number" min="30" max="300" value="100"></label>
+            <label><span>PULSOS</span><input id="rhythmStepsInput" type="number" min="1" max="64" value="16"></label>
+            <label><span>TAMANHO DO PULSO</span><input id="rhythmPulseInput" type="number" min="0.125" max="8" step="0.125" value="0.25"></label>
+            <label><span>FONTE</span><select id="rhythmModeInput"><option value="neutral">ACORDE TOCADO</option><option value="activeBase">BASE ATIVA</option><option value="programmedBase">BASE PROGRAMADA</option></select></label>
+          </div>
+
+          <div class="rhythm-construction">
+            <div class="rhythm-timeline">
+              <div class="rhythm-transport">
+                <button class="rhythm-play-button" id="previewRhythmButton" type="button">
+                  <span>â–¶</span><strong>OUVIR CONSTRUÃ‡ÃƒO</strong>
+                </button>
+                <div class="rhythm-gesture-legend" id="rhythmGestureLegend">
+                  <span><i>A</i> Acorde</span>
+                  <span><i>â†“</i> Lento/RÃ¡pido</span>
+                  <span><i>â†‘</i> Lento/RÃ¡pido</span>
+                  <span><i>Arp</i> Arpejo</span>
+                  <span><i>Ã—</i> Abafado</span>
+                  <span><i>St</i> Staccato</span>
+                  <span><i>Ba</i> Baixo + acorde</span>
+                </div>
+              </div>
+              <div class="rhythm-track-head"><strong>ACORDES / ATAQUES</strong><span>Clique para selecionar; A/D altera o ataque</span></div>
+              <div id="rhythmGridA" class="rhythm-track"></div>
+              <div class="rhythm-track-head"><strong>BASE</strong><span>Independente do acorde tocado</span></div>
+              <div id="rhythmGridB" class="rhythm-track"></div>
+              <div class="rhythm-track-head"><strong>PULSO</strong><span>Clique para selecionar; A/D altera o pulso</span></div>
+              <div id="rhythmGridDuration" class="rhythm-track rhythm-duration-track"></div>
+            </div>
+
+            <aside class="rhythm-event-inspector" id="rhythmEventInspector">
+              <span>EVENTO SELECIONADO</span>
+              <strong id="rhythmEventPosition">PULSO 1</strong>
+              <p>Clique no bloco que quer editar. A/D troca ataque ou pulso, W/S ajusta intensidade, Q limpa e E copia o anterior.</p>
+              <label class="rhythm-vertical-control"><span>INTENSIDADE</span><input id="rhythmEventVelocity" type="range" min="30" max="100" value="80" orient="vertical"></label>
+              <button class="secondary-button" id="clearRhythmEvent" type="button">REMOVER EVENTO</button>
+            </aside>
+          </div>
+
+          <div class="rhythm-builder-actions">
+            <span>As alteraÃ§Ãµes ficam locais neste dispositivo.</span>
+            <button class="primary-button" type="submit">SALVAR NA BIBLIOTECA</button>
+          </div>
+        </form>
+
+        <div class="rhythm-libraries">
+          <section><header><span>RITMOS</span><strong>PadrÃµes que aceitam qualquer acorde</strong></header><div class="rhythm-library rhythm-list" id="rhythmLibrary"></div></section>
+          <section><header><span>BASES</span><strong>Acompanhamentos com notas programadas</strong></header><div class="rhythm-library rhythm-list" id="baseLibrary"></div></section>
+        </div>
+      </section>
+
       <footer>
-        <span id="engineLabel">RHYTHM SET · NATIVO</span>
+        <span id="engineLabel">RHYTHM SET Â· NATIVO</span>
         <div class="sound-state" aria-live="polite">
           <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
           <span id="soundState">AGUARDANDO GESTO</span>
         </div>
-        <span id="beatState">COMPASSO: —</span>
+        <span id="beatState">COMPASSO: â€”</span>
       </footer>
     </main>
 
@@ -343,41 +421,41 @@
           <p class="eyebrow">MAPEAMENTO</p>
           <h2>Configure as teclas</h2>
         </div>
-        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
+        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">Ã—</button>
       </div>
       <p class="dialog-copy">
-        Organize os comandos por contexto. Para combinações, clique em alterar,
+        Organize os comandos por contexto. Para combinaÃ§Ãµes, clique em alterar,
         segure Shift, Ctrl ou Alt e pressione a tecla principal.
       </p>
       <div class="mapping-toolbar">
         <label>
           <span>FILTRAR COMANDOS</span>
-          <input id="mappingSearch" type="search" placeholder="Ex.: base, ritmo, memória…" />
+          <input id="mappingSearch" type="search" placeholder="Ex.: base, ritmo, memÃ³riaâ€¦" />
         </label>
         <div class="mapping-legend">
           <span><i class="legend-dot composer"></i> COMPOSITOR</span>
-          <span><i class="legend-dot stage"></i> APRESENTAÇÃO</span>
+          <span><i class="legend-dot stage"></i> APRESENTAÃ‡ÃƒO</span>
         </div>
       </div>
       <section class="smart-command-settings">
         <div class="smart-command-heading">
           <div>
-            <span>TÔNICAS INTELIGENTES</span>
-            <strong>Campo harmônico controlado pela interface</strong>
+            <span>TÃ”NICAS INTELIGENTES</span>
+            <strong>Campo harmÃ´nico controlado pela interface</strong>
           </div>
           <small>Enquanto CAMPO estiver ativo, estes comandos passam na frente do remapeamento.</small>
         </div>
         <div class="smart-command-shared">
           <span><kbd>C D E F G A S/B</kbd> tocam notas do campo</span>
           <span><kbd>SHIFT + NOTA</kbd> troca o campo</span>
-          <span><kbd>← / →</kbd> ♯ / ♭</span>
-          <span><kbd>↑ / ↓</kbd> maior / menor</span>
+          <span><kbd>â† / â†’</kbd> â™¯ / â™­</span>
+          <span><kbd>â†‘ / â†“</kbd> maior / menor</span>
         </div>
       </section>
       <div class="shortcut-capture" id="shortcutCapture" hidden>
         <div>
           <span>CAPTURANDO</span>
-          <strong id="captureActionName">—</strong>
+          <strong id="captureActionName">â€”</strong>
         </div>
         <output id="captureShortcutPreview">PRESSIONE UMA TECLA</output>
         <div class="shortcut-capture-actions">
@@ -387,8 +465,8 @@
       </div>
       <div class="mapping-list" id="mappingList"></div>
       <div class="dialog-actions">
-        <button class="secondary-button" id="resetMappings" type="button">RESTAURAR PADRÃO</button>
-        <button class="primary-button" data-close-dialog type="button">CONCLUÍDO</button>
+        <button class="secondary-button" id="resetMappings" type="button">RESTAURAR PADRÃƒO</button>
+        <button class="primary-button" data-close-dialog type="button">CONCLUÃDO</button>
       </div>
     </dialog>
 
@@ -398,13 +476,13 @@
           <p class="eyebrow">MANUAL DO FORMINC</p>
           <h2>Super guia</h2>
         </div>
-        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
+        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">Ã—</button>
       </div>
-      <nav class="guide-nav" aria-label="Seções do guia">
-        <a href="#guide-start">COMEÇAR</a>
+      <nav class="guide-nav" aria-label="SeÃ§Ãµes do guia">
+        <a href="#guide-start">COMEÃ‡AR</a>
         <a href="#guide-compose">COMPOR</a>
         <a href="#guide-smart">INTELIGENTE</a>
-        <a href="#guide-stage">APRESENTAÇÃO</a>
+        <a href="#guide-stage">APRESENTAÃ‡ÃƒO</a>
         <a href="#guide-live">AO VIVO</a>
         <a href="#guide-mapping">TECLAS</a>
       </nav>
@@ -413,11 +491,11 @@
           <div class="guide-section-number">01</div>
           <div>
             <p class="eyebrow">PRIMEIRO SOM</p>
-            <h3>Comece em três gestos</h3>
+            <h3>Comece em trÃªs gestos</h3>
             <div class="guide-quick-grid">
-              <article><strong>1</strong><span>Escolha uma tônica.</span></article>
-              <article><strong>2</strong><span>Ative até quatro graus ou chame uma memória.</span></article>
-              <article><strong>3</strong><span>Pressione uma nota; use Espaço apenas como pedal.</span></article>
+              <article><strong>1</strong><span>Escolha uma tÃ´nica.</span></article>
+              <article><strong>2</strong><span>Ative atÃ© quatro graus ou chame uma memÃ³ria.</span></article>
+              <article><strong>3</strong><span>Pressione uma nota; use EspaÃ§o apenas como pedal.</span></article>
             </div>
           </div>
         </section>
@@ -429,26 +507,26 @@
             <h3>Construa a harmonia</h3>
             <div class="guide-cards">
               <article>
-                <h4>Tônica</h4>
-                <p>É a nota principal. Ela permanece selecionada até outra tônica ser escolhida.</p>
+                <h4>TÃ´nica</h4>
+                <p>Ã‰ a nota principal. Ela permanece selecionada atÃ© outra tÃ´nica ser escolhida.</p>
               </article>
               <article>
                 <h4>Graus</h4>
-                <p>Ative até quatro. Bemóis e sustenidos ficam abaixo do grau correspondente.</p>
+                <p>Ative atÃ© quatro. BemÃ³is e sustenidos ficam abaixo do grau correspondente.</p>
               </article>
               <article>
                 <h4>Oitava</h4>
                 <p>Use Z e X para deslocar o registro antes de salvar ou tocar.</p>
               </article>
               <article>
-                <h4>24 memórias</h4>
-                <p>Salve conjuntos de graus, dê nomes e chame a mesma forma sobre qualquer tônica.</p>
+                <h4>24 memÃ³rias</h4>
+                <p>Salve conjuntos de graus, dÃª nomes e chame a mesma forma sobre qualquer tÃ´nica.</p>
               </article>
             </div>
             <div class="guide-example">
               <span>EXEMPLO</span>
-              <strong>C + ♭7 + 9 = C7(9)</strong>
-              <p>Salve ♭7 + 9 como “Dominante 9” e reutilize a forma em D, E, F…</p>
+              <strong>C + â™­7 + 9 = C7(9)</strong>
+              <p>Salve â™­7 + 9 como â€œDominante 9â€ e reutilize a forma em D, E, Fâ€¦</p>
             </div>
           </div>
         </section>
@@ -456,18 +534,18 @@
         <section class="guide-section" id="guide-smart">
           <div class="guide-section-number">03</div>
           <div>
-            <p class="eyebrow">TÔNICAS INTELIGENTES</p>
-            <h3>Navegue pelo campo harmônico</h3>
-            <p class="guide-lead">Quando ativado, os botões representam posições I–VII, não notas fixas. As memórias acompanham a posição ao mudar o campo.</p>
+            <p class="eyebrow">TÃ”NICAS INTELIGENTES</p>
+            <h3>Navegue pelo campo harmÃ´nico</h3>
+            <p class="guide-lead">Quando ativado, os botÃµes representam posiÃ§Ãµes Iâ€“VII, nÃ£o notas fixas. As memÃ³rias acompanham a posiÃ§Ã£o ao mudar o campo.</p>
             <dl class="guide-shortcuts">
               <div><dt>C D E F G A S/B</dt><dd>Tocam a nota correspondente dentro do campo atual</dd></div>
               <div><dt>SHIFT + NOTA</dt><dd>Troca a tonalidade do campo</dd></div>
-              <div><dt>← / →</dt><dd>Aplicam sustenido ou bemol</dd></div>
-              <div><dt>↑ / ↓</dt><dd>Escolhem maior ou menor</dd></div>
+              <div><dt>â† / â†’</dt><dd>Aplicam sustenido ou bemol</dd></div>
+              <div><dt>â†‘ / â†“</dt><dd>Escolhem maior ou menor</dd></div>
             </dl>
             <div class="guide-tip">
               <strong>ALTERNATIVA</strong>
-              <span>No modo CAMPO, as teclas são fixas: graus usam 1–= e Shift alterna natural, sustenido e bemol.</span>
+              <span>No modo CAMPO, as teclas sÃ£o fixas: graus usam 1â€“= e Shift alterna natural, sustenido e bemol.</span>
             </div>
           </div>
         </section>
@@ -475,24 +553,24 @@
         <section class="guide-section" id="guide-stage">
           <div class="guide-section-number">04</div>
           <div>
-            <p class="eyebrow">CAMPO DE APRESENTAÇÃO</p>
-            <h3>Prepare o repertório</h3>
+            <p class="eyebrow">CAMPO DE APRESENTAÃ‡ÃƒO</p>
+            <h3>Prepare o repertÃ³rio</h3>
             <div class="guide-cards">
               <article>
                 <h4>40 notas</h4>
-                <p>Clique no + de uma tônica e escolha “Nota”. O sistema salva nota, forma e oitava no próximo espaço livre.</p>
+                <p>Clique no + de uma tÃ´nica e escolha â€œNotaâ€. O sistema salva nota, forma e oitava no prÃ³ximo espaÃ§o livre.</p>
               </article>
               <article>
                 <h4>10 bases</h4>
-                <p>Escolha “Base” para criar uma camada contínua. A mesma tecla desliga; outra base substitui a atual.</p>
+                <p>Escolha â€œBaseâ€ para criar uma camada contÃ­nua. A mesma tecla desliga; outra base substitui a atual.</p>
               </article>
               <article>
-                <h4>Contexto próprio</h4>
+                <h4>Contexto prÃ³prio</h4>
                 <p>No CA, as teclas chamam notas e bases. Os comandos do compositor ficam suspensos.</p>
               </article>
               <article>
                 <h4>Ritmo livre</h4>
-                <p>O ritmo não é salvo com a nota. Escolha a levada durante a apresentação.</p>
+                <p>O ritmo nÃ£o Ã© salvo com a nota. Escolha a levada durante a apresentaÃ§Ã£o.</p>
               </article>
             </div>
           </div>
@@ -502,13 +580,13 @@
           <div class="guide-section-number">05</div>
           <div>
             <p class="eyebrow">PERFORMANCE AO VIVO</p>
-            <h3>Ritmo, timbre e expressão</h3>
+            <h3>Ritmo, timbre e expressÃ£o</h3>
             <dl class="guide-shortcuts">
-              <div><dt>ESPAÇO</dt><dd>Liga/desliga o pedal sustain</dd></div>
+              <div><dt>ESPAÃ‡O</dt><dd>Liga/desliga o pedal sustain</dd></div>
               <div><dt>SHIFT</dt><dd>Bend de dois semitons</dd></div>
               <div><dt>BPM</dt><dd>Ajusta a velocidade dos presets</dd></div>
             </dl>
-            <p class="guide-lead">As notas tocam ao pressionar e soltam como um piano. Com o pedal ativo, o som continua após soltar a tecla.</p>
+            <p class="guide-lead">As notas tocam ao pressionar e soltam como um piano. Com o pedal ativo, o som continua apÃ³s soltar a tecla.</p>
           </div>
         </section>
 
@@ -516,11 +594,11 @@
           <div class="guide-section-number">06</div>
           <div>
             <p class="eyebrow">MAPEAMENTO</p>
-            <h3>Faça o instrumento caber nas suas mãos</h3>
-            <p class="guide-lead">Abra as configurações, filtre o comando, clique em Alterar e pressione a nova tecla. Para combinações como Shift+1, segure o modificador, pressione a tecla principal e confirme.</p>
+            <h3>FaÃ§a o instrumento caber nas suas mÃ£os</h3>
+            <p class="guide-lead">Abra as configuraÃ§Ãµes, filtre o comando, clique em Alterar e pressione a nova tecla. Para combinaÃ§Ãµes como Shift+1, segure o modificador, pressione a tecla principal e confirme.</p>
             <div class="guide-tip">
               <strong>DICA</strong>
-              <span>Compositor e Apresentação têm contextos separados, portanto podem reutilizar teclas sem conflito.</span>
+              <span>Compositor e ApresentaÃ§Ã£o tÃªm contextos separados, portanto podem reutilizar teclas sem conflito.</span>
             </div>
           </div>
         </section>
@@ -534,10 +612,10 @@
       <form id="memoryForm">
         <div class="dialog-header">
           <div>
-            <p class="eyebrow">MEMÓRIA HARMÔNICA</p>
+            <p class="eyebrow">MEMÃ“RIA HARMÃ”NICA</p>
             <h2 id="memoryDialogTitle">Nomear conjunto</h2>
           </div>
-          <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
+          <button class="close-button" data-close-dialog type="button" aria-label="Fechar">Ã—</button>
         </div>
         <p class="dialog-copy" id="memoryDialogDegrees"></p>
         <label class="memory-name-field">
@@ -557,19 +635,19 @@
           <p class="eyebrow">ENVIAR AO PALCO</p>
           <h2>Como usar esta nota?</h2>
         </div>
-        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
+        <button class="close-button" data-close-dialog type="button" aria-label="Fechar">Ã—</button>
       </div>
       <p class="dialog-copy" id="captureDialogNote"></p>
       <div class="capture-options">
         <button class="capture-option" id="captureAsNote" type="button">
           <span>NOTA</span>
-          <strong>Execução pontual</strong>
-          <small>Ocupa o próximo dos 40 espaços livres.</small>
+          <strong>ExecuÃ§Ã£o pontual</strong>
+          <small>Ocupa o prÃ³ximo dos 40 espaÃ§os livres.</small>
         </button>
         <button class="capture-option" id="captureAsBase" type="button">
           <span>BASE</span>
-          <strong>Sustentação contínua</strong>
-          <small>Ocupa o próximo dos 10 espaços de fundo.</small>
+          <strong>SustentaÃ§Ã£o contÃ­nua</strong>
+          <small>Ocupa o prÃ³ximo dos 10 espaÃ§os de fundo.</small>
         </button>
       </div>
     </dialog>
@@ -579,14 +657,14 @@
         <div class="dialog-header">
           <div>
             <p class="eyebrow">NOVO CONJUNTO</p>
-            <h2>Salvar como música</h2>
+            <h2>Salvar como mÃºsica</h2>
           </div>
-          <button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button>
+          <button class="close-button" data-close-dialog type="button" aria-label="Fechar">Ã—</button>
         </div>
         <p class="dialog-copy" id="setDialogSummary"></p>
         <label class="memory-name-field">
           <span>NOME DO CONJUNTO</span>
-          <input id="setNameInput" type="text" maxlength="40" autocomplete="off" placeholder="Ex.: Noite de verão" required />
+          <input id="setNameInput" type="text" maxlength="40" autocomplete="off" placeholder="Ex.: Noite de verÃ£o" required />
         </label>
         <div class="dialog-actions">
           <button class="secondary-button" data-close-dialog type="button">CANCELAR</button>
@@ -596,29 +674,5 @@
     </dialog>
 
     <script type="module" src="src/main.js"></script>
-    <dialog id="rhythmDialog" class="modal">
-      <div class="dialog-header">
-        <h2 id="rhythmDialogTitle">EDITOR DE RITMO</h2>
-        <button class="close-button" type="button" id="closeRhythmDialog" aria-label="Fechar">
-          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="dialog-content">
-        <form id="rhythmForm">
-          <label>
-            <span>NOME DO RITMO</span>
-            <input type="text" id="rhythmNameInput" required maxlength="24" placeholder="Ex: Meu Groove" />
-          </label>
-          <div class="rhythm-grid-editor">
-            <div id="rhythmGridA" class="rhythm-track"></div>
-            <div id="rhythmGridB" class="rhythm-track"></div>
-          </div>
-        </form>
-      </div>
-      <div class="dialog-actions">
-        <button class="text-button" type="button" id="cancelRhythm">CANCELAR</button>
-        <button class="text-button" type="submit" form="rhythmForm">SALVAR RITMO</button>
-      </div>
-    </dialog>
   </body>
 </html>

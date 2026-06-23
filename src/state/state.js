@@ -197,16 +197,18 @@ const initialState = {
   rhythmPreset: isValidRhythmPreset(storage.get(STORAGE_KEYS.RHYTHM_PRESET))
     ? storage.get(STORAGE_KEYS.RHYTHM_PRESET)
     : RHYTHM_TOKENS.DEFAULT_PRESET,
+  basePreset: storage.get(STORAGE_KEYS.BASE_PRESET) || "",
   tempo: Math.max(50, Math.min(220, Number(storage.get(STORAGE_KEYS.RHYTHM_TEMPO)) || RHYTHM_TOKENS.PRESETS[storage.get(STORAGE_KEYS.RHYTHM_PRESET)]?.bpm || GLOBAL_TOKENS.DEFAULT_TEMPO)),
   rhythmPlaying: false,
+  rhythmEnabled: storage.get(STORAGE_KEYS.RHYTHM_ENABLED) !== "false",
   rhythmVariation: GLOBAL_TOKENS.RHYTHM_VAR_A,
   rhythmStep: 0,
   rhythmTimer: null,
   nextStepAt: 0,
   manualTimers: new Map(),
   editingMemory: null,
-  workspace: storage.get(STORAGE_KEYS.WORKSPACE) === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE 
-    ? GLOBAL_TOKENS.WORKSPACE_PERFORMANCE 
+  workspace: [GLOBAL_TOKENS.WORKSPACE_PERFORMANCE, GLOBAL_TOKENS.WORKSPACE_RHYTHM].includes(storage.get(STORAGE_KEYS.WORKSPACE))
+    ? storage.get(STORAGE_KEYS.WORKSPACE)
     : GLOBAL_TOKENS.WORKSPACE_COMPOSER,
   performanceMemories: loadPerformanceMemories(),
   baseMemories: loadBaseMemories(),
@@ -322,6 +324,16 @@ export const store = {
           this.saveRhythmState();
           changed = true;
         }
+        break;
+      case STATE_ACTION_TOKENS.SET_RHYTHM_ENABLED:
+        this.state.rhythmEnabled = Boolean(payload);
+        storage.set(STORAGE_KEYS.RHYTHM_ENABLED, this.state.rhythmEnabled ? "true" : "false");
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_BASE_PRESET:
+        this.state.basePreset = payload || "";
+        storage.set(STORAGE_KEYS.BASE_PRESET, this.state.basePreset);
+        changed = true;
         break;
       case STATE_ACTION_TOKENS.SET_TEMPO:
         this.state.tempo = Math.max(50, Math.min(220, Number(payload) || GLOBAL_TOKENS.DEFAULT_TEMPO));

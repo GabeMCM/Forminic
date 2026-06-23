@@ -2,6 +2,7 @@ import { store } from '../state/state.js';
 import { STATE_ACTION_TOKENS } from '../state/state.tokens.js';
 import { renderer } from './renderer.js';
 import { audioEngine } from '../audio/engine.js';
+import { rhythmEngine } from '../audio/rhythm.js';
 import { GLOBAL_TOKENS, MUSIC_TOKENS } from '../tokens/master.tokens.js';
 import { elements } from './elements.js';
 import { UI_EVENTS_TOKENS } from './events.tokens.js';
@@ -318,6 +319,22 @@ export const events = {
   },
 
   bindUIControls() {
+    elements.panicButton?.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
+      rhythmEngine.stopRhythm();
+      audioEngine.stopAll(0.02);
+      this.featureHandlers?.stopBase?.();
+      store.state.manualTimers.forEach(timers => {
+        window.clearTimeout(timers.delay);
+        window.clearInterval(timers.interval);
+      });
+      store.state.manualTimers.clear();
+      store.state.activeActions.clear();
+      store.state.actionsByPhysicalKey.clear();
+      store.state.pedalActive = false;
+      elements.soundState.textContent = "PÂNICO · ÁUDIO INTERROMPIDO";
+      renderer.updateUI();
+    });
+
     elements.soundSetSelect.addEventListener(DOM_EVENTS_TOKENS.CHANGE, () => {
       audioEngine.stopAll();
       this.featureHandlers?.stopBase?.();

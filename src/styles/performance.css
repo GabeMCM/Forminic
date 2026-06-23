@@ -53,7 +53,7 @@
 .rhythm-config {
   width: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 32px 66px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px 66px;
   gap: 6px;
   grid-column: 1 / -1;
   margin-top: 0;
@@ -239,3 +239,21 @@ body.sounding .wave i:nth-child(5) { animation-delay: -300ms; }
   to { height: 13px; }
 }
 
+.rhythm-enable-button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(214,168,95,.32);
+  border-radius: 10px;
+  background: rgba(214,168,95,.08);
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+.rhythm-enable-button.active {
+  background: var(--gold);
+  color: #12110e;
+}

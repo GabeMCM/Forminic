@@ -462,6 +462,11 @@ export const features = {
     elements.stageRhythmPreset.value = store.state.rhythmPreset;
     elements.stageTempoControl.value = store.state.tempo;
     elements.tempoControl.value = store.state.tempo;
+    [elements.rhythmEnableButton, elements.stageRhythmEnableButton].filter(Boolean).forEach(button => {
+      button.classList.toggle("active", store.state.rhythmEnabled);
+      button.textContent = store.state.rhythmEnabled ? "RITMO ON" : "MANUAL";
+      button.setAttribute("aria-pressed", String(store.state.rhythmEnabled));
+    });
     elements.engineLabel.textContent = `RHYTHM SET · ${preset.source || "INSTALADO"}`;
     elements.beatState.textContent = manual ? "COMPASSO: LIVRE" : `${preset.meter} · PARADO`;
     [elements.autoRhythmButton, elements.stageAutoRhythmButton].filter(Boolean).forEach(button => {
@@ -557,9 +562,21 @@ export const features = {
     elements.tempoControl.value = store.state.tempo;
     elements.stageTempoControl.value = store.state.tempo;
 
+    [elements.rhythmEnableButton, elements.stageRhythmEnableButton].filter(Boolean).forEach(button => {
+      button.addEventListener(DOM_EVENTS_TOKENS.CLICK, event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const enabled = !store.state.rhythmEnabled;
+        if (!enabled) rhythmEngine.stopRhythm();
+        store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_ENABLED, enabled);
+        this.updateRhythmControls();
+      });
+    });
+
     elements.rhythmPresetSelect.addEventListener(DOM_EVENTS_TOKENS.CHANGE, () => {
       rhythmEngine.stopRhythm();
       store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, elements.rhythmPresetSelect.value);
+      store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_ENABLED, true);
       store.state.rhythmVariation = "a";
       store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, rhythmEngine.currentPreset().bpm);
       elements.tempoControl.value = store.state.tempo;

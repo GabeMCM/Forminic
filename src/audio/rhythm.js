@@ -7,25 +7,67 @@ import { GLOBAL_TOKENS } from '../tokens/master.tokens.js';
 export const rhythmEngine = {
   currentPreset() {
     const registry = globalThis.RHYTHM_PRESETS || RHYTHM_TOKENS.PRESETS;
+    if (!store.state.rhythmEnabled) return registry.manual;
     return registry[store.state.rhythmPreset] || registry.manual;
   },
 
-  rhythmEvent(symbol, scheduledAt) {
+  rhythmEvent(symbol, scheduledAt, velocityOverride = null) {
     if (!symbol || symbol === RHYTHM_VALUES.PAUSE) return;
+    const modern = {
+      C: [ENGINE_TOKENS.STRUM_DOWN, { chord: true }],
+      DS: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.04 }],
+      DF: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.012 }],
+      US: [ENGINE_TOKENS.STRUM_UP, { spacing: 0.04 }],
+      UF: [ENGINE_TOKENS.STRUM_UP, { spacing: 0.012 }],
+      A: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.075 }],
+      M: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.01, muted: true }],
+      T: [ENGINE_TOKENS.STRUM_DOWN, { chord: true, staccato: true }],
+      H: [ENGINE_TOKENS.STRUM_DOWN, { chord: true }],
+      BA: [ENGINE_TOKENS.STRUM_DOWN, { bassThenChord: true }],
+    };
+    if (modern[symbol]) {
+      const [direction, options] = modern[symbol];
+      audioEngine.previewRhythmGesture(direction, velocityOverride ?? (symbol === "T" ? 0.68 : 0.82), Boolean(options.muted), { ...options, scheduledAt });
+      return;
+    }
     const direction = symbol.toLowerCase() === RHYTHM_VALUES.LIGHT_UP ? ENGINE_TOKENS.STRUM_UP : ENGINE_TOKENS.STRUM_DOWN;
     const muted = symbol.toLowerCase() === RHYTHM_VALUES.MUTED;
-    const velocity = symbol === symbol.toUpperCase() && !muted ? 1 : muted ? 0.62 : 0.72;
+    const velocity = velocityOverride ?? (symbol === symbol.toUpperCase() && !muted ? 1 : muted ? 0.62 : 0.72);
     audioEngine.strum(direction, velocity, muted, scheduledAt);
+  },
+
+  baseEvent(symbol, scheduledAt, preset) {
+    if (!symbol || symbol === RHYTHM_VALUES.PAUSE || preset.mode !== "programmedBase") return;
+    const tonic = store.state.tonic;
+    if (tonic === null || symbol === "S") return;
+    const midi = (store.state.octave + 1) * 12 + tonic - 12;
+    audioEngine.pluckString(midi, 0, 1, scheduledAt, symbol === "B" ? 0.82 : 0.58);
   },
 
   scheduleRhythm() {
     if (!store.state.rhythmPlaying || !audioEngine.ctx) return;
     const preset = this.currentPreset();
+    const basePreset = (globalThis.RHYTHM_PRESETS || {})[store.state.basePreset];
     const pattern = preset[store.state.rhythmVariation] || preset.a;
-    const secondsPerStep = 60 / store.state.tempo / 4;
+    const secondsPerStep = 60 / store.state.tempo * (preset.pulse || 0.25);
 
     while (store.state.nextStepAt < audioEngine.ctx.currentTime + 0.09) {
-      this.rhythmEvent(pattern[store.state.rhythmStep % pattern.length], store.state.nextStepAt);
+      const stepIndex = store.state.rhythmStep % pattern.length;
+      const symbol = pattern[stepIndex];
+      const articulation = preset.durations?.[stepIndex] || "1";
+      const velocity = preset.velocities?.[stepIndex] ? preset.velocities[stepIndex] / 100 : null;
+      this.rhythmEvent(symbol, store.state.nextStepAt, velocity);
+      if (articulation === "R" && symbol !== RHYTHM_VALUES.PAUSE) {
+        this.rhythmEvent(symbol, store.state.nextStepAt + secondsPerStep * 0.5, velocity);
+      }
+      if (basePreset) {
+        this.baseEvent(basePreset.b?.[store.state.rhythmStep % (basePreset.b?.length || 1)], store.state.nextStepAt, basePreset);
+      } else {
+        this.baseEvent(preset.b?.[store.state.rhythmStep % (preset.b?.length || 1)], store.state.nextStepAt, preset);
+      }
+      if (articulation !== "R" && Number(articulation) > 1) {
+        window.setTimeout(() => audioEngine.dampVoices(secondsPerStep * Number(articulation) * 0.7), secondsPerStep * Number(articulation) * 700);
+      }
       store.state.rhythmStep = (store.state.rhythmStep + 1) % pattern.length;
       store.state.nextStepAt += secondsPerStep;
     }

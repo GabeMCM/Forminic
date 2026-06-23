@@ -44,8 +44,10 @@ function bootstrap() {
   // Escutar eventos de state centralizado (Pub/Sub) para UI Updates pesados
   store.subscribe(STATE_ACTION_TOKENS.SET_WORKSPACE, (workspace) => {
     const performance = workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
-    elements.composerWorkspace.hidden = performance;
+    const rhythm = workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
+    elements.composerWorkspace.hidden = performance || rhythm;
     elements.performanceWorkspace.hidden = !performance;
+    elements.rhythmWorkspace.hidden = !rhythm;
     document.querySelectorAll(UI_SELECTORS.workspaceButtons).forEach(button => {
       button.classList.toggle(DOM_ATTRIBUTES_TOKENS.CLASS_ACTIVE, button.dataset.workspace === workspace);
     });

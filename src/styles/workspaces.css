@@ -1,4 +1,7 @@
 ﻿.workspace-switcher {
+  position: sticky;
+  top: 76px;
+  z-index: 45;
   display: inline-flex;
   gap: 5px;
   margin-bottom: 12px;
