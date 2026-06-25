@@ -127,6 +127,19 @@ function loadSets() {
   }));
 }
 
+function loadRhythmTracks() {
+  const stored = storage.getJSON('rhythm_tracks');
+  if (!Array.isArray(stored)) return [];
+  return stored.map(track => ({
+    id: track.id || `track_${Date.now()}_${Math.random()}`,
+    tonic: Math.max(0, Math.min(11, track.tonic)),
+    noteName: String(track.noteName || '').slice(0, 8),
+    octave: Math.max(1, Math.min(7, Number(track.octave) || 4)),
+    degrees: Array.isArray(track.degrees) ? track.degrees : [],
+    displayName: String(track.displayName || '').slice(0, 36)
+  }));
+}
+
 function loadTonicLinks() {
   const storedLinks = storage.getJSON(STORAGE_KEYS.TONIC_LINKS);
   if (Array.isArray(storedLinks)) {
@@ -231,6 +244,7 @@ const initialState = {
   draggedSetId: null,
   pedalActive: false,
   theme: loadTheme(),
+  rhythmTracks: loadRhythmTracks(),
 };
 
 export const store = {
@@ -412,6 +426,19 @@ export const store = {
         this.state.pedalActive = !this.state.pedalActive;
         changed = true;
         break;
+      case STATE_ACTION_TOKENS.ADD_RHYTHM_TRACK: {
+        this.state.rhythmTracks.push(payload);
+        this.saveRhythmTracks();
+        changed = true;
+        break;
+      }
+      case STATE_ACTION_TOKENS.REMOVE_RHYTHM_TRACK: {
+        const idToRemove = payload;
+        this.state.rhythmTracks = this.state.rhythmTracks.filter(t => t.id !== idToRemove);
+        this.saveRhythmTracks();
+        changed = true;
+        break;
+      }
       // Adicionar mais handlers conforme necessário
       default:
         console.warn(STATE_MESSAGE_TOKENS.ERR_UNKNOWN_ACTION, actionType);
@@ -443,6 +470,9 @@ export const store = {
     storage.set(STORAGE_KEYS.FIELD_MINOR, String(this.state.fieldMinor));
     storage.setJSON(STORAGE_KEYS.SMART_LINKS, this.state.smartLinks);
     storage.set(STORAGE_KEYS.SMART_COMMAND_MODE, this.state.smartCommandMode);
+  },
+  saveRhythmTracks() {
+    storage.setJSON('rhythm_tracks', this.state.rhythmTracks);
   },
   saveSoundSet() {
     storage.set(STORAGE_KEYS.SOUND_SET, this.state.soundSet);

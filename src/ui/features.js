@@ -495,6 +495,19 @@ export const features = {
       elements.captureDialog.close();
     });
 
+    const captureAsRhythmBtn = document.getElementById("captureAsRhythm");
+    if (captureAsRhythmBtn) {
+      captureAsRhythmBtn.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
+        const snapshot = this.currentCaptureSnapshot();
+        if (snapshot) {
+          store.dispatch(STATE_ACTION_TOKENS.ADD_RHYTHM_TRACK, snapshot);
+          elements.soundState.textContent = `RITMO · TRILHA ADICIONADA: ${snapshot.displayName}`;
+        }
+        store.state.pendingCapture = null;
+        elements.captureDialog.close();
+      });
+    }
+
     elements.newSetButton.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => this.openSetDialog());
     elements.updateSetButton.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => this.updateActiveSet());
     elements.previousSetButton.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => this.navigateSet(-1));

@@ -1,4 +1,4 @@
-import * as Tone from 'tone';
+import * as Tone from '../../node_modules/tone/build/esm/index.js';
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const STORAGE_KEY = 'forminc_guitar_composer_v1';
@@ -16,6 +16,11 @@ const TECHNIQUES = [
   ['vibrato', 'Vibrato'],
   ['harmonic', 'Harmônico'],
   ['deadNote', 'Dead note'],
+];
+const DIRECTIONS = [
+  ['pluck', '●', 'Puxar junto'],
+  ['down', '↓', 'De cima para baixo'],
+  ['up', '↑', 'De baixo para cima'],
 ];
 
 const defaultState = {
@@ -68,12 +73,12 @@ const defaultState = {
       id: 'pattern_pop',
       name: 'Pop dedilhado',
       events: [
-        { id: 'evt_1', atMs: 0, strings: [5], velocity: 0.82, durationMs: 900, technique: 'normal' },
-        { id: 'evt_2', atMs: 140, strings: [4], velocity: 0.74, durationMs: 820, technique: 'normal' },
-        { id: 'evt_3', atMs: 280, strings: [3], velocity: 0.72, durationMs: 820, technique: 'normal' },
-        { id: 'evt_4', atMs: 420, strings: [2], velocity: 0.7, durationMs: 760, technique: 'hammerOn', targetFretOffset: 2 },
-        { id: 'evt_5', atMs: 560, strings: [1], velocity: 0.76, durationMs: 920, technique: 'vibrato' },
-        { id: 'evt_6', atMs: 860, strings: [5, 4, 3, 2, 1], velocity: 0.62, durationMs: 650, technique: 'palmMute', spreadMs: 18 },
+        { id: 'evt_1', atMs: 0, strings: [5], velocity: 0.82, durationMs: 900, technique: 'normal', direction: 'pluck' },
+        { id: 'evt_2', atMs: 140, strings: [4], velocity: 0.74, durationMs: 820, technique: 'normal', direction: 'pluck' },
+        { id: 'evt_3', atMs: 280, strings: [3], velocity: 0.72, durationMs: 820, technique: 'normal', direction: 'pluck' },
+        { id: 'evt_4', atMs: 420, strings: [2], velocity: 0.7, durationMs: 760, technique: 'hammerOn', targetFretOffset: 2, direction: 'pluck' },
+        { id: 'evt_5', atMs: 560, strings: [1], velocity: 0.76, durationMs: 920, technique: 'vibrato', direction: 'pluck' },
+        { id: 'evt_6', atMs: 860, strings: [5, 4, 3, 2, 1], velocity: 0.62, durationMs: 650, technique: 'palmMute', direction: 'down' },
       ],
     },
   },
@@ -117,6 +122,21 @@ function saveState() {
 
 function safeTarget(target) {
   return target instanceof HTMLElement ? target : null;
+}
+
+function directionFor(value) {
+  return DIRECTIONS.find(([id]) => id === value) || DIRECTIONS[0];
+}
+
+function orderedStringsForEvent(event) {
+  const strings = [...new Set(event.strings || [])];
+  if (event.direction === 'down') return strings.sort((a, b) => b - a);
+  if (event.direction === 'up') return strings.sort((a, b) => a - b);
+  return strings;
+}
+
+function spreadForEvent(event) {
+  return event.direction === 'pluck' ? 0 : Math.max(8, Math.min(80, Number(event.spreadMs) || 18));
 }
 
 function uid(prefix) {
@@ -183,8 +203,7 @@ function ensureAudio() {
 function playStringEvent(event, shape, time, stringNumber, spreadIndex = 0) {
   const engine = ensureAudio();
   const fret = fretFor(shape, stringNumber);
-  const stringDelay = event.stringDelays?.[stringNumber] ?? (event.spreadMs || 0) * spreadIndex;
-  const offset = Number(stringDelay || 0) / 1000;
+  const offset = (spreadForEvent(event) * spreadIndex) / 1000;
   const when = time + offset;
   const velocity = Math.max(0.05, Math.min(1, Number(event.velocity) || 0.75));
   if (fret === null || event.technique === 'deadNote' || event.technique === 'muted') {
@@ -244,7 +263,7 @@ function schedulePlayback() {
       Tone.Transport.schedule(time => {
         const shape = activeShapeAt(eventTimeMs);
         if (!shape) return;
-        event.strings.forEach((stringNumber, index) => playStringEvent(event, shape, time, stringNumber, index));
+        orderedStringsForEvent(event).forEach((stringNumber, index) => playStringEvent(event, shape, time, stringNumber, index));
       }, eventTimeMs / 1000);
     });
   });
@@ -397,19 +416,28 @@ function renderActionEditorSimple() {
     return;
   }
   if (!pattern.events.length) {
-    pattern.events.push({ id: uid('evt'), atMs: 0, strings: [], velocity: 0.75, durationMs: 700, technique: 'normal' });
+    pattern.events.push({ id: uid('evt'), atMs: 0, strings: [], velocity: 0.75, durationMs: 700, technique: 'normal', direction: 'pluck' });
   }
   elements.actionEditor.innerHTML = `
     <div class="guitar-action-blocks">
       ${pattern.events.map((event, index) => {
         const previous = pattern.events[index - 1];
         const gap = previous ? Math.max(0, event.atMs - previous.atMs) : event.atMs;
+        const [directionId, directionIcon, directionLabel] = directionFor(event.direction);
+        const orderedStrings = orderedStringsForEvent(event);
         return `
           <article class="guitar-action-block ${event.id === state.selectedEventId ? 'active' : ''}" data-select-event="${event.id}">
             <header>
               <span>TOQUE ${index + 1}</span>
-              <strong>${gap}ms</strong>
+              <strong>${directionLabel}</strong>
             </header>
+            <div class="guitar-direction-picker" role="group" aria-label="Direção do toque">
+              ${DIRECTIONS.map(([id, icon, label]) => `
+                <button class="guitar-direction-button ${directionId === id ? 'active' : ''}" data-set-event-direction="${event.id}:${id}" type="button" title="${label}" aria-label="${label}">
+                  ${icon}
+                </button>
+              `).join('')}
+            </div>
             <div class="guitar-action-boxes">
               ${state.instrument.strings.map(string => `
                 <div class="guitar-action-string-card ${event.strings.includes(string.string) ? 'selected' : ''}">
@@ -417,14 +445,13 @@ function renderActionEditorSimple() {
                     <strong>${string.string}</strong>
                     <span>${string.note}${string.octave}</span>
                   </button>
-                  <label>
-                    <span>delay</span>
-                    <input data-edit-string-delay="${event.id}:${string.string}" type="number" min="0" max="3000" step="10" value="${event.stringDelays?.[string.string] ?? 0}" />
-                  </label>
                 </div>
               `).join('')}
             </div>
-            <footer>${event.strings.length ? `Ordem ${event.strings.join(' → ')}` : 'Selecione as cordas'}</footer>
+            <footer>
+              <span>${gap}ms</span>
+              <strong>${event.strings.length ? `${directionIcon} ${orderedStrings.join(' ')}` : 'Selecione'}</strong>
+            </footer>
           </article>
         `;
       }).join('')}
@@ -442,10 +469,10 @@ function renderActionEditorSimple() {
         const previous = pattern.events[index - 1];
         const gap = previous ? Math.max(0, event.atMs - previous.atMs) : event.atMs;
         return `
-          <button class="guitar-gap-row ${event.id === state.selectedEventId ? 'active' : ''}" data-select-event="${event.id}" type="button">
+          <label class="guitar-gap-row ${event.id === state.selectedEventId ? 'active' : ''}" data-select-event="${event.id}">
             <span>${index === 0 ? 'INÍCIO' : `BLOCO ${index} → ${index + 1}`}</span>
-            <strong>${gap}ms</strong>
-          </button>
+            <input data-edit-event-gap="${event.id}" type="number" min="0" max="3000" step="${state.snapMs}" value="${gap}" aria-label="Tempo até este toque em milissegundos" />
+          </label>
         `;
       }).join('')}
     </aside>
@@ -516,7 +543,7 @@ function renderInspector() {
       <div class="guitar-inspector-card">
         <span>EVENTO</span>
         <strong>${eventRef.event.strings.join('+')} · ${eventRef.event.technique}</strong>
-        <label>Tempo ms<input data-edit-event="atMs" type="number" value="${eventRef.event.atMs}" /></label>
+        <small>O tempo deste toque é definido pela distância entre blocos.</small>
         <label>Duração ms<input data-edit-event="durationMs" type="number" value="${eventRef.event.durationMs}" /></label>
         <label>Força<input data-edit-event="velocity" type="number" min="0.05" max="1" step="0.05" value="${eventRef.event.velocity}" /></label>
         <label>Técnica<select data-edit-event="technique">${TECHNIQUES.map(([id, label]) => `<option value="${id}" ${eventRef.event.technique === id ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
@@ -568,6 +595,7 @@ function addEvent(stringNumber) {
       velocity: 0.75,
       durationMs: 700,
       technique: 'normal',
+      direction: 'pluck',
     });
   });
 }
@@ -609,15 +637,20 @@ function bindEvents() {
       if (eventField === 'atMs') item.atMs = snap(item.atMs);
     });
 
-    const stringDelay = target.dataset.editStringDelay;
-    if (stringDelay) setState(next => {
-      const [eventId, stringRaw] = stringDelay.split(':');
-      const stringNumber = Number(stringRaw);
-      const item = next.patterns[next.selectedPatternId]?.events.find(ev => ev.id === eventId);
-      if (!item) return;
-      item.stringDelays = item.stringDelays || {};
-      item.stringDelays[stringNumber] = Math.max(0, snap(Number(target.value) || 0));
-      next.selectedEventId = eventId;
+    const gapEventId = target.dataset.editEventGap;
+    if (gapEventId) setState(next => {
+      const pattern = next.patterns[next.selectedPatternId];
+      const index = pattern?.events.findIndex(ev => ev.id === gapEventId) ?? -1;
+      if (!pattern || index < 0) return;
+      const current = pattern.events[index];
+      const previous = pattern.events[index - 1];
+      const oldGap = previous ? Math.max(0, current.atMs - previous.atMs) : current.atMs;
+      const newGap = Math.max(0, snap(Number(target.value) || 0));
+      const delta = newGap - oldGap;
+      for (let i = index; i < pattern.events.length; i += 1) {
+        pattern.events[i].atMs = Math.max(0, snap(pattern.events[i].atMs + delta));
+      }
+      next.selectedEventId = gapEventId;
     });
   });
 
@@ -639,8 +672,17 @@ function bindEvents() {
       const previous = pattern.events.at(-1);
       const atMs = snap((previous?.atMs ?? 0) + 240);
       const id = uid('evt');
-      pattern.events.push({ id, atMs, strings: [], velocity: 0.75, durationMs: 700, technique: 'normal' });
+      pattern.events.push({ id, atMs, strings: [], velocity: 0.75, durationMs: 700, technique: 'normal', direction: 'pluck' });
       next.selectedEventId = id;
+    });
+    const directionData = target.closest('[data-set-event-direction]')?.dataset.setEventDirection;
+    if (directionData) setState(next => {
+      const [eventId, direction] = directionData.split(':');
+      const pattern = next.patterns[next.selectedPatternId];
+      const item = pattern?.events.find(ev => ev.id === eventId);
+      if (!item || !DIRECTIONS.some(([id]) => id === direction)) return;
+      item.direction = direction;
+      next.selectedEventId = eventId;
     });
     const actionBox = target.closest('[data-toggle-event-string]')?.dataset.toggleEventString;
     if (actionBox) setState(next => {

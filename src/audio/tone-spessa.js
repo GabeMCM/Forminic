@@ -1,5 +1,5 @@
-import * as Tone from 'tone';
-import { WorkletSynthesizer } from 'spessasynth_lib';
+import * as Tone from '../../node_modules/tone/build/esm/index.js';
+import { WorkletSynthesizer } from '../../node_modules/spessasynth_lib/dist/index.js';
 import { GLOBAL_TOKENS } from '../tokens/master.tokens.js';
 
 const PROGRAMS = {

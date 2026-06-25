@@ -1,4 +1,4 @@
-﻿.workspace-switcher {
+.workspace-switcher {
   position: sticky;
   top: 76px;
   z-index: 45;
@@ -518,7 +518,7 @@ body[data-theme="light"] .set-empty {
 
 .capture-options {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 

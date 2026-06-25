@@ -2,7 +2,7 @@ import { store } from '../state/state.js';
 import { audioEngine } from './engine.js';
 import { RHYTHM_TOKENS, RHYTHM_VALUES } from './rhythm.tokens.js';
 import { ENGINE_TOKENS } from './engine.tokens.js';
-import { GLOBAL_TOKENS } from '../tokens/master.tokens.js';
+import { GLOBAL_TOKENS, MUSIC_TOKENS } from '../tokens/master.tokens.js';
 
 export const rhythmEngine = {
   currentPreset() {
@@ -11,65 +11,43 @@ export const rhythmEngine = {
     return registry[store.state.rhythmPreset] || registry.manual;
   },
 
-  rhythmEvent(symbol, scheduledAt, velocityOverride = null) {
-    if (!symbol || symbol === RHYTHM_VALUES.PAUSE) return;
-    const modern = {
-      C: [ENGINE_TOKENS.STRUM_DOWN, { chord: true }],
-      DS: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.04 }],
-      DF: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.012 }],
-      US: [ENGINE_TOKENS.STRUM_UP, { spacing: 0.04 }],
-      UF: [ENGINE_TOKENS.STRUM_UP, { spacing: 0.012 }],
-      A: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.075 }],
-      M: [ENGINE_TOKENS.STRUM_DOWN, { spacing: 0.01, muted: true }],
-      T: [ENGINE_TOKENS.STRUM_DOWN, { chord: true, staccato: true }],
-      H: [ENGINE_TOKENS.STRUM_DOWN, { chord: true }],
-      BA: [ENGINE_TOKENS.STRUM_DOWN, { bassThenChord: true }],
-    };
-    if (modern[symbol]) {
-      const [direction, options] = modern[symbol];
-      audioEngine.previewRhythmGesture(direction, velocityOverride ?? (symbol === "T" ? 0.68 : 0.82), Boolean(options.muted), { ...options, scheduledAt });
-      return;
-    }
-    const direction = symbol.toLowerCase() === RHYTHM_VALUES.LIGHT_UP ? ENGINE_TOKENS.STRUM_UP : ENGINE_TOKENS.STRUM_DOWN;
-    const muted = symbol.toLowerCase() === RHYTHM_VALUES.MUTED;
-    const velocity = velocityOverride ?? (symbol === symbol.toUpperCase() && !muted ? 1 : muted ? 0.62 : 0.72);
-    audioEngine.strum(direction, velocity, muted, scheduledAt);
-  },
+  playTrack(trackId, scheduledAt, velocity = 0.8, durationMs = null) {
+    const track = store.state.rhythmTracks.find(t => t.id === trackId);
+    if (!track) return;
+    
+    const root = 12 * (track.octave + 1) + track.tonic;
+    const midiNotes = track.degrees.map(index => root + MUSIC_TOKENS.DEGREES[index][1]);
+    if (midiNotes.length === 0) midiNotes.push(root);
 
-  baseEvent(symbol, scheduledAt, preset) {
-    if (!symbol || symbol === RHYTHM_VALUES.PAUSE || preset.mode !== "programmedBase") return;
-    const tonic = store.state.tonic;
-    if (tonic === null || symbol === "S") return;
-    const midi = (store.state.octave + 1) * 12 + tonic - 12;
-    audioEngine.pluckString(midi, 0, 1, scheduledAt, symbol === "B" ? 0.82 : 0.58);
+    midiNotes.forEach(midi => {
+      const voice = audioEngine.pluckString(midi, 0, 1, scheduledAt, velocity, false);
+      if (durationMs && voice) {
+        window.setTimeout(() => audioEngine.stopVoice(voice), durationMs);
+      }
+    });
   },
 
   scheduleRhythm() {
     if (!store.state.rhythmPlaying || !audioEngine.ctx) return;
     const preset = this.currentPreset();
-    const basePreset = (globalThis.RHYTHM_PRESETS || {})[store.state.basePreset];
-    const pattern = preset[store.state.rhythmVariation] || preset.a;
-    const secondsPerStep = 60 / store.state.tempo * (preset.pulse || 0.25);
+    if (!preset || !preset.blocks || preset.blocks.length === 0) return;
 
-    while (store.state.nextStepAt < audioEngine.ctx.currentTime + 0.09) {
-      const stepIndex = store.state.rhythmStep % pattern.length;
-      const symbol = pattern[stepIndex];
-      const articulation = preset.durations?.[stepIndex] || "1";
-      const velocity = preset.velocities?.[stepIndex] ? preset.velocities[stepIndex] / 100 : null;
-      this.rhythmEvent(symbol, store.state.nextStepAt, velocity);
-      if (articulation === "R" && symbol !== RHYTHM_VALUES.PAUSE) {
-        this.rhythmEvent(symbol, store.state.nextStepAt + secondsPerStep * 0.5, velocity);
-      }
-      if (basePreset) {
-        this.baseEvent(basePreset.b?.[store.state.rhythmStep % (basePreset.b?.length || 1)], store.state.nextStepAt, basePreset);
-      } else {
-        this.baseEvent(preset.b?.[store.state.rhythmStep % (preset.b?.length || 1)], store.state.nextStepAt, preset);
-      }
-      if (articulation !== "R" && Number(articulation) > 1) {
-        window.setTimeout(() => audioEngine.dampVoices(secondsPerStep * Number(articulation) * 0.7), secondsPerStep * Number(articulation) * 700);
-      }
-      store.state.rhythmStep = (store.state.rhythmStep + 1) % pattern.length;
-      store.state.nextStepAt += secondsPerStep;
+    // We assume pattern length is calculated based on BPM and total duration of the rhythm.
+    // For simplicity, let's assume a 1 bar loop (4 beats)
+    const beatsPerBar = 4;
+    const secondsPerBeat = 60 / (preset.bpm || store.state.tempo);
+    const loopDuration = secondsPerBeat * beatsPerBar;
+
+    while (store.state.nextStepAt < audioEngine.ctx.currentTime + 0.1) {
+      const loopStart = store.state.nextStepAt;
+      
+      preset.blocks.forEach(block => {
+        // Convert block start time from MS to seconds relative to loop start
+        const eventTime = loopStart + (block.startTimeMs / 1000);
+        this.playTrack(block.trackId, eventTime, (block.velocity || 80) / 100);
+      });
+
+      store.state.nextStepAt += loopDuration;
     }
   },
 
@@ -78,7 +56,6 @@ export const rhythmEngine = {
     if (preset.manual) return;
     audioEngine.init();
     store.state.rhythmPlaying = true;
-    store.state.rhythmStep = 0;
     store.state.nextStepAt = audioEngine.ctx.currentTime + 0.04;
     window.clearInterval(store.state.rhythmTimer);
     store.state.rhythmTimer = window.setInterval(() => this.scheduleRhythm(), 25);
@@ -97,9 +74,7 @@ export const rhythmEngine = {
   },
 
   toggleVariation() {
-    if (this.currentPreset().manual) return;
-    store.state.rhythmVariation = store.state.rhythmVariation === RHYTHM_TOKENS.VARIATION_A ? RHYTHM_TOKENS.VARIATION_B : RHYTHM_TOKENS.VARIATION_A;
-    store.state.rhythmStep = 0;
+    // Variations not currently supported in piano-roll mode
   },
 
   startRepeatingStrum(action) {

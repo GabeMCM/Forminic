@@ -73,14 +73,10 @@
         </button>
         <button class="workspace-tab" data-workspace="rhythm" type="button">
           <span>02</span>
-          RITMO / BASE
-        </button>
-        <button class="workspace-tab" data-workspace="guitar" type="button">
-          <span>03</span>
-          VIOLÃO
+          RITMO
         </button>
         <button class="workspace-tab" data-workspace="performance" type="button">
-          <span>04</span>
+          <span>03</span>
           APRESENTAÇÃO
         </button>
       </nav>
@@ -134,7 +130,6 @@
         <nav class="mobile-mode-nav">
           <button class="active" data-workspace="composer" type="button"><span>◌</span>COMPOR</button>
           <button data-workspace="rhythm" type="button"><span>≋</span>RITMO</button>
-          <button data-workspace="guitar" type="button"><span>≀</span>VIOLÃO</button>
           <button data-workspace="performance" type="button"><span>◉</span>TOCAR</button>
         </nav>
       </section>
@@ -417,57 +412,52 @@
         </header>
         <form id="rhythmForm" class="rhythm-builder">
           <div class="rhythm-builder-toolbar">
-            <label class="rhythm-name-field"><span>NOME</span><input type="text" id="rhythmNameInput" required maxlength="24" placeholder="Ex.: Pulso aberto"></label>
-            <label><span>TIPO</span><select id="rhythmTypeInput"><option value="rhythm">RITMO LIVRE</option><option value="base">BASE PROGRAMADA</option></select></label>
+            <label class="rhythm-name-field" style="grid-column: span 2;"><span>NOME</span><input type="text" id="rhythmNameInput" required maxlength="24" placeholder="Ex.: Pulso aberto"></label>
             <label><span>BPM</span><input id="rhythmBpmInput" type="number" min="30" max="300" value="100"></label>
-            <label><span>PULSOS</span><input id="rhythmStepsInput" type="number" min="1" max="64" value="16"></label>
-            <label><span>TAMANHO DO PULSO</span><input id="rhythmPulseInput" type="number" min="0.125" max="8" step="0.125" value="0.25"></label>
-            <label><span>FONTE</span><select id="rhythmModeInput"><option value="neutral">ACORDE TOCADO</option><option value="activeBase">BASE ATIVA</option><option value="programmedBase">BASE PROGRAMADA</option></select></label>
+            <label><span>GRID</span><select id="rhythmGridSnap"><option value="0.25">1/4</option><option value="0.125">1/8</option><option value="0.0625">1/16</option><option value="free">Livre (ms)</option></select></label>
+            <label><span>LOOP</span><select id="rhythmLoopMode"><option value="true">Ativo</option><option value="false">Desativado</option></select></label>
+            <button class="primary-button" id="previewRhythmButton" type="button" style="height: 38px; margin-top: auto;">
+              <span>▶</span> OUVIR RITMO
+            </button>
           </div>
 
-          <div class="rhythm-construction">
-            <div class="rhythm-timeline">
-              <div class="rhythm-transport">
-                <button class="rhythm-play-button" id="previewRhythmButton" type="button">
-                  <span>▶</span><strong>OUVIR CONSTRUÇÃO</strong>
-                </button>
-                <div class="rhythm-gesture-legend" id="rhythmGestureLegend">
-                  <span><i>A</i> Acorde</span>
-                  <span><i>↓</i> Lento/Rápido</span>
-                  <span><i>↑</i> Lento/Rápido</span>
-                  <span><i>Arp</i> Arpejo</span>
-                  <span><i>×</i> Abafado</span>
-                  <span><i>St</i> Staccato</span>
-                  <span><i>Ba</i> Baixo + acorde</span>
+          <div class="rhythm-construction piano-roll-layout">
+            <div class="piano-roll-main">
+              <div class="piano-roll-container" id="pianoRollContainer">
+                <div class="piano-roll-keys" id="pianoRollKeys">
+                  <!-- Y-axis (Note names) dynamically generated here -->
+                </div>
+                <div class="piano-roll-grid" id="pianoRollGrid">
+                  <div class="piano-roll-playhead" id="pianoRollPlayhead"></div>
+                  <div class="piano-roll-tracks" id="pianoRollTracks">
+                    <!-- Tracks and blocks dynamically generated here -->
+                  </div>
                 </div>
               </div>
-              <div class="rhythm-track-head"><strong>ACORDES / ATAQUES</strong><span>Clique para selecionar; A/D altera o ataque</span></div>
-              <div id="rhythmGridA" class="rhythm-track"></div>
-              <div class="rhythm-track-head"><strong>BASE</strong><span>Independente do acorde tocado</span></div>
-              <div id="rhythmGridB" class="rhythm-track"></div>
-              <div class="rhythm-track-head"><strong>PULSO</strong><span>Clique para selecionar; A/D altera o pulso</span></div>
-              <div id="rhythmGridDuration" class="rhythm-track rhythm-duration-track"></div>
+              <div class="rhythm-builder-actions">
+                <button class="primary-button" type="submit">SALVAR NA BIBLIOTECA</button>
+              </div>
             </div>
-
+            
             <aside class="rhythm-event-inspector" id="rhythmEventInspector">
-              <span>EVENTO SELECIONADO</span>
-              <strong id="rhythmEventPosition">PULSO 1</strong>
-              <p>Clique no bloco que quer editar. A/D troca ataque ou pulso, W/S ajusta intensidade, Q limpa e E copia o anterior.</p>
-              <label class="rhythm-vertical-control"><span>INTENSIDADE</span><input id="rhythmEventVelocity" type="range" min="30" max="100" value="80" orient="vertical"></label>
-              <button class="secondary-button" id="clearRhythmEvent" type="button">REMOVER EVENTO</button>
+              <div class="inspector-header">
+                <span>BLOCO SELECIONADO</span>
+                <strong id="rhythmEventPosition">—</strong>
+              </div>
+              <div class="inspector-body">
+                <label><span>TAMANHO (ms)</span><input id="rhythmEventDuration" type="number" min="10" max="10000" step="10"></label>
+                <label><span>EFEITO (Volume)</span>
+                  <select id="rhythmEventEffect">
+                    <option value="none">Nenhum</option>
+                    <option value="fadein">Crescendo (Aumentando)</option>
+                    <option value="fadeout">Decrescendo (Abaixando)</option>
+                  </select>
+                </label>
+              </div>
+              <button class="secondary-button" id="clearRhythmEvent" type="button" style="margin-top: auto;">REMOVER BLOCO</button>
             </aside>
           </div>
-
-          <div class="rhythm-builder-actions">
-            <span>As alterações ficam locais neste dispositivo.</span>
-            <button class="primary-button" type="submit">SALVAR NA BIBLIOTECA</button>
-          </div>
         </form>
-
-        <div class="rhythm-libraries">
-          <section><header><span>RITMOS</span><strong>Padrões que aceitam qualquer acorde</strong></header><div class="rhythm-library rhythm-list" id="rhythmLibrary"></div></section>
-          <section><header><span>BASES</span><strong>Acompanhamentos com notas programadas</strong></header><div class="rhythm-library rhythm-list" id="baseLibrary"></div></section>
-        </div>
       </section>
 
       <footer>
@@ -713,6 +703,11 @@
           <span>BASE</span>
           <strong>Sustentação contínua</strong>
           <small>Ocupa o próximo dos 10 espaços de fundo.</small>
+        </button>
+        <button class="capture-option" id="captureAsRhythm" type="button">
+          <span>RITMO</span>
+          <strong>Trilha sequencial</strong>
+          <small>Adiciona ao Laboratório de Movimento.</small>
         </button>
       </div>
     </dialog>

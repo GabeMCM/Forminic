@@ -387,15 +387,6 @@ export const events = {
       renderer.renderKeys();
     });
 
-    document.querySelectorAll("[data-workspace]").forEach(btn => {
-      btn.addEventListener(DOM_EVENTS_TOKENS.CLICK, event => {
-        const button = event.target.closest("[data-workspace]");
-        if (!button?.dataset.workspace) return;
-        store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, button.dataset.workspace);
-        renderer.updateUI();
-      });
-    });
-
     elements.tonicLinkGrid.addEventListener(DOM_EVENTS_TOKENS.CHANGE, event => {
       const tonicSelect = event.target.closest("[data-tonic-link]");
       const smartSelect = event.target.closest("[data-smart-link]");

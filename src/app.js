@@ -11,6 +11,21 @@ import { DOM_EVENTS_TOKENS, DOM_ATTRIBUTES_TOKENS } from './tokens/api.tokens.js
 import { UI_SELECTORS } from './ui/elements.tokens.js';
 
 function bootstrap() {
+  const switchWorkspace = (workspace) => {
+    store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, workspace);
+    renderer.updateUI();
+  };
+
+  document.addEventListener(DOM_EVENTS_TOKENS.CLICK, event => {
+    let button = null;
+    if (event.target && typeof event.target.closest === 'function') {
+      button = event.target.closest(UI_SELECTORS.workspaceButtons);
+    }
+    if (!button || !button.dataset.workspace) return;
+    event.preventDefault();
+    event.stopPropagation();
+    switchWorkspace(button.dataset.workspace);
+  }, true);
   // Inicialização de UI
   renderer.applyTheme(store.state.theme);
   renderer.renderSoundSetOptions();
@@ -66,7 +81,7 @@ function bootstrap() {
   });
 
   // Atualiza Workspace inicial
-  store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, store.state.workspace);
+  switchWorkspace(store.state.workspace);
 }
 
 document.addEventListener(DOM_EVENTS_TOKENS.DOM_CONTENT_LOADED, bootstrap);

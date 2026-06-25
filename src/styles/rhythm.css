@@ -51,6 +51,7 @@
 
 .rhythm-builder-toolbar input,
 .rhythm-builder-toolbar select,
+.rhythm-event-inspector input,
 .rhythm-event-inspector select {
   appearance: none;
   width: 100%;
@@ -77,18 +78,22 @@
 
 .rhythm-builder-toolbar input:focus,
 .rhythm-builder-toolbar select:focus,
+.rhythm-event-inspector input:focus,
 .rhythm-event-inspector select:focus {
   border-color: var(--gold);
   background-color: rgba(214,168,95,.055);
   box-shadow: 0 0 0 3px rgba(214,168,95,.08);
 }
 
-.rhythm-builder-toolbar input[type="number"] {
+.rhythm-builder-toolbar input[type="number"],
+.rhythm-event-inspector input[type="number"] {
   appearance: textfield;
 }
 
 .rhythm-builder-toolbar input[type="number"]::-webkit-inner-spin-button,
-.rhythm-builder-toolbar input[type="number"]::-webkit-outer-spin-button {
+.rhythm-builder-toolbar input[type="number"]::-webkit-outer-spin-button,
+.rhythm-event-inspector input[type="number"]::-webkit-inner-spin-button,
+.rhythm-event-inspector input[type="number"]::-webkit-outer-spin-button {
   width: 22px;
   height: 30px;
   opacity: .58;
@@ -96,15 +101,135 @@
   cursor: pointer;
 }
 
-.rhythm-construction {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 210px;
+.piano-roll-layout {
+  display: flex;
+  flex-direction: row;
   gap: 14px;
   margin-top: 18px;
+  align-items: stretch;
+}
+
+.piano-roll-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   min-width: 0;
 }
 
-.rhythm-timeline { min-width: 0; overflow: hidden; }
+.piano-roll-container {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  min-height: 120px;
+}
+
+.piano-roll-keys {
+  flex: 0 0 100px;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: #111;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+
+.piano-roll-key {
+  flex: 0 0 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.piano-roll-key:last-child {
+  border-bottom: none;
+}
+
+.piano-roll-grid {
+  flex: 1;
+  position: relative;
+  min-width: 800px;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 40px 100%;
+}
+
+.piano-roll-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--gold);
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(214,168,95,0.8);
+}
+
+.piano-roll-tracks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.piano-roll-track {
+  flex: 0 0 48px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.piano-roll-track:last-child {
+  border-bottom: none;
+}
+
+.piano-roll-block {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 12px;
+  background: rgba(214,168,95,0.6);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 5;
+  transition: opacity 120ms ease;
+}
+
+.piano-roll-block:hover {
+  background: rgba(214,168,95,0.8);
+}
+
+.piano-roll-block.selected {
+  background: var(--gold);
+  border-color: #fff;
+  box-shadow: 0 0 5px rgba(214,168,95,0.8);
+}
+
+.piano-roll-block.playing {
+  background: #fff;
+  border-color: var(--gold);
+}
+
+.piano-roll-block-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 10;
+}
 
 .rhythm-transport {
   display: flex;
@@ -192,70 +317,41 @@
 }
 
 .rhythm-event-inspector {
-  padding: 15px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: rgba(255,255,255,.025);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+  flex: 0 0 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(238, 233, 223, 0.13);
+  border-radius: 8px;
 }
 
-.rhythm-event-inspector > span {
-  color: var(--gold);
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: .12em;
+.rhythm-event-inspector .inspector-header {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
 }
 
-.rhythm-event-inspector > strong {
-  display: block;
-  margin: 7px 0 16px;
-  font-family: Georgia, serif;
-  font-size: 18px;
-  font-weight: 400;
+.rhythm-event-inspector .inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.rhythm-event-inspector p {
-  margin: 0 0 14px;
+.rhythm-event-inspector label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rhythm-event-inspector label span {
+  font-size: 10px;
+  font-weight: bold;
   color: var(--muted);
-  font-family: Georgia, serif;
-  font-size: 11px;
-  line-height: 1.45;
 }
 
-.rhythm-event-inspector label { display: block; margin-top: 12px; }
-.rhythm-event-inspector .rhythm-vertical-control {
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  min-height: 190px;
-  padding: 10px 0 4px;
-}
-.rhythm-event-inspector input[type="range"] {
-  appearance: none;
-  width: 100%;
-  height: 5px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(214,168,95,.4), rgba(238,233,223,.09));
-}
-
-.rhythm-event-inspector .rhythm-vertical-control input[type="range"] {
-  writing-mode: vertical-lr;
-  direction: rtl;
-  width: 24px;
-  height: 140px;
-  background: linear-gradient(0deg, rgba(214,168,95,.4), rgba(238,233,223,.09));
-}
-
-.rhythm-event-inspector input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 17px;
-  height: 17px;
-  border: 3px solid #151411;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 0 1px rgba(214,168,95,.55);
-}
-.rhythm-event-inspector button { width: 100%; margin-top: 18px; }
+.rhythm-event-inspector button { width: 100%; margin-top: auto; }
 
 .rhythm-builder-actions {
   display: flex;
@@ -340,6 +436,7 @@
 
 body[data-theme="light"] .rhythm-builder-toolbar input,
 body[data-theme="light"] .rhythm-builder-toolbar select,
+body[data-theme="light"] .rhythm-event-inspector input,
 body[data-theme="light"] .rhythm-event-inspector select {
   border-color: rgba(68,58,43,.16);
   background-color: rgba(255,255,255,.42);

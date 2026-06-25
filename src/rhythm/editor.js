@@ -5,346 +5,307 @@ import { STATE_ACTION_TOKENS } from '../state/state.tokens.js';
 import { rhythmEngine } from '../audio/rhythm.js';
 import { RHYTHM_TOKENS } from '../audio/rhythm.tokens.js';
 import { audioEngine } from '../audio/engine.js';
-import { ENGINE_TOKENS } from '../audio/engine.tokens.js';
+import { MUSIC_TOKENS } from '../tokens/master.tokens.js';
 
-const GESTURES = [
-  { value: '-', label: 'Pausa', short: '—', className: 'beat-pause' },
-  { value: 'C', label: 'Acorde', short: 'Acorde', className: 'beat-chord' },
-  { value: 'DS', label: 'Descida lenta', short: '↓ lento', className: 'beat-strong-down' },
-  { value: 'DF', label: 'Descida rápida', short: '↓ rápido', className: 'beat-light-down' },
-  { value: 'US', label: 'Subida lenta', short: '↑ lento', className: 'beat-strong-up' },
-  { value: 'UF', label: 'Subida rápida', short: '↑ rápido', className: 'beat-light-up' },
-  { value: 'A', label: 'Arpejo', short: 'Arpejo', className: 'beat-arpeggio' },
-  { value: 'M', label: 'Abafado', short: 'Abafado', className: 'beat-muted' },
-  { value: 'T', label: 'Staccato', short: 'Staccato', className: 'beat-staccato' },
-  { value: 'H', label: 'Sustentar', short: 'Sustentar', className: 'beat-sustain' },
-  { value: 'BA', label: 'Baixo + acorde', short: 'Baixo+A', className: 'beat-bass-chord' },
-  { value: 'D', label: 'Legado: descida forte', short: '↓ forte', className: 'beat-strong-down' },
-  { value: 'd', label: 'Legado: descida leve', short: '↓ leve', className: 'beat-light-down' },
-  { value: 'U', label: 'Legado: subida forte', short: '↑ forte', className: 'beat-strong-up' },
-  { value: 'u', label: 'Legado: subida leve', short: '↑ leve', className: 'beat-light-up' },
-  { value: 'x', label: 'Legado: abafado', short: 'Abafado', className: 'beat-muted' },
-];
-const BASE_GESTURES = [
-  { value: '-', label: 'Pausa', short: '—', className: 'beat-pause' },
-  { value: 'B', label: 'Base forte', short: 'Base forte', className: 'beat-base' },
-  { value: 'b', label: 'Base leve', short: 'Base leve', className: 'beat-light-down' },
-  { value: 'S', label: 'Sustentar base', short: 'Sustentar', className: 'beat-sustain' },
-];
-const PULSE_VALUES = [
-  { value: '1', label: '1 pulso' },
-  { value: '2', label: '2 pulsos' },
-  { value: '4', label: '4 pulsos' },
-  { value: 'R', label: 'Repetir' },
-];
 let customRhythms = {};
-
 const registry = () => globalThis.RHYTHM_PRESETS;
-const gestureFor = (value, base = false) => (base ? BASE_GESTURES : GESTURES).find(item => item.value === value) || GESTURES[0];
-const pulseFor = value => PULSE_VALUES.find(item => item.value === value) || PULSE_VALUES[0];
-const editorKeys = new Set(['a', 'd', 'w', 's', 'q', 'e']);
 
 export function initRhythmEditor() {
-  const form = document.querySelector('#rhythmForm');
-  const gridA = document.querySelector('#rhythmGridA');
-  const gridB = document.querySelector('#rhythmGridB');
-  const gridDuration = document.querySelector('#rhythmGridDuration');
-  const library = document.querySelector('#rhythmLibrary');
-  const baseLibrary = document.querySelector('#baseLibrary');
-  if (!form || !gridA || !gridB || !gridDuration || !library || !baseLibrary) return;
+  const container = document.querySelector('#pianoRollContainer');
+  const keysContainer = document.querySelector('#pianoRollKeys');
+  const tracksContainer = document.querySelector('#pianoRollTracks');
+  const playhead = document.querySelector('#pianoRollPlayhead');
+  const gridContainer = document.querySelector('#pianoRollGrid');
+  
+  if (!container || !keysContainer || !tracksContainer) return;
 
-  const nameInput = document.querySelector('#rhythmNameInput');
   const bpmInput = document.querySelector('#rhythmBpmInput');
-  const stepsInput = document.querySelector('#rhythmStepsInput');
-  const pulseInput = document.querySelector('#rhythmPulseInput');
-  const modeInput = document.querySelector('#rhythmModeInput');
-  const typeInput = document.querySelector('#rhythmTypeInput');
-  const eventPosition = document.querySelector('#rhythmEventPosition');
-  const eventVelocity = document.querySelector('#rhythmEventVelocity');
-  let selectedIndex = 0;
-  let selectedTrack = 'rhythm';
+  const snapSelect = document.querySelector('#rhythmGridSnap');
+    const eventPosition = document.querySelector('#rhythmEventPosition');
+    const eventDuration = document.querySelector('#rhythmEventDuration');
+    const eventEffect = document.querySelector('#rhythmEventEffect');
+
+  let activeNotes = [];
+  let blocks = [];
+  let selectedBlockId = null;
   let previewTimer = null;
   let previewPlaying = false;
-  let loadedPresetId = null;
+  let previewStartTime = 0;
+  
+  const PX_PER_SECOND = 300; // Zoom visual (300px = 1 segundo)
 
+  // Initialization
   customRhythms = storage.getJSON(STORAGE_KEYS.CUSTOM_RHYTHMS, {}) || {};
   Object.assign(registry(), customRhythms);
-  const rhythmSelects = [document.querySelector('#rhythmPreset'), document.querySelector('#stageRhythmPreset')].filter(Boolean);
-  const baseSelects = [document.querySelector('#basePreset'), document.querySelector('#stageBasePreset')].filter(Boolean);
-  rhythmSelects.forEach(select => { select.innerHTML = ''; });
-  baseSelects.forEach(select => { select.innerHTML = '<option value="">SEM BASE PROGRAMADA</option>'; });
 
-  function stepMarkup(value, index, base = false) {
-    const gesture = gestureFor(value, base);
-    return `<button class="rhythm-step ${gesture.className}" data-index="${index}" data-value="${value}" type="button"><small>${index + 1}</small><strong>${gesture.short}</strong></button>`;
+  function getBPM() {
+    return Math.max(30, Math.min(300, Number(bpmInput?.value) || 100));
   }
 
-  function buildTrack(container, count, values, base = false) {
-    container.style.setProperty('--steps', count);
-    container.innerHTML = Array.from({ length: count }, (_, index) => stepMarkup(values?.[index] || '-', index, base)).join('');
+  function getBarDurationMs() {
+    // Assumindo 4 tempos (4/4) por compasso
+    return (60 / getBPM()) * 4 * 1000;
   }
 
-  function buildDurations(count, values) {
-    gridDuration.style.setProperty('--steps', count);
-    gridDuration.innerHTML = Array.from({ length: count }, (_, index) => {
-      const pulse = pulseFor(values?.[index] || '1');
-      return `<button class="rhythm-step" data-index="${index}" data-value="${pulse.value}" type="button"><small>${index + 1}</small><strong>${pulse.label}</strong></button>`;
-    }).join('');
-  }
+  // Gera as teclas/linhas dinamicamente com base nas notas selecionadas
+  function renderKeys() {
+    keysContainer.innerHTML = '';
+    tracksContainer.innerHTML = '';
+    
+    // Ler faixas do state
+    activeNotes = store.state.rhythmTracks.map(track => ({ id: track.id, name: track.displayName }));
 
-  function selectEvent(index, track = 'rhythm') {
-    selectedIndex = index;
-    selectedTrack = track;
-    const container = track === 'pulse' ? gridDuration : track === 'base' ? gridB : gridA;
-    const step = container.querySelector(`[data-index="${index}"]`);
-    [gridA, gridB, gridDuration].forEach(trackContainer => {
-      trackContainer.querySelectorAll('.rhythm-step.selected').forEach(item => item.classList.remove('selected'));
+    activeNotes.forEach((track) => {
+      // Cria rótulo da linha (eixo Y)
+      const keyEl = document.createElement('div');
+      keyEl.className = 'piano-roll-key';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = track.name;
+      keyEl.appendChild(nameSpan);
+
+      const delTrackBtn = document.createElement('button');
+      delTrackBtn.innerHTML = '×';
+      delTrackBtn.className = 'track-delete-btn';
+      delTrackBtn.style.cssText = 'background: transparent; border: none; color: var(--red); cursor: pointer; font-size: 14px; margin-left: auto; padding: 0 4px;';
+      delTrackBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        store.dispatch(STATE_ACTION_TOKENS.REMOVE_RHYTHM_TRACK, track.id);
+        // Remove blocos associados
+        blocks = blocks.filter(b => b.trackId !== track.id);
+        if (selectedBlockId && !blocks.find(b => b.id === selectedBlockId)) selectBlock(null);
+        renderKeys();
+      });
+      keyEl.appendChild(delTrackBtn);
+
+      keysContainer.appendChild(keyEl);
+
+      // Cria trilha para os blocos
+      const trackEl = document.createElement('div');
+      trackEl.className = 'piano-roll-track';
+      trackEl.dataset.trackId = track.id;
+      
+      // Clique na trilha para adicionar bloco
+      trackEl.addEventListener('click', (e) => {
+        if (e.target !== trackEl) return; // ignora cliques nos blocos
+        const rect = trackEl.getBoundingClientRect();
+        const x = e.clientX - rect.left + container.scrollLeft;
+        addBlock(track.id, x);
+      });
+
+      tracksContainer.appendChild(trackEl);
     });
-    step?.classList.add('selected');
-    eventPosition.textContent = `PULSO ${index + 1} · ${track === 'base' ? 'BASE' : 'ACORDE'}`;
-    eventPosition.textContent = `PULSO ${index + 1} · ${track === 'pulse' ? 'DURAÇÃO' : track === 'base' ? 'BASE' : 'ACORDE'}`;
-    eventVelocity.value = step?.dataset.velocity || (step?.dataset.value === 'D' || step?.dataset.value === 'B' ? 100 : 72);
+    
+    renderBlocks();
   }
 
-  function previewGesture(value, velocity = 72) {
-    if (value === '-') return;
-    rhythmEngine.rhythmEvent(value, null, velocity / 100);
-    window.setTimeout(() => audioEngine.dampRecentVoices(.4, .32), 180);
-  }
-
-  function cycleGesture(step, base = false, direction = 1) {
-    const gestures = base ? BASE_GESTURES : GESTURES;
-    const current = gestures.findIndex(item => item.value === step.dataset.value);
-    const next = gestures[(Math.max(0, current) + direction + gestures.length) % gestures.length];
-    step.dataset.value = next.value;
-    step.dataset.velocity = next.value === next.value.toUpperCase() && next.value !== '-' ? 100 : 72;
-    step.className = `rhythm-step ${next.className} selected`;
-    step.innerHTML = `<small>${Number(step.dataset.index) + 1}</small><strong>${next.short}</strong>`;
-    selectEvent(Number(step.dataset.index), base ? 'base' : 'rhythm');
-    if (!base) previewGesture(next.value, Number(step.dataset.velocity));
-  }
-
-  function cyclePulse(step, direction = 1) {
-    const current = PULSE_VALUES.findIndex(item => item.value === step.dataset.value);
-    const next = PULSE_VALUES[(Math.max(0, current) + direction + PULSE_VALUES.length) % PULSE_VALUES.length];
-    step.dataset.value = next.value;
-    step.innerHTML = `<small>${Number(step.dataset.index) + 1}</small><strong>${next.label}</strong>`;
-    selectEvent(Number(step.dataset.index), 'pulse');
-  }
-
-  function updateSelectedVelocity() {
-    const container = selectedTrack === 'base' ? gridB : gridA;
-    const step = container.querySelector(`[data-index="${selectedIndex}"]`);
-    if (!step) return;
-    step.dataset.velocity = eventVelocity.value;
-  }
-
-  function selectedContainer() {
-    if (selectedTrack === 'pulse') return gridDuration;
-    return selectedTrack === 'base' ? gridB : gridA;
-  }
-
-  function clearSelectedEvent() {
-    const step = selectedContainer().querySelector(`[data-index="${selectedIndex}"]`);
-    if (!step) return;
-    if (selectedTrack === 'pulse') {
-      const pulse = pulseFor('1');
-      step.dataset.value = pulse.value;
-      step.innerHTML = `<small>${selectedIndex + 1}</small><strong>${pulse.label}</strong>`;
-      selectEvent(selectedIndex, 'pulse');
-      return;
+  // Escuta as mudanças de notas e refaz as linhas
+  store.subscribe(state => {
+    const currentTracksStr = state.rhythmTracks.map(t => t.id).join(',');
+    if (renderKeys.lastTracksStr !== currentTracksStr) {
+      renderKeys.lastTracksStr = currentTracksStr;
+      renderKeys();
     }
-    const gesture = gestureFor('-', selectedTrack === 'base');
-    step.dataset.value = gesture.value;
-    step.dataset.velocity = 72;
-    step.className = `rhythm-step ${gesture.className} selected`;
-    step.innerHTML = `<small>${selectedIndex + 1}</small><strong>${gesture.short}</strong>`;
-    selectEvent(selectedIndex, selectedTrack);
-  }
-
-  function copyPreviousIntoSelected() {
-    if (selectedIndex <= 0) return;
-    const container = selectedContainer();
-    const current = container.querySelector(`[data-index="${selectedIndex}"]`);
-    const previous = container.querySelector(`[data-index="${selectedIndex - 1}"]`);
-    if (!current || !previous) return;
-    current.dataset.value = previous.dataset.value;
-    current.dataset.velocity = previous.dataset.velocity || current.dataset.velocity || 72;
-    current.className = `${previous.className.replace(/\bselected\b/g, '').trim()} selected`;
-    current.innerHTML = previous.innerHTML.replace(/<small>.*?<\/small>/, `<small>${selectedIndex + 1}</small>`);
-    selectEvent(selectedIndex, selectedTrack);
-    if (selectedTrack !== 'pulse') previewGesture(current.dataset.value, Number(current.dataset.velocity) || 72);
-  }
-
-  function adjustSelectedIntensity(direction) {
-    if (selectedTrack === 'pulse') return;
-    const step = selectedContainer().querySelector(`[data-index="${selectedIndex}"]`);
-    if (!step) return;
-    const next = Math.max(30, Math.min(100, (Number(step.dataset.velocity) || Number(eventVelocity.value) || 72) + direction * 5));
-    step.dataset.velocity = next;
-    eventVelocity.value = next;
-  }
-
-  function changeSelectedValue(direction) {
-    const step = selectedContainer().querySelector(`[data-index="${selectedIndex}"]`);
-    if (!step) return;
-    if (selectedTrack === 'pulse') cyclePulse(step, direction);
-    else cycleGesture(step, selectedTrack === 'base', direction);
-  }
-
-  function resetEditor() {
-    loadedPresetId = null;
-    nameInput.value = '';
-    bpmInput.value = 100;
-    stepsInput.value = 16;
-    pulseInput.value = .25;
-    modeInput.value = 'neutral';
-    typeInput.value = 'rhythm';
-    buildTrack(gridA, 16);
-    buildTrack(gridB, 16, null, true);
-    buildDurations(16);
-    selectEvent(0);
-  }
-
-  function loadPreset(id) {
-    const preset = registry()[id];
-    if (!preset || preset.manual) return;
-    loadedPresetId = id;
-    nameInput.value = preset.name || '';
-    bpmInput.value = preset.bpm || 100;
-    stepsInput.value = preset.steps || preset.a?.length || 16;
-    pulseInput.value = preset.pulse || .25;
-    typeInput.value = preset.type === 'base' ? 'base' : 'rhythm';
-    modeInput.value = typeInput.value === 'base' ? 'programmedBase' : preset.mode || 'neutral';
-    modeInput.disabled = typeInput.value === 'base';
-    buildTrack(gridA, Number(stepsInput.value), preset.a || []);
-    buildTrack(gridB, Number(stepsInput.value), preset.b || [], true);
-    buildDurations(Number(stepsInput.value), preset.durations || []);
-    [...gridA.children].forEach((item, index) => { item.dataset.velocity = preset.velocities?.[index] || 72; });
-    [...gridB.children].forEach((item, index) => { item.dataset.velocity = preset.baseVelocities?.[index] || 72; });
-    selectEvent(0);
-    store.dispatch(preset.type === 'base' ? STATE_ACTION_TOKENS.SET_BASE_PRESET : STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, id);
-    if (preset.type !== 'base') store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, preset.bpm || 100);
-  }
-
-  function refreshSelectors() {
-    rhythmSelects.forEach(select => { select.innerHTML = ''; });
-    baseSelects.forEach(select => { select.innerHTML = '<option value="">SEM BASE PROGRAMADA</option>'; });
-    Object.entries(registry()).forEach(([id, preset]) => {
-      if (preset.manual) return;
-      const targets = preset.type === 'base' ? baseSelects : rhythmSelects;
-      targets.forEach(select => select.insertAdjacentHTML('beforeend', `<option value="${id}">${preset.name.toUpperCase()}</option>`));
-    });
-    rhythmSelects.forEach(select => { select.value = store.state.rhythmPreset; });
-    baseSelects.forEach(select => { select.value = store.state.basePreset; });
-  }
-
-  function listMarkup(entries, base = false) {
-    return entries.map(([id, preset]) => `
-      <article class="rhythm-list-item ${(!base && store.state.rhythmPreset === id) || (base && store.state.basePreset === id) ? 'active' : ''}">
-        <button data-rhythm-select="${id}" type="button"><strong>${preset.name}</strong><span>${preset.bpm} BPM · ${preset.steps || preset.a?.length || 0} pulsos</span></button>
-        ${preset.source === RHYTHM_TOKENS.SOURCE_CUSTOM ? `<button data-rhythm-delete="${id}" type="button" aria-label="Excluir ${preset.name}">×</button>` : ''}
-      </article>
-    `).join('');
-  }
-
-  function renderLibraries() {
-    const entries = Object.entries(registry()).filter(([, preset]) => !preset.manual);
-    library.innerHTML = listMarkup(entries.filter(([, preset]) => preset.type !== 'base'));
-    baseLibrary.innerHTML = listMarkup(entries.filter(([, preset]) => preset.type === 'base'), true) || '<p class="rhythm-list-empty">Nenhuma base criada.</p>';
-    refreshSelectors();
-  }
-
-  [gridA, gridB].forEach((container, trackIndex) => container.addEventListener('click', event => {
-    const step = event.target.closest('.rhythm-step');
-    if (step) selectEvent(Number(step.dataset.index), trackIndex ? 'base' : 'rhythm');
-  }));
-  gridDuration.addEventListener('click', event => {
-    const step = event.target.closest('.rhythm-step');
-    if (step) selectEvent(Number(step.dataset.index), 'pulse');
   });
-  eventVelocity.addEventListener('input', updateSelectedVelocity);
-  document.querySelector('#clearRhythmEvent').addEventListener('click', clearSelectedEvent);
-  document.addEventListener('keydown', event => {
-    const key = event.key.toLowerCase();
-    if (!editorKeys.has(key) || store.state.workspace !== 'rhythm') return;
-    if (event.target.closest('input, select, textarea')) return;
-    event.preventDefault();
-    if (key === 'a') changeSelectedValue(-1);
-    if (key === 'd') changeSelectedValue(1);
-    if (key === 'w') adjustSelectedIntensity(1);
-    if (key === 's') adjustSelectedIntensity(-1);
-    if (key === 'q') clearSelectedEvent();
-    if (key === 'e') copyPreviousIntoSelected();
-  });
-  stepsInput.addEventListener('change', () => {
-    const count = Math.max(1, Math.min(64, Number(stepsInput.value) || 16));
-    buildTrack(gridA, count, [...gridA.children].map(item => item.dataset.value));
-    buildTrack(gridB, count, [...gridB.children].map(item => item.dataset.value), true);
-    buildDurations(count, [...gridDuration.children].map(item => item.dataset.value));
-    selectEvent(Math.min(selectedIndex, count - 1), selectedTrack);
-  });
-  typeInput.addEventListener('change', () => {
-    modeInput.value = typeInput.value === 'base' ? 'programmedBase' : 'neutral';
-    modeInput.disabled = typeInput.value === 'base';
-  });
-  document.querySelector('#newRhythmButton').addEventListener('click', resetEditor);
-  document.querySelector('#openRhythmEditor')?.addEventListener('click', () => store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, 'rhythm'));
 
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    const sourcePreset = loadedPresetId ? registry()[loadedPresetId] : null;
-    const id = sourcePreset?.source === RHYTHM_TOKENS.SOURCE_CUSTOM ? loadedPresetId : `${RHYTHM_TOKENS.PREFIX_CUSTOM}${Date.now()}`;
-    const preset = {
-      name: nameInput.value.trim() || RHYTHM_TOKENS.NAME_CUSTOM,
-      type: typeInput.value,
-      bpm: Math.max(30, Math.min(300, Number(bpmInput.value) || 100)),
-      meter: RHYTHM_TOKENS.METER_FREE,
-      source: RHYTHM_TOKENS.SOURCE_CUSTOM,
-      mode: typeInput.value === 'base' ? 'programmedBase' : modeInput.value,
-      steps: gridA.children.length,
-      pulse: Math.max(.125, Number(pulseInput.value) || .25),
-      a: [...gridA.children].map(item => item.dataset.value),
-      b: [...gridB.children].map(item => item.dataset.value),
-      durations: [...gridDuration.children].map(item => item.dataset.value),
-      velocities: [...gridA.children].map(item => Number(item.dataset.velocity) || 72),
-      baseVelocities: [...gridB.children].map(item => Number(item.dataset.velocity) || 72),
+  function getSnapMs() {
+    const val = snapSelect.value;
+    if (val === 'free') return 1; 
+    const beatValue = Number(val); // 0.25 = 1/4 (1 beat)
+    const msPerBeat = (60 / getBPM()) * 1000;
+    return msPerBeat * (beatValue / 0.25);
+  }
+
+  function xToMs(x) {
+    return (x / PX_PER_SECOND) * 1000;
+  }
+
+  function msToX(ms) {
+    return (ms / 1000) * PX_PER_SECOND;
+  }
+
+  function magneticSnapMs(ms) {
+    const snap = getSnapMs();
+    if (snap <= 1) return ms; // free mode
+    
+    const snappedMs = Math.round(ms / snap) * snap;
+    const distancePx = Math.abs(msToX(ms) - msToX(snappedMs));
+    
+    // Magnetic pull distance: 15px
+    if (distancePx < 15) {
+      return snappedMs;
+    }
+    return ms;
+  }
+
+  function addBlock(trackId, x) {
+    const ms = magneticSnapMs(xToMs(x));
+    const block = {
+      id: 'block_' + Date.now(),
+      trackId,
+      startTimeMs: ms,
+      durationMs: getSnapMs() > 1 ? getSnapMs() : 250,
+      velocity: 80
     };
-    customRhythms[id] = preset;
-    registry()[id] = preset;
-    storage.setJSON(STORAGE_KEYS.CUSTOM_RHYTHMS, customRhythms);
-    store.dispatch(typeInput.value === 'base' ? STATE_ACTION_TOKENS.SET_BASE_PRESET : STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, id);
-    if (typeInput.value !== 'base') store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, preset.bpm);
-    renderLibraries();
-    resetEditor();
+    blocks.push(block);
+    selectBlock(block.id);
+    renderBlocks();
+    
+    rhythmEngine.playTrack(trackId, null, block.velocity / 100);
+  }
+
+  function updateInspector(block) {
+    if (block) {
+      const track = store.state.rhythmTracks.find(t => t.id === block.trackId);
+      const noteName = track ? track.displayName : 'Trilha';
+      eventPosition.textContent = `${noteName} @ ${Math.round(block.startTimeMs)}ms`;
+      if (eventDuration) eventDuration.value = Math.round(block.durationMs);
+      if (eventEffect) eventEffect.value = block.effect || 'none';
+    } else {
+      eventPosition.textContent = '—';
+      if (eventDuration) eventDuration.value = '';
+      if (eventEffect) eventEffect.value = 'none';
+    }
+  }
+
+  function selectBlock(id, skipRender = false) {
+    selectedBlockId = id;
+    const block = blocks.find(b => b.id === id);
+    updateInspector(block);
+    if (!skipRender) {
+      renderBlocks();
+    } else {
+      document.querySelectorAll('.piano-roll-block').forEach(n => n.classList.remove('selected'));
+      const activeEl = document.querySelector(`.piano-roll-block[data-block-id="${id}"]`);
+      if (activeEl) activeEl.classList.add('selected');
+    }
+  }
+
+  if (eventDuration) {
+    eventDuration.addEventListener('input', () => {
+      const block = blocks.find(b => b.id === selectedBlockId);
+      if (block) {
+        block.durationMs = Math.max(10, Number(eventDuration.value) || 100);
+        renderBlocks();
+      }
+    });
+  }
+
+  if (eventEffect) {
+    eventEffect.addEventListener('change', () => {
+      const block = blocks.find(b => b.id === selectedBlockId);
+      if (block) {
+        block.effect = eventEffect.value;
+      }
+    });
+  }
+
+  let isDragging = false;
+  let isResizing = false;
+  let startX = 0;
+  let initialStartMs = 0;
+  let initialDurationMs = 0;
+  let draggedBlock = null;
+
+  window.addEventListener('mousemove', (e) => {
+    if (isDragging && draggedBlock) {
+      const dx = e.clientX - startX;
+      const msDelta = xToMs(dx);
+      draggedBlock.block.startTimeMs = Math.max(0, magneticSnapMs(initialStartMs + msDelta));
+      draggedBlock.el.style.left = msToX(draggedBlock.block.startTimeMs) + 'px';
+      if (draggedBlock.block.id === selectedBlockId) {
+        const track = store.state.rhythmTracks.find(t => t.id === draggedBlock.block.trackId);
+        eventPosition.textContent = `${track ? track.displayName : 'Trilha'} @ ${Math.round(draggedBlock.block.startTimeMs)}ms`;
+      }
+    } else if (isResizing && draggedBlock) {
+      const dx = e.clientX - startX;
+      const msDelta = xToMs(dx);
+      const currentEndMs = initialStartMs + initialDurationMs + msDelta;
+      const snappedEndMs = magneticSnapMs(currentEndMs);
+      
+      draggedBlock.block.durationMs = Math.max(10, snappedEndMs - draggedBlock.block.startTimeMs);
+      draggedBlock.el.style.width = Math.max(4, msToX(draggedBlock.block.durationMs)) + 'px';
+      if (draggedBlock.block.id === selectedBlockId && eventDuration) {
+        eventDuration.value = Math.round(draggedBlock.block.durationMs);
+      }
+    }
   });
 
-  document.querySelector('.rhythm-libraries').addEventListener('click', event => {
-    const select = event.target.closest('[data-rhythm-select]');
-    const remove = event.target.closest('[data-rhythm-delete]');
-    if (select) {
-      const id = select.dataset.rhythmSelect;
-      rhythmEngine.stopRhythm();
-      loadPreset(id);
-      renderLibraries();
+  window.addEventListener('mouseup', () => {
+    if (isDragging || isResizing) {
+      isDragging = false;
+      isResizing = false;
+      draggedBlock = null;
+      renderBlocks(); 
     }
-    if (remove) {
-      const id = remove.dataset.rhythmDelete;
-      delete customRhythms[id];
-      delete registry()[id];
-      storage.setJSON(STORAGE_KEYS.CUSTOM_RHYTHMS, customRhythms);
-      renderLibraries();
+  });
+
+  function renderBlocks() {
+    document.querySelectorAll('.piano-roll-block').forEach(el => el.remove());
+
+    blocks.forEach(block => {
+      const trackIndex = activeNotes.findIndex(n => n.id === block.trackId);
+      if (trackIndex === -1) return; 
+
+      const trackEl = tracksContainer.children[trackIndex];
+      if (!trackEl) return;
+
+      const el = document.createElement('div');
+      el.className = 'piano-roll-block' + (block.id === selectedBlockId ? ' selected' : '');
+      el.dataset.blockId = block.id;
+      el.style.left = msToX(block.startTimeMs) + 'px';
+      el.style.width = Math.max(4, msToX(block.durationMs)) + 'px';
+      
+      // Resize Handle
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = 'piano-roll-block-resize-handle';
+      el.appendChild(resizeHandle);
+      
+      resizeHandle.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        selectBlock(block.id, true);
+        isResizing = true;
+        startX = e.clientX;
+        initialDurationMs = block.durationMs;
+        initialStartMs = block.startTimeMs;
+        draggedBlock = { block, el };
+      });
+
+      el.addEventListener('mousedown', (e) => {
+        if (isResizing) return;
+        e.stopPropagation();
+        selectBlock(block.id, true);
+        isDragging = true;
+        startX = e.clientX;
+        initialStartMs = block.startTimeMs;
+        draggedBlock = { block, el };
+      });
+
+      trackEl.appendChild(el);
+    });
+  }
+
+
+  document.querySelector('#clearRhythmEvent').addEventListener('click', () => {
+    if (!selectedBlockId) return;
+    blocks = blocks.filter(b => b.id !== selectedBlockId);
+    selectedBlockId = null;
+    selectBlock(null);
+    renderBlocks();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlockId && store.state.workspace === 'rhythm') {
+      document.querySelector('#clearRhythmEvent').click();
     }
   });
 
   function stopPreview() {
     previewPlaying = false;
-    window.clearTimeout(previewTimer);
-    previewTimer = null;
+    cancelAnimationFrame(previewTimer);
     document.querySelector('#previewRhythmButton').classList.remove('active');
-    document.querySelector('#previewRhythmButton strong').textContent = 'OUVIR CONSTRUÇÃO';
     document.querySelector('#previewRhythmButton span').textContent = '▶';
-    audioEngine.dampVoices(.28);
+    playhead.style.left = '0px';
   }
 
   function startPreview() {
@@ -354,44 +315,92 @@ export function initRhythmEditor() {
     }
     audioEngine.init();
     previewPlaying = true;
-    const button = document.querySelector('#previewRhythmButton');
-    button.classList.add('active');
-    button.querySelector('strong').textContent = 'PARAR PRÉVIA';
-    button.querySelector('span').textContent = '■';
-    const pulseMs = 60000 / Math.max(30, Number(bpmInput.value) || 100) * Math.max(.125, Number(pulseInput.value) || .25);
-    let stepIndex = 0;
-    const playStep = () => {
+    previewStartTime = audioEngine.ctx.currentTime;
+    
+    document.querySelector('#previewRhythmButton').classList.add('active');
+    document.querySelector('#previewRhythmButton span').textContent = '■';
+
+    const barMs = getBarDurationMs();
+    let maxEndMs = 0;
+    blocks.forEach(b => {
+      const end = b.startTimeMs + b.durationMs;
+      if (end > maxEndMs) maxEndMs = end;
+    });
+    
+    // Calcula múltiplos do compasso que consigam englobar o último bloco
+    let loopDurationMs = barMs;
+    if (maxEndMs > barMs) {
+      loopDurationMs = Math.ceil(maxEndMs / barMs) * barMs;
+    }
+    
+    let playedBlocks = new Set();
+    let currentLoopStart = previewStartTime;
+
+    function animate() {
       if (!previewPlaying) return;
-      const rhythmStep = gridA.children[stepIndex];
-      const baseStep = gridB.children[stepIndex];
-      previewGesture(rhythmStep.dataset.value, Number(rhythmStep.dataset.velocity) || 72);
-      if (typeInput.value === 'base' && baseStep.dataset.value !== '-') {
-        audioEngine.previewRhythmGesture(
-          ENGINE_TOKENS.STRUM_DOWN,
-          baseStep.dataset.value === 'B' ? .82 : .58
-        );
+      const now = audioEngine.ctx.currentTime;
+      let elapsed = now - currentLoopStart;
+
+      const loopMode = document.querySelector('#rhythmLoopMode').value === 'true';
+
+      if (elapsed * 1000 >= loopDurationMs) {
+        if (!loopMode) {
+          stopPreview();
+          return;
+        }
+        currentLoopStart += loopDurationMs / 1000;
+        elapsed = now - currentLoopStart;
+        playedBlocks.clear();
       }
-      [gridA, gridB, gridDuration].forEach(track => {
-        [...track.children].forEach(item => item.classList.toggle('playing', Number(item.dataset.index) === stepIndex));
+
+      const elapsedMs = elapsed * 1000;
+      playhead.style.left = msToX(elapsedMs) + 'px';
+      
+      blocks.forEach(block => {
+        if (!playedBlocks.has(block.id) && block.startTimeMs <= elapsedMs) {
+          playedBlocks.add(block.id);
+          rhythmEngine.playTrack(block.trackId, now, block.velocity / 100, block.durationMs / 1000);
+          
+          // Piscar o bloco visualmente
+          const blockEls = document.querySelectorAll('.piano-roll-block');
+          blockEls.forEach(el => {
+            if (el.style.left === msToX(block.startTimeMs) + 'px') {
+              el.classList.add('playing');
+              setTimeout(() => el.classList.remove('playing'), 100);
+            }
+          });
+        }
       });
-      stepIndex = (stepIndex + 1) % gridA.children.length;
-      previewTimer = window.setTimeout(playStep, pulseMs);
-    };
-    playStep();
+
+      previewTimer = requestAnimationFrame(animate);
+    }
+    
+    animate();
   }
 
   document.querySelector('#previewRhythmButton').addEventListener('click', startPreview);
 
-  rhythmSelects.forEach(select => select.addEventListener('change', () => {
-    rhythmSelects.forEach(peer => { peer.value = select.value; });
-    rhythmEngine.stopRhythm();
-    loadPreset(select.value);
-  }));
-  baseSelects.forEach(select => select.addEventListener('change', () => {
-    baseSelects.forEach(peer => { peer.value = select.value; });
-    store.dispatch(STATE_ACTION_TOKENS.SET_BASE_PRESET, select.value);
-  }));
+  document.querySelector('#rhythmForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.querySelector('#rhythmNameInput').value;
+    const id = `${RHYTHM_TOKENS.PREFIX_CUSTOM}${Date.now()}`;
+    const preset = {
+      name: name || RHYTHM_TOKENS.NAME_CUSTOM,
+      type: 'rhythm',
+      bpm: getBPM(),
+      blocks: [...blocks]
+    };
+    customRhythms[id] = preset;
+    registry()[id] = preset;
+    storage.setJSON(STORAGE_KEYS.CUSTOM_RHYTHMS, customRhythms);
+    store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, id);
+    
+    // Atualizar UI de sucesso (opcional, pode ser um pequeno aviso ao invés de alert)
+    const btn = document.querySelector('#rhythmForm button[type="submit"]');
+    const oldText = btn.textContent;
+    btn.textContent = 'SALVO COM SUCESSO!';
+    setTimeout(() => btn.textContent = oldText, 2000);
+  });
 
-  resetEditor();
-  renderLibraries();
+  renderKeys();
 }
