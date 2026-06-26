@@ -40,6 +40,7 @@ export const UI_SELECTORS = {
   themeToggle: "#themeToggle",
   themeLabel: "#themeLabel",
   composerWorkspace: "#composerWorkspace",
+  guitarWorkspace: "#guitarWorkspace",
   performanceWorkspace: "#performanceWorkspace",
   rhythmWorkspace: "#rhythmWorkspace",
   performanceMemoryGrid: "#performanceMemoryGrid",

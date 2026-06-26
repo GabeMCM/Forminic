@@ -147,8 +147,8 @@ function render() {
   const performance = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
   const rhythm = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
   root.dataset.mode = rhythm ? 'rhythm' : performance ? 'performance' : 'composer';
-  modeLabel.textContent = rhythm ? 'LABORATÓRIO DE RITMO' : performance ? 'CAMPO DE APRESENTAÇÃO' : 'CENTRO DE COMPOSIÇÃO';
-  centerOverline.textContent = rhythm ? 'RITMO ATUAL' : performance ? 'ACORDE ATUAL' : 'TÔNICA';
+  modeLabel.textContent = rhythm ? 'LABORATÓRIO DE RITMO' : performance ? 'CAMPO DE APRESENTAÇÃO' : guitar ? 'COMPOSITOR DE VIOLÃO' : 'CENTRO DE COMPOSIÇÃO';
+  centerOverline.textContent = rhythm ? 'RITMO ATUAL' : performance ? 'ACORDE ATUAL' : guitar ? 'VIOLÃO' : 'TÔNICA';
   if (rhythm) {
     const preset = rhythmEngine.currentPreset();
     centerNote.textContent = preset.name;

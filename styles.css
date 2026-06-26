@@ -12,4 +12,9 @@
 @import "src/styles/mobile.css";
 @import "src/styles/rhythm.css";
 @import "src/styles/header.css";
+@import "src/styles/guitar.css";
+
+[hidden] {
+  display: none !important;
+}
 

@@ -14,6 +14,7 @@ export const GLOBAL_TOKENS = {
 
   // Workspaces
   WORKSPACE_COMPOSER: "composer",
+  WORKSPACE_GUITAR: "guitar",
   WORKSPACE_PERFORMANCE: "performance",
   WORKSPACE_RHYTHM: "rhythm",
 

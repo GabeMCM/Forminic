@@ -5,6 +5,7 @@ import { events } from './ui/events.js';
 import { features } from './ui/features.js';
 import { elements } from './ui/elements.js';
 import { initRhythmEditor } from './rhythm/editor.js';
+import { initGuitarComposer } from './guitar/composer.js';
 import { GLOBAL_TOKENS, MUSIC_TOKENS } from './tokens/master.tokens.js';
 import { DOM_EVENTS_TOKENS, DOM_ATTRIBUTES_TOKENS } from './tokens/api.tokens.js';
 import { UI_SELECTORS } from './ui/elements.tokens.js';
@@ -41,14 +42,18 @@ function bootstrap() {
   events.init();
   features.bindFeatureControls();
   initRhythmEditor();
+  initGuitarComposer();
 
   // Escutar eventos de state centralizado (Pub/Sub) para UI Updates pesados
   store.subscribe(STATE_ACTION_TOKENS.SET_WORKSPACE, (workspace) => {
+    const composer = workspace === GLOBAL_TOKENS.WORKSPACE_COMPOSER;
     const performance = workspace === GLOBAL_TOKENS.WORKSPACE_PERFORMANCE;
     const rhythm = workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
-    elements.composerWorkspace.hidden = performance || rhythm;
-    elements.performanceWorkspace.hidden = !performance;
-    elements.rhythmWorkspace.hidden = !rhythm;
+    const guitar = workspace === GLOBAL_TOKENS.WORKSPACE_GUITAR;
+    if (elements.composerWorkspace) elements.composerWorkspace.hidden = !composer;
+    if (elements.guitarWorkspace) elements.guitarWorkspace.hidden = !guitar;
+    if (elements.performanceWorkspace) elements.performanceWorkspace.hidden = !performance;
+    if (elements.rhythmWorkspace) elements.rhythmWorkspace.hidden = !rhythm;
     document.querySelectorAll(UI_SELECTORS.workspaceButtons).forEach(button => {
       button.classList.toggle(DOM_ATTRIBUTES_TOKENS.CLASS_ACTIVE, button.dataset.workspace === workspace);
     });

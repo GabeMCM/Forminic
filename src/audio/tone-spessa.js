@@ -34,6 +34,8 @@ let spessaSynth = null;
 let spessaLoading = null;
 const spessaPrograms = new Map();
 const spessaTimers = new Map();
+const spessaStartTimers = new Map();
+const activeSpessaNotes = new Set();
 const MIN_SCHEDULE_AHEAD = 0.025;
 const SPESSA_WORKLET_URL = '/vendor/spessasynth_processor.min.js';
 const SOUNDFONT_URLS = ['/soundfonts/forminic.sf3', '/soundfonts/forminic.sf2'];
@@ -216,15 +218,19 @@ export const toneSpessaEngine = {
       const delay = Math.max(MIN_SCHEDULE_AHEAD, (scheduledAt ?? currentTime) - currentTime);
       const channel = spessaChannelFor(program);
       const noteKey = `${channel}:${midi}`;
+      window.clearTimeout(spessaStartTimers.get(noteKey));
       window.clearTimeout(spessaTimers.get(noteKey));
-      window.setTimeout(() => {
+      spessaStartTimers.set(noteKey, window.setTimeout(() => {
+        spessaStartTimers.delete(noteKey);
         selectSpessaProgram(channel, program);
         spessaSynth.noteOff(channel, midi);
         spessaSynth.noteOn(channel, midi, Math.max(1, Math.min(108, Math.round(velocity * level * 118))));
-      }, delay * 1000);
+        activeSpessaNotes.add(noteKey);
+      }, delay * 1000));
       const length = preset.duration === Infinity ? 18 : Math.min(8, preset.duration || 4);
       spessaTimers.set(noteKey, window.setTimeout(() => {
         spessaSynth?.noteOff?.(channel, midi);
+        activeSpessaNotes.delete(noteKey);
         spessaTimers.delete(noteKey);
       }, (delay + length) * 1000));
       return { tone: true, spessa: true, channel, midi, startedAt: scheduledAt ?? currentTime, bendRatio: 1 };
@@ -276,9 +282,12 @@ export const toneSpessaEngine = {
     }
     if (voice.spessa) {
       const noteKey = `${voice.channel ?? 0}:${voice.midi}`;
+      window.clearTimeout(spessaStartTimers.get(noteKey));
+      spessaStartTimers.delete(noteKey);
       window.clearTimeout(spessaTimers.get(noteKey));
       spessaTimers.delete(noteKey);
       spessaSynth?.noteOff?.(voice.channel ?? 0, voice.midi);
+      activeSpessaNotes.delete(noteKey);
       return;
     }
     const time = Tone.now();
@@ -302,6 +311,7 @@ export const toneSpessaEngine = {
     if (voice.spessa) {
       const semitones = 12 * Math.log2(ratio);
       spessaSynth?.pitchWheel?.(voice.channel ?? 0, Math.max(0, Math.min(16383, Math.round(8192 + (semitones / 2) * 8192))));
+      voice.bendRatio = ratio;
       return;
     }
     const cents = 1200 * Math.log2(ratio);
@@ -338,6 +348,13 @@ export const toneSpessaEngine = {
     }
     spessaTimers.forEach(timer => window.clearTimeout(timer));
     spessaTimers.clear();
+    spessaStartTimers.forEach(timer => window.clearTimeout(timer));
+    spessaStartTimers.clear();
+    activeSpessaNotes.forEach(noteKey => {
+      const [channel, midi] = noteKey.split(':').map(Number);
+      try { spessaSynth?.noteOff?.(channel, midi); } catch (_) {}
+    });
+    activeSpessaNotes.clear();
     spessaPrograms.clear();
     try { sampledPiano?.releaseAll?.(); } catch (_) {}
   },

@@ -388,8 +388,10 @@ export const events = {
     });
 
     document.querySelectorAll("[data-workspace]").forEach(btn => {
-      btn.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
-        store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, btn.dataset.workspace);
+      btn.addEventListener(DOM_EVENTS_TOKENS.CLICK, event => {
+        const button = event.target.closest("[data-workspace]");
+        if (!button?.dataset.workspace) return;
+        store.dispatch(STATE_ACTION_TOKENS.SET_WORKSPACE, button.dataset.workspace);
         renderer.updateUI();
       });
     });

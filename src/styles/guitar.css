@@ -1,0 +1,788 @@
+.guitar-workspace {
+  display: grid;
+  gap: 22px;
+  --guitar-wood: #7a4526;
+  --guitar-wood-dark: #2a1711;
+  --guitar-cream: color-mix(in srgb, var(--paper) 92%, #f2e1ba 8%);
+  --guitar-glow: 0 24px 70px rgba(0, 0, 0, .18);
+}
+
+.guitar-workspace[hidden] {
+  display: none !important;
+}
+
+.guitar-head,
+.guitar-timeline-head,
+.guitar-card-head,
+.guitar-panel header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guitar-head h2 {
+  margin: 0;
+  font-size: clamp(34px, 5vw, 72px);
+  line-height: .88;
+  letter-spacing: -.06em;
+}
+
+.guitar-head h2 em {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.guitar-transport {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.guitar-transport label,
+.guitar-inspector-card label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.guitar-transport input,
+.guitar-transport select,
+.guitar-inspector-card input,
+.guitar-inspector-card select,
+.guitar-tuning-row input,
+.guitar-tuning-row select {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--guitar-cream);
+  color: var(--ink);
+  padding: 0 9px;
+  font: inherit;
+  outline: none;
+}
+
+.guitar-transport input:focus,
+.guitar-transport select:focus,
+.guitar-inspector-card input:focus,
+.guitar-inspector-card select:focus,
+.guitar-tuning-row input:focus,
+.guitar-tuning-row select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent);
+}
+
+.guitar-transport output {
+  min-width: 76px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.guitar-grid {
+  display: grid;
+  grid-template-columns: minmax(190px, 220px) minmax(0, 1fr) minmax(210px, 240px);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.guitar-panel,
+.guitar-fretboard-card,
+.guitar-action-card,
+.guitar-timeline-wrap {
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--gold) 16%, transparent), transparent 32%),
+    linear-gradient(135deg, color-mix(in srgb, var(--paper) 95%, var(--ink) 5%), color-mix(in srgb, var(--paper) 88%, var(--gold) 12%));
+  box-shadow: var(--guitar-glow);
+}
+
+.guitar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.guitar-panel header {
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.guitar-panel header:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.guitar-panel header span,
+.guitar-card-head span,
+.guitar-timeline-head span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .18em;
+}
+
+.guitar-panel header strong,
+.guitar-card-head strong,
+.guitar-timeline-head strong {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.guitar-tuning,
+.guitar-library,
+.guitar-inspector {
+  display: grid;
+  gap: 8px;
+}
+
+.guitar-tuning-row {
+  display: grid;
+  grid-template-columns: 1fr 62px 56px;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.guitar-library-card {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.guitar-library-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--gold) 60%, var(--line));
+}
+
+.guitar-library-card strong {
+  font-size: 12px;
+}
+
+.guitar-library-card span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.guitar-library-card.active {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 28%, transparent), color-mix(in srgb, var(--paper) 78%, transparent));
+}
+
+.guitar-stage {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 18px;
+  min-width: 0;
+}
+
+.guitar-fretboard-card,
+.guitar-action-card {
+  min-height: 260px;
+  padding: 16px;
+  overflow: visible;
+}
+
+.guitar-fretboard {
+  display: grid;
+  grid-template-rows: auto repeat(6, minmax(46px, 1fr));
+  gap: 8px;
+  position: relative;
+  min-height: 360px;
+  overflow-x: auto;
+  height: auto;
+  margin-top: 18px;
+  margin-left: 0;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255, 255, 255, .1), transparent 36%),
+    linear-gradient(90deg, var(--guitar-wood-dark), var(--guitar-wood) 45%, #3a2116);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, .32);
+}
+
+.guitar-fret-grid-head,
+.guitar-fret-grid-row {
+  display: grid;
+  grid-template-columns: 64px repeat(12, minmax(42px, 1fr));
+  min-width: 620px;
+  gap: 7px;
+  align-items: stretch;
+}
+
+.guitar-fret-grid-head span,
+.guitar-fret-grid-head b {
+  display: grid;
+  place-items: center;
+  min-height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  color: #f8f2dd;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
+.guitar-fret-box {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff4d8;
+  cursor: pointer;
+}
+
+.guitar-fret-box strong {
+  font-size: 11px;
+}
+
+.guitar-fret-box span {
+  color: rgba(255, 255, 255, .58);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.guitar-fret-box:hover,
+.guitar-fret-box.active {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 82%, #fff 18%);
+  color: #21190b;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 24%, transparent);
+}
+
+.guitar-fret-nut {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 12px;
+  background: #d8d1bf;
+  z-index: 3;
+}
+
+.guitar-string-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc((var(--string) - 1) * 16.5% + 5%);
+  height: 24px;
+}
+
+.guitar-string-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, #eee, #777, #fff);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .45);
+  pointer-events: none;
+}
+
+.guitar-string-state {
+  display: grid;
+  place-items: center;
+  gap: 1px;
+  position: static;
+  width: auto;
+  height: auto;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--guitar-cream);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 950;
+}
+
+.guitar-string-state span {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.guitar-string-state.muted {
+  color: #ff6464;
+}
+
+.guitar-fret-hit {
+  position: absolute;
+  top: 50%;
+  left: calc((var(--fret) - .5) * (100% / 23));
+  z-index: 4;
+  width: calc(100% / 23);
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.guitar-fret-hit:hover {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+}
+
+.guitar-fret-hit.active {
+  background: var(--gold);
+  color: #18120a;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 24%, transparent);
+}
+
+.guitar-fret-hit small {
+  font-size: 8px;
+  font-weight: 950;
+}
+
+.guitar-action-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 12px;
+  position: relative;
+  min-height: 390px;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 92%, #000 8%), color-mix(in srgb, var(--paper) 82%, #000 18%));
+  overflow: hidden;
+}
+
+.guitar-action-blocks {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.guitar-action-block {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  flex: 0 0 184px;
+  min-height: 336px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  cursor: pointer;
+}
+
+.guitar-action-block.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 20%, transparent);
+}
+
+.guitar-action-block header,
+.guitar-action-block footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.guitar-action-block header strong {
+  color: var(--gold);
+}
+
+.guitar-action-boxes {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.guitar-action-string-card {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 7px;
+  align-items: stretch;
+}
+
+.guitar-action-box {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--paper) 88%, #000 12%);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.guitar-action-string-card.selected .guitar-action-box {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #191307;
+}
+
+.guitar-action-string-card label {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: .1em;
+}
+
+.guitar-action-string-card input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 92%, #000 8%);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 900;
+  padding: 0 6px;
+}
+
+.guitar-action-box span {
+  color: currentColor;
+  font-size: 8px;
+  opacity: .72;
+}
+
+.guitar-add-action-block {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  flex: 0 0 150px;
+  min-height: 336px;
+  border: 1px dashed color-mix(in srgb, var(--gold) 60%, var(--line));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+
+.guitar-add-action-block span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 18px;
+}
+
+.guitar-action-gap-panel {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+  border-left: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 82%, #000 18%);
+}
+
+.guitar-action-gap-panel header {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+
+.guitar-action-gap-panel header strong {
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.guitar-gap-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0 10px;
+  font-size: 9px;
+  font-weight: 950;
+}
+
+.guitar-gap-row.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.guitar-action-strings {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  padding: 10px 0;
+}
+
+.guitar-action-string {
+  position: relative;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: left;
+  transition: background .16s ease;
+}
+
+.guitar-action-string:hover {
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+}
+
+.guitar-action-string span {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.guitar-action-string i {
+  position: absolute;
+  left: 48px;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  opacity: .28;
+}
+
+.guitar-action-event {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 5;
+  min-width: 48px;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 72%, var(--gold) 28%));
+  color: var(--paper);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.guitar-action-event.active {
+  background: var(--gold);
+  color: #15120a;
+}
+
+.guitar-action-event strong,
+.guitar-action-event span {
+  display: block;
+  font-size: 8px;
+  line-height: 1.1;
+}
+
+.guitar-inspector-card {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+}
+
+.guitar-inspector-card span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .16em;
+}
+
+.guitar-timeline-wrap {
+  padding: 14px;
+  overflow: hidden;
+}
+
+.guitar-timeline {
+  position: relative;
+  height: 230px;
+  margin-top: 12px;
+  overflow: auto hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px) 142px 0 / 120px 100%,
+    color-mix(in srgb, var(--paper) 88%, #000 12%);
+}
+
+.guitar-time-ruler {
+  position: relative;
+  height: 34px;
+  border-bottom: 1px solid var(--line);
+}
+
+.guitar-time-ruler span {
+  position: absolute;
+  top: 10px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.guitar-track {
+  position: relative;
+  height: 88px;
+  border-bottom: 1px solid var(--line);
+}
+
+.guitar-track > strong {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  display: inline-grid;
+  place-items: center;
+  width: 142px;
+  height: 100%;
+  background: color-mix(in srgb, var(--paper) 94%, var(--ink) 6%);
+  border-right: 1px solid var(--line);
+  font-size: 9px;
+  letter-spacing: .14em;
+}
+
+.guitar-block {
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  min-width: 36px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--gold) 22%, var(--ink) 12%);
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .15);
+}
+
+.guitar-track[data-track="rightHandTrack"] .guitar-block {
+  background: color-mix(in srgb, var(--acid-dark) 20%, var(--ink) 10%);
+}
+
+.guitar-block.active {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.guitar-block button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: grab;
+  font-size: 10px;
+  font-weight: 950;
+  text-align: left;
+}
+
+.guitar-block i,
+.guitar-block b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 9px;
+  background: color-mix(in srgb, var(--ink) 35%, transparent);
+  cursor: ew-resize;
+}
+
+.guitar-block i {
+  left: 0;
+}
+
+.guitar-block b {
+  right: 0;
+}
+
+.guitar-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  width: 2px;
+  background: #ff5a5a;
+  box-shadow: 0 0 12px rgba(255, 90, 90, .7);
+  pointer-events: none;
+}
+
+.guitar-danger-button {
+  min-height: 34px;
+  border: 1px solid color-mix(in srgb, #ff6b6b 55%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, #ff6b6b 12%, transparent);
+  color: color-mix(in srgb, #ff6b6b 78%, var(--ink));
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+
+.guitar-danger-button:hover {
+  background: color-mix(in srgb, #ff6b6b 22%, transparent);
+}
+
+@media (max-width: 1100px) {
+  .guitar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guitar-head,
+  .guitar-transport {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .guitar-action-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .guitar-action-gap-panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .guitar-fret-grid-head,
+  .guitar-fret-grid-row {
+    grid-template-columns: 64px repeat(12, minmax(38px, 1fr));
+  }
+}

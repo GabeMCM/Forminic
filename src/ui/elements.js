@@ -42,6 +42,7 @@ export const elements = {
   themeToggle: document.querySelector(UI_SELECTORS.themeToggle),
   themeLabel: document.querySelector(UI_SELECTORS.themeLabel),
   composerWorkspace: document.querySelector(UI_SELECTORS.composerWorkspace),
+  guitarWorkspace: document.querySelector(UI_SELECTORS.guitarWorkspace),
   performanceWorkspace: document.querySelector(UI_SELECTORS.performanceWorkspace),
   rhythmWorkspace: document.querySelector(UI_SELECTORS.rhythmWorkspace),
   performanceMemoryGrid: document.querySelector(UI_SELECTORS.performanceMemoryGrid),

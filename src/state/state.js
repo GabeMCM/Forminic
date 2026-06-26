@@ -166,6 +166,12 @@ function loadSmartLinks() {
 
 const listeners = new Set();
 const actionListeners = new Map();
+const VALID_WORKSPACES = [
+  GLOBAL_TOKENS.WORKSPACE_COMPOSER,
+  GLOBAL_TOKENS.WORKSPACE_GUITAR,
+  GLOBAL_TOKENS.WORKSPACE_PERFORMANCE,
+  GLOBAL_TOKENS.WORKSPACE_RHYTHM,
+];
 
 const initialState = {
   bindings: loadBindings(),
@@ -207,7 +213,7 @@ const initialState = {
   nextStepAt: 0,
   manualTimers: new Map(),
   editingMemory: null,
-  workspace: [GLOBAL_TOKENS.WORKSPACE_PERFORMANCE, GLOBAL_TOKENS.WORKSPACE_RHYTHM].includes(storage.get(STORAGE_KEYS.WORKSPACE))
+  workspace: VALID_WORKSPACES.includes(storage.get(STORAGE_KEYS.WORKSPACE))
     ? storage.get(STORAGE_KEYS.WORKSPACE)
     : GLOBAL_TOKENS.WORKSPACE_COMPOSER,
   performanceMemories: loadPerformanceMemories(),
@@ -276,8 +282,8 @@ export const store = {
         changed = true;
         break;
       case STATE_ACTION_TOKENS.SET_WORKSPACE:
-        this.state.workspace = payload;
-        storage.set(STORAGE_KEYS.WORKSPACE, payload);
+        this.state.workspace = VALID_WORKSPACES.includes(payload) ? payload : GLOBAL_TOKENS.WORKSPACE_COMPOSER;
+        storage.set(STORAGE_KEYS.WORKSPACE, this.state.workspace);
         changed = true;
         break;
       case STATE_ACTION_TOKENS.SET_SOUND_SET:

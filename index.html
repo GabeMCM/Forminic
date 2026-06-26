@@ -75,8 +75,12 @@
           <span>02</span>
           RITMO / BASE
         </button>
-        <button class="workspace-tab" data-workspace="performance" type="button">
+        <button class="workspace-tab" data-workspace="guitar" type="button">
           <span>03</span>
+          VIOLÃO
+        </button>
+        <button class="workspace-tab" data-workspace="performance" type="button">
+          <span>04</span>
           APRESENTAÇÃO
         </button>
       </nav>
@@ -130,6 +134,7 @@
         <nav class="mobile-mode-nav">
           <button class="active" data-workspace="composer" type="button"><span>◌</span>COMPOR</button>
           <button data-workspace="rhythm" type="button"><span>≋</span>RITMO</button>
+          <button data-workspace="guitar" type="button"><span>≀</span>VIOLÃO</button>
           <button data-workspace="performance" type="button"><span>◉</span>TOCAR</button>
         </nav>
       </section>
@@ -243,6 +248,66 @@
           </div>
           <div class="performance-effects-grid" id="performanceEffectsGrid"></div>
         </div>
+      </section>
+
+      <section class="instrument guitar-workspace" id="guitarWorkspace" aria-label="Compositor de violão" hidden>
+        <header class="guitar-head">
+          <div>
+            <p class="eyebrow">COMPOSITOR DE VIOLÃO</p>
+            <h2>Molde cordas.<br /><em>Escreva gestos.</em></h2>
+          </div>
+          <div class="guitar-transport">
+            <button class="primary-button" id="guitarPlay" type="button">PLAY</button>
+            <button class="secondary-button" id="guitarStop" type="button">STOP</button>
+            <label><span>BPM</span><input id="guitarBpm" type="number" min="40" max="240" value="96" /></label>
+            <label><span>SNAP</span><select id="guitarSnap"><option value="10">10ms</option><option value="25">25ms</option><option value="50">50ms</option><option value="100" selected>100ms</option><option value="250">250ms</option></select></label>
+            <output id="guitarTime">0.00s</output>
+          </div>
+        </header>
+
+        <div class="guitar-grid">
+          <aside class="guitar-panel">
+            <header><span>AFINAÇÃO</span><strong>Cordas configuráveis</strong></header>
+            <div class="guitar-tuning" id="guitarTuning"></div>
+            <header><span>SHAPES</span><strong>Mão esquerda</strong></header>
+            <div class="guitar-library" id="guitarShapes"></div>
+            <button class="secondary-button" id="guitarAddShape" type="button">+ SHAPE</button>
+          </aside>
+
+          <div class="guitar-stage">
+            <section class="guitar-fretboard-card">
+              <div class="guitar-card-head">
+                <span>BRAÇO ESQUERDO</span>
+                <strong id="guitarActiveShapeName">C Maior</strong>
+              </div>
+              <div class="guitar-fretboard" id="guitarFretboard"></div>
+            </section>
+
+            <section class="guitar-action-card">
+              <div class="guitar-card-head">
+                <span>TRACKER DE AÇÃO</span>
+                <strong id="guitarActivePatternName">Pop dedilhado</strong>
+              </div>
+              <div class="guitar-action-editor" id="guitarActionEditor"></div>
+            </section>
+          </div>
+
+          <aside class="guitar-panel">
+            <header><span>PADRÕES</span><strong>Mão direita</strong></header>
+            <div class="guitar-library" id="guitarPatterns"></div>
+            <button class="secondary-button" id="guitarAddPattern" type="button">+ PADRÃO</button>
+            <header><span>INSPECTOR</span><strong>Tempo e técnica</strong></header>
+            <div class="guitar-inspector" id="guitarInspector"></div>
+          </aside>
+        </div>
+
+        <section class="guitar-timeline-wrap">
+          <div class="guitar-timeline-head">
+            <span>TIMELINE</span>
+            <strong>Mão esquerda e mão direita se comunicam pelo tempo</strong>
+          </div>
+          <div class="guitar-timeline" id="guitarTimeline"></div>
+        </section>
       </section>
 
       <section class="instrument performance-workspace" id="performanceWorkspace" aria-label="Campo de apresentação" hidden>
@@ -673,6 +738,6 @@
       </form>
     </dialog>
 
-    <script type="module" src="src/main.js"></script>
+    <script type="module" src="src/main.ts"></script>
   </body>
 </html>
