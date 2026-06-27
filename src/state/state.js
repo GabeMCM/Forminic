@@ -181,7 +181,6 @@ const listeners = new Set();
 const actionListeners = new Map();
 const VALID_WORKSPACES = [
   GLOBAL_TOKENS.WORKSPACE_COMPOSER,
-  GLOBAL_TOKENS.WORKSPACE_GUITAR,
   GLOBAL_TOKENS.WORKSPACE_PERFORMANCE,
   GLOBAL_TOKENS.WORKSPACE_RHYTHM,
 ];
@@ -289,6 +288,10 @@ export const store = {
         break;
       case STATE_ACTION_TOKENS.REMOVE_DEGREE:
         this.state.degrees.delete(payload);
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_DEGREES:
+        this.state.degrees = new Set(payload);
         changed = true;
         break;
       case STATE_ACTION_TOKENS.SET_OCTAVE:
@@ -439,7 +442,120 @@ export const store = {
         changed = true;
         break;
       }
-      // Adicionar mais handlers conforme necessário
+      case STATE_ACTION_TOKENS.SET_PENDING_CAPTURE:
+        this.state.pendingCapture = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_EDITING_MEMORY:
+        this.state.editingMemory = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_REMAPPING:
+        this.state.remapping = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_PENDING_SHORTCUT:
+        this.state.pendingShortcut = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_CURRENT_MEMORY_INDEX:
+        this.state.currentMemoryIndex = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_SMART_POSITION:
+        this.state.smartPosition = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.ADD_SET:
+        this.state.sets.unshift(payload);
+        this.state.activeSetId = payload.id;
+        this.saveSets();
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.LOAD_SET: {
+        const set = this.state.sets.find(item => item.id === payload);
+        if (set) {
+          const cloneSlots = (slots, length) => Array.from({ length }, (_, i) => slots[i] ? JSON.parse(JSON.stringify(slots[i])) : null);
+          this.state.performanceMemories = cloneSlots(set.notes, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
+          this.state.baseMemories = cloneSlots(set.bases, GLOBAL_TOKENS.MAX_BASE_SLOTS);
+          this.state.activeSetId = payload;
+          this.state.activePerformanceSlot = null;
+          this.savePerformanceMemories();
+          this.saveBaseMemories();
+          this.saveSets();
+          changed = true;
+        }
+        break;
+      }
+      case STATE_ACTION_TOKENS.UPDATE_ACTIVE_SET: {
+        const activeSet = this.state.sets.find(item => item.id === this.state.activeSetId);
+        if (activeSet) {
+          const cloneSlots = (slots, length) => Array.from({ length }, (_, i) => slots[i] ? JSON.parse(JSON.stringify(slots[i])) : null);
+          activeSet.notes = cloneSlots(this.state.performanceMemories, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
+          activeSet.bases = cloneSlots(this.state.baseMemories, GLOBAL_TOKENS.MAX_BASE_SLOTS);
+          activeSet.updatedAt = Date.now();
+          this.saveSets();
+          changed = true;
+        }
+        break;
+      }
+      case STATE_ACTION_TOKENS.DELETE_SET:
+        this.state.sets = this.state.sets.filter(item => item.id !== payload);
+        if (this.state.activeSetId === payload) this.state.activeSetId = null;
+        this.saveSets();
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.REORDER_SET: {
+        const { draggedId, targetId } = payload;
+        if (draggedId && targetId && draggedId !== targetId) {
+          const fromIndex = this.state.sets.findIndex(s => s.id === draggedId);
+          const toIndex = this.state.sets.findIndex(s => s.id === targetId);
+          if (fromIndex >= 0 && toIndex >= 0) {
+            const [moved] = this.state.sets.splice(fromIndex, 1);
+            this.state.sets.splice(toIndex, 0, moved);
+            this.saveSets();
+            changed = true;
+          }
+        }
+        break;
+      }
+      case STATE_ACTION_TOKENS.CLEAR_PERFORMANCE_MEMORY:
+        if (Number.isInteger(payload) && payload >= 0 && payload < this.state.performanceMemories.length) {
+          this.state.performanceMemories[payload] = null;
+          if (this.state.activePerformanceSlot === payload) this.state.activePerformanceSlot = null;
+          this.savePerformanceMemories();
+          changed = true;
+        }
+        break;
+      case STATE_ACTION_TOKENS.CLEAR_BASE_MEMORY:
+        if (Number.isInteger(payload) && payload >= 0 && payload < this.state.baseMemories.length) {
+          this.state.baseMemories[payload] = null;
+          this.saveBaseMemories();
+          changed = true;
+        }
+        break;
+      case STATE_ACTION_TOKENS.SET_NEXT_STEP_AT:
+        this.state.nextStepAt = payload;
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.RESET_BINDINGS:
+        this.state.bindings = { ...DEFAULT_BINDINGS };
+        this.state.remapping = null;
+        this.saveBindings();
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_BASE_VOICES:
+        this.state.baseVoices = payload || [];
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_PEDAL_ACTIVE:
+        this.state.pedalActive = Boolean(payload);
+        changed = true;
+        break;
+      case STATE_ACTION_TOKENS.SET_RHYTHM_VARIATION:
+        this.state.rhythmVariation = payload;
+        changed = true;
+        break;
       default:
         console.warn(STATE_MESSAGE_TOKENS.ERR_UNKNOWN_ACTION, actionType);
     }

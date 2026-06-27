@@ -5,6 +5,7 @@ import { renderer } from './renderer.js';
 import { events } from './events.js';
 import { audioEngine } from '../audio/engine.js';
 import { rhythmEngine } from '../audio/rhythm.js';
+import { STRING_TOKENS } from '../tokens/string.tokens.js';
 
 const root = document.querySelector('#mobileInstrument');
 const wheel = document.querySelector('#mobileWheel');
@@ -148,21 +149,21 @@ function render() {
   const rhythm = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM;
   const guitar = store.state.workspace === GLOBAL_TOKENS.WORKSPACE_GUITAR;
   root.dataset.mode = rhythm ? 'rhythm' : performance ? 'performance' : 'composer';
-  modeLabel.textContent = rhythm ? 'LABORATÓRIO DE RITMO' : performance ? 'CAMPO DE APRESENTAÇÃO' : guitar ? 'COMPOSITOR DE VIOLÃO' : 'CENTRO DE NOTAS';
-  centerOverline.textContent = rhythm ? 'RITMO ATUAL' : performance ? 'ACORDE ATUAL' : guitar ? 'VIOLÃO' : 'TÔNICA';
+  modeLabel.textContent = rhythm ? STRING_TOKENS.UI.RHYTHM_LAB : performance ? STRING_TOKENS.UI.PERFORMANCE_FIELD : guitar ? STRING_TOKENS.UI.GUITAR_COMPOSER : STRING_TOKENS.UI.NOTE_CENTER;
+  centerOverline.textContent = rhythm ? STRING_TOKENS.UI.CURRENT_RHYTHM : performance ? STRING_TOKENS.UI.CURRENT_CHORD : guitar ? STRING_TOKENS.UI.GUITAR : STRING_TOKENS.UI.TONIC;
   if (rhythm) {
     const preset = rhythmEngine.currentPreset();
     centerNote.textContent = preset.name;
-    centerShape.textContent = store.state.rhythmPlaying ? 'TOCANDO · TOQUE PARA PARAR' : `${preset.bpm} BPM · TOQUE PARA INICIAR`;
+    centerShape.textContent = store.state.rhythmPlaying ? STRING_TOKENS.UI.PLAYING_TOUCH_TO_STOP : `${preset.bpm} ${STRING_TOKENS.UI.BPM_TOUCH_TO_START}`;
   } else {
   centerNote.textContent = renderer.currentNoteName();
   centerShape.textContent = store.state.degrees.size
     ? renderer.memoryName([...store.state.degrees])
-    : 'TÔNICA PURA';
+    : STRING_TOKENS.UI.TONIC_PURE;
   }
   harmonyLabel.textContent = performance
-    ? `${store.state.performanceMemories.filter(Boolean).length} NOTAS PRONTAS`
-    : `OITAVA ${store.state.octave} · ${store.state.degrees.size} GRAUS`;
+    ? `${store.state.performanceMemories.filter(Boolean).length} ${STRING_TOKENS.UI.READY_NOTES}`
+    : `${STRING_TOKENS.UI.OCTAVE} ${store.state.octave} · ${store.state.degrees.size} ${STRING_TOKENS.UI.DEGREES}`;
   soundSelect.value = store.state.soundSet;
   addStageButton.hidden = performance || rhythm;
   root.querySelectorAll('[data-workspace]').forEach(button => {
@@ -172,7 +173,7 @@ function render() {
   mobilePedal?.classList.toggle('active', store.state.pedalActive);
   mobilePedal?.setAttribute('aria-pressed', String(store.state.pedalActive));
   const pedalLabel = mobilePedal?.querySelector('strong');
-  if (pedalLabel) pedalLabel.textContent = store.state.pedalActive ? 'PEDAL ON' : 'PEDAL OFF';
+  if (pedalLabel) pedalLabel.textContent = store.state.pedalActive ? STRING_TOKENS.UI.PEDAL_ON : STRING_TOKENS.UI.PEDAL_OFF;
   renderWheel();
   renderStrip();
 }
@@ -244,7 +245,7 @@ function handleWheelMove(event) {
       store.state.pointerActions.delete(event.pointerId);
       store.state.activeActions.delete(trackedAction);
     }
-    centerShape.textContent = 'ESCOLHA A PRÓXIMA NOTA';
+    centerShape.textContent = STRING_TOKENS.UI.CHOOSE_NEXT_NOTE;
     root.classList.add('wheel-armed');
     return;
   }

@@ -8,6 +8,7 @@ import { elements } from './elements.js';
 import { UI_EVENTS_TOKENS } from './events.tokens.js';
 import { KEYBOARD_TOKENS } from '../tokens/keyboard.tokens.js';
 import { DOM_EVENTS_TOKENS, DOM_ELEMENTS_TOKENS } from '../tokens/api.tokens.js';
+import { STRING_TOKENS } from '../tokens/string.tokens.js';
 
 export const events = {
   featureHandlers: null,
@@ -116,7 +117,7 @@ export const events = {
       if (event.shiftKey) {
         store.dispatch(STATE_ACTION_TOKENS.SET_FIELD_LETTER, notePosition);
         store.dispatch(STATE_ACTION_TOKENS.SET_FIELD_ACCIDENTAL, 0);
-      store.state.smartPosition = 0;
+      store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, 0);
       this.syncSmartField();
       return true;
     }
@@ -185,7 +186,7 @@ export const events = {
       store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_PERFORMANCE_SLOT, null);
       audioEngine.dampVoices(store.state.pedalActive ? 0.7 : 0.09);
       
-      store.state.smartPosition = position;
+      store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, position);
       const scaleNote = renderer.smartScale()[position];
       if (scaleNote) {
         store.dispatch(STATE_ACTION_TOKENS.SET_TONIC, scaleNote.pitch);
@@ -259,8 +260,8 @@ export const events = {
     if (!memory) return;
     if (store.state.workspace === GLOBAL_TOKENS.WORKSPACE_COMPOSER) store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_PERFORMANCE_SLOT, null);
     
-    store.state.degrees = new Set(memory.degrees);
-    store.state.currentMemoryIndex = index;
+    store.dispatch(STATE_ACTION_TOKENS.SET_DEGREES, memory.degrees);
+    store.dispatch(STATE_ACTION_TOKENS.SET_CURRENT_MEMORY_INDEX, index);
     if (playNote) {
       if (!store.state.pedalActive) audioEngine.dampVoices(0.15);
       audioEngine.strum(GLOBAL_TOKENS.ACTION_RHYTHM_DOWN);
@@ -330,8 +331,8 @@ export const events = {
       store.state.manualTimers.clear();
       store.state.activeActions.clear();
       store.state.actionsByPhysicalKey.clear();
-      store.state.pedalActive = false;
-      elements.soundState.textContent = "PÂNICO · ÁUDIO INTERROMPIDO";
+      store.dispatch(STATE_ACTION_TOKENS.SET_PEDAL_ACTIVE, false);
+      elements.soundState.textContent = STRING_TOKENS.UI.PANIC_AUDIO_STOPPED;
       renderer.updateUI();
     });
 
@@ -346,9 +347,9 @@ export const events = {
     const setSmartMode = enabled => {
       store.dispatch(STATE_ACTION_TOKENS.SET_SMART_MODE, enabled);
       if (store.state.smartMode) {
-        store.state.smartPosition = 0;
+        store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, 0);
       } else {
-        store.state.smartPosition = null;
+        store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, null);
       }
       renderer.renderKeys();
       renderer.updateUI();

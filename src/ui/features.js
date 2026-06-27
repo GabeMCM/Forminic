@@ -6,6 +6,7 @@ import { GLOBAL_TOKENS, MUSIC_TOKENS, DEFAULT_BINDINGS, PERFORMANCE_EFFECTS } fr
 import { elements } from './elements.js';
 import { rhythmEngine } from '../audio/rhythm.js';
 import { RHYTHM_TOKENS } from '../audio/rhythm.tokens.js';
+import { STRING_TOKENS } from '../tokens/string.tokens.js';
 import { events } from './events.js';
 import { DOM_EVENTS_TOKENS } from '../tokens/api.tokens.js';
 
@@ -41,9 +42,8 @@ export const features = {
       elements.soundState.textContent = STATE_MESSAGE_TOKENS.ERR_NO_TONIC;
       return;
     }
-    store.state.performanceMemories[index] = { ...snapshot };
-    store.savePerformanceMemories();
-    renderer.renderPerformanceMemories();
+    store.dispatch(STATE_ACTION_TOKENS.SAVE_PERFORMANCE_MEMORY, { index, memory: snapshot });
+    
     elements.soundState.textContent = `${STATE_MESSAGE_TOKENS.MSG_PERFORMANCE} ${index + 1} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${store.state.performanceMemories[index].displayName}`;
   },
 
@@ -64,9 +64,8 @@ export const features = {
     }
     const snapshot = store.state.pendingCapture || this.currentCaptureSnapshot();
     if (!snapshot) return;
-    store.state.baseMemories[nextIndex] = { ...snapshot };
-    store.saveBaseMemories();
-    renderer.renderBaseMemories();
+    store.dispatch(STATE_ACTION_TOKENS.SAVE_BASE_MEMORY, { index: nextIndex, memory: snapshot });
+    
     elements.soundState.textContent = `${STATE_MESSAGE_TOKENS.MSG_BASE} ${nextIndex + 1} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${snapshot.displayName}`;
   },
 
@@ -79,15 +78,15 @@ export const features = {
       elements.soundState.textContent = STATE_MESSAGE_TOKENS.ERR_ALL_FULL;
       return;
     }
-    store.state.pendingCapture = snapshot;
+    store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, snapshot);
     if (!baseFree) {
       this.captureInNextPerformanceSlot();
-      store.state.pendingCapture = null;
+      store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
       return;
     }
     if (!noteFree) {
       this.captureInNextBaseSlot();
-      store.state.pendingCapture = null;
+      store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
       return;
     }
     elements.captureDialogNote.textContent = `${snapshot.displayName} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${STATE_MESSAGE_TOKENS.MSG_OCTAVE} ${snapshot.octave}`;
@@ -119,10 +118,7 @@ export const features = {
       createdAt: now,
       updatedAt: now,
     };
-    store.state.sets.unshift(set);
-    store.state.activeSetId = set.id;
-    store.saveSets();
-    renderer.renderSets();
+    store.dispatch(STATE_ACTION_TOKENS.ADD_SET, set);
     elements.soundState.textContent = `${STATE_MESSAGE_TOKENS.MSG_SET_SAVED} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${set.name}`;
   },
 
@@ -130,37 +126,21 @@ export const features = {
     const set = store.state.sets.find(item => item.id === id);
     if (!set) return;
     this.stopBase();
-    store.state.performanceMemories = this.cloneSlots(set.notes, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
-    store.state.baseMemories = this.cloneSlots(set.bases, 10);
-    store.state.activeSetId = id;
-    store.state.activePerformanceSlot = null;
-    store.savePerformanceMemories();
-    store.saveBaseMemories();
-    store.saveSets();
-    renderer.renderPerformanceMemories();
-    renderer.renderBaseMemories();
-    renderer.renderSets();
+    store.dispatch(STATE_ACTION_TOKENS.LOAD_SET, id);
     elements.soundState.textContent = `${STATE_MESSAGE_TOKENS.MSG_SET_LOADED} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${set.name}`;
   },
 
   updateActiveSet() {
     const set = store.state.sets.find(item => item.id === store.state.activeSetId);
     if (!set) return;
-    set.notes = this.cloneSlots(store.state.performanceMemories, GLOBAL_TOKENS.MAX_PERFORMANCE_SLOTS);
-    set.bases = this.cloneSlots(store.state.baseMemories, 10);
-    set.updatedAt = Date.now();
-    store.saveSets();
-    renderer.renderSets();
+    store.dispatch(STATE_ACTION_TOKENS.UPDATE_ACTIVE_SET);
     elements.soundState.textContent = `${STATE_MESSAGE_TOKENS.MSG_SET_UPDATED} ${STATE_MESSAGE_TOKENS.SEPARATOR_DOT} ${set.name}`;
   },
 
   deleteSet(id) {
     const set = store.state.sets.find(item => item.id === id);
     if (!set) return;
-    store.state.sets = store.state.sets.filter(item => item.id !== id);
-    if (store.state.activeSetId === id) store.state.activeSetId = null;
-    store.saveSets();
-    renderer.renderSets();
+    store.dispatch(STATE_ACTION_TOKENS.DELETE_SET, id);
     elements.soundState.textContent = `CONJUNTO EXCLUÍDO · ${set.name}`;
   },
 
@@ -169,10 +149,7 @@ export const features = {
     const fromIndex = store.state.sets.findIndex(set => set.id === draggedId);
     const toIndex = store.state.sets.findIndex(set => set.id === targetId);
     if (fromIndex < 0 || toIndex < 0) return;
-    const [moved] = store.state.sets.splice(fromIndex, 1);
-    store.state.sets.splice(toIndex, 0, moved);
-    store.saveSets();
-    renderer.renderSets();
+    store.dispatch(STATE_ACTION_TOKENS.REORDER_SET, { draggedId, targetId });
     elements.soundState.textContent = `ORDEM ATUALIZADA · ${moved.name}`;
   },
 
@@ -203,8 +180,7 @@ export const features = {
 
   stopBase() {
     if (!audioEngine.ctx || !store.state.baseVoices.length) {
-      store.state.activeBaseSlot = null;
-      renderer.renderBaseMemories();
+      store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_BASE_SLOT, null);
       return;
     }
     const now = audioEngine.ctx.currentTime;
@@ -213,9 +189,8 @@ export const features = {
       gain.gain.setTargetAtTime(0.0001, now, 0.16);
       oscillators.forEach(oscillator => oscillator.stop(now + 0.9));
     });
-    store.state.baseVoices = [];
-    store.state.activeBaseSlot = null;
-    window.setTimeout(() => renderer.renderBaseMemories(), 40);
+    store.dispatch(STATE_ACTION_TOKENS.SET_BASE_VOICES, []);
+    store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_BASE_SLOT, null);
   },
 
   startBase(index) {
@@ -227,7 +202,7 @@ export const features = {
     const notes = this.baseMidiNotes(item);
     const soundSet = MUSIC_TOKENS.SOUND_SETS[store.state.soundSet] || MUSIC_TOKENS.SOUND_SETS.piano;
 
-    store.state.baseVoices = notes.map((midi, noteIndex) => {
+    const baseVoices = notes.map((midi, noteIndex) => {
       const gain = audioEngine.ctx.createGain();
       const filter = audioEngine.ctx.createBiquadFilter();
       const pan = audioEngine.ctx.createStereoPanner();
@@ -254,15 +229,15 @@ export const features = {
       filter.connect(gain).connect(pan).connect(audioEngine.master);
       return { oscillators, gain };
     });
+    store.dispatch(STATE_ACTION_TOKENS.SET_BASE_VOICES, baseVoices);
 
-    store.state.activeBaseSlot = index;
-    renderer.renderBaseMemories();
+    store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_BASE_SLOT, index);
     elements.soundState.textContent = `BASE · ${item.displayName}`;
   },
 
   toggleBaseMemory(index) {
     if (!store.state.baseMemories[index]) {
-      elements.soundState.textContent = `BASE ${index + 1} VAZIA`;
+      elements.soundState.textContent = `${STRING_TOKENS.UI.BASE_EMPTY} ${index + 1}`;
       return;
     }
     if (store.state.activeBaseSlot === index) this.stopBase();
@@ -272,19 +247,16 @@ export const features = {
   recallPerformanceMemory(index) {
     const item = store.state.performanceMemories[index];
     if (!item) {
-      elements.soundState.textContent = `NOTA ${index + 1} VAZIA`;
+      elements.soundState.textContent = `${STRING_TOKENS.UI.NOTE_EMPTY} ${index + 1}`;
       return;
     }
     audioEngine.dampVoices(store.state.pedalActive ? 0.85 : 0.32);
-    store.state.tonic = item.tonic;
-    store.state.octave = item.octave;
-    store.state.degrees = new Set(item.degrees);
-    store.state.currentMemoryIndex = item.memoryIndex;
-    store.state.smartPosition = null;
-    store.state.activePerformanceSlot = index;
-    renderer.updateUI();
-    renderer.renderPerformanceMemories();
-    renderer.updateStageCurrent();
+    store.dispatch(STATE_ACTION_TOKENS.SET_TONIC, item.tonic);
+    store.dispatch(STATE_ACTION_TOKENS.SET_OCTAVE, item.octave);
+    store.dispatch(STATE_ACTION_TOKENS.SET_DEGREES, item.degrees);
+    store.dispatch(STATE_ACTION_TOKENS.SET_CURRENT_MEMORY_INDEX, item.memoryIndex);
+    store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, null);
+    store.dispatch(STATE_ACTION_TOKENS.SET_ACTIVE_PERFORMANCE_SLOT, index);
     
     // Play the note immediately if the pedal is active or if we just want it to trigger on press
     audioEngine.strum(GLOBAL_TOKENS.ACTION_RHYTHM_DOWN);
@@ -295,14 +267,14 @@ export const features = {
   openMemoryDialog(index, renameOnly) {
     const memory = store.state.memories[index];
     if (!renameOnly && !store.state.degrees.size) {
-      elements.soundState.textContent = "ESCOLHA AO MENOS UM GRAU";
+      elements.soundState.textContent = STRING_TOKENS.UI.CHOOSE_AT_LEAST_ONE_DEGREE;
       return;
     }
     if (renameOnly && !memory) return;
 
     const degrees = renameOnly ? memory.degrees : [...store.state.degrees].slice(0, 4);
-    store.state.editingMemory = { index, degrees };
-    elements.memoryDialogTitle.textContent = renameOnly ? `Renomear memória ${index + 1}` : `Salvar memória ${index + 1}`;
+    store.dispatch(STATE_ACTION_TOKENS.SET_EDITING_MEMORY, { index, degrees });
+    elements.memoryDialogTitle.textContent = renameOnly ? `${STRING_TOKENS.UI.RENAME_MEMORY} ${index + 1}` : `${STRING_TOKENS.UI.SAVE_MEMORY} ${index + 1}`;
     elements.memoryDialogDegrees.textContent = `FORMA · ${renderer.memoryName(degrees)}`;
     elements.memoryNameInput.value = memory?.name || renderer.memoryName(degrees);
     elements.memoryDialog.showModal();
@@ -313,15 +285,11 @@ export const features = {
   },
 
   storeMemory(index, degrees, name) {
-    store.state.memories[index] = {
+    store.dispatch(STATE_ACTION_TOKENS.SAVE_MEMORY, { index, memory: {
       name: name.trim() || renderer.memoryName(degrees),
       degrees,
-    };
-    store.saveMemories();
-    renderer.renderMemories();
-    renderer.renderTonicLinks();
-    renderer.updateUI();
-    elements.soundState.textContent = `MEMÓRIA ${index + 1} SALVA · ${store.state.memories[index].name}`;
+    }});
+    elements.soundState.textContent = `${STRING_TOKENS.UI.MEMORY_SAVED} ${index + 1} · ${store.state.memories[index].name}`;
   },
 
   renderMappings() {
@@ -392,23 +360,19 @@ export const features = {
   },
 
   beginShortcutCapture(action) {
-    if (false && store.state.smartMode) {
-      elements.soundState.textContent = "NO MODO CAMPO, O TECLADO É FIXO";
-      return;
-    }
-    store.state.remapping = action;
-    store.state.pendingShortcut = null;
+    store.dispatch(STATE_ACTION_TOKENS.SET_REMAPPING, action);
+    store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_SHORTCUT, null);
     store.state.remapModifierCodes.clear();
     elements.shortcutCapture.hidden = false;
     elements.captureActionName.textContent = this.actionLabel(action);
-    elements.captureShortcutPreview.textContent = "PRESSIONE UMA TECLA";
+    elements.captureShortcutPreview.textContent = STRING_TOKENS.UI.PRESS_KEY;
     elements.confirmShortcut.disabled = true;
     this.renderMappings();
   },
 
   cancelShortcutCapture() {
-    store.state.remapping = null;
-    store.state.pendingShortcut = null;
+    store.dispatch(STATE_ACTION_TOKENS.SET_REMAPPING, null);
+    store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_SHORTCUT, null);
     store.state.remapModifierCodes.clear();
     elements.shortcutCapture.hidden = true;
     elements.confirmShortcut.disabled = true;
@@ -416,7 +380,7 @@ export const features = {
   },
 
   setShortcutPreview(shortcut) {
-    store.state.pendingShortcut = shortcut;
+    store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_SHORTCUT, shortcut);
     elements.captureShortcutPreview.textContent = renderer.keyLabel(shortcut);
     elements.confirmShortcut.disabled = false;
   },
@@ -425,14 +389,11 @@ export const features = {
     if (!store.state.remapping || !store.state.pendingShortcut) return;
     const action = store.state.remapping;
     const swapped = this.findConflictingAction(store.state.pendingShortcut, action);
-    if (swapped && swapped !== action) store.state.bindings[swapped] = store.state.bindings[action];
-    store.state.bindings[action] = store.state.pendingShortcut;
-    store.saveBindings();
+    if (swapped && swapped !== action) {
+      store.dispatch(STATE_ACTION_TOKENS.UPDATE_BINDING, { action: swapped, shortcut: store.state.bindings[action] });
+    }
+    store.dispatch(STATE_ACTION_TOKENS.UPDATE_BINDING, { action, shortcut: store.state.pendingShortcut });
     this.cancelShortcutCapture();
-    renderer.renderKeys();
-    renderer.renderPerformanceEffects();
-    renderer.renderPerformanceMemories();
-    renderer.renderBaseMemories();
   },
 
   findConflictingAction(code, targetAction) {
@@ -454,8 +415,8 @@ export const features = {
     const manual = Boolean(preset.manual);
     const rhythmPrimaryLabel = document.querySelector("#rhythmPrimaryLabel");
     const rhythmPrimaryCopy = document.querySelector("#rhythmPrimaryCopy");
-    if (rhythmPrimaryLabel) rhythmPrimaryLabel.textContent = "PEDAL";
-    if (rhythmPrimaryCopy) rhythmPrimaryCopy.textContent = "ALONGA APÓS SOLTAR";
+    if (rhythmPrimaryLabel) rhythmPrimaryLabel.textContent = STRING_TOKENS.UI.PEDAL;
+    if (rhythmPrimaryCopy) rhythmPrimaryCopy.textContent = STRING_TOKENS.UI.EXTEND_AFTER_RELEASE;
     elements.rhythmPresetSelect.value = store.state.rhythmPreset;
     elements.tempoControl.disabled = manual;
     elements.stageTempoControl.disabled = manual;
@@ -464,46 +425,46 @@ export const features = {
     elements.tempoControl.value = store.state.tempo;
     [elements.rhythmEnableButton, elements.stageRhythmEnableButton].filter(Boolean).forEach(button => {
       button.classList.toggle("active", store.state.rhythmEnabled);
-      button.textContent = store.state.rhythmEnabled ? "RITMO ON" : "MANUAL";
+      button.textContent = store.state.rhythmEnabled ? STRING_TOKENS.UI.RHYTHM_ON : STRING_TOKENS.UI.MANUAL;
       button.setAttribute("aria-pressed", String(store.state.rhythmEnabled));
     });
     elements.engineLabel.textContent = `RHYTHM SET · ${preset.source || "INSTALADO"}`;
-    elements.beatState.textContent = manual ? "COMPASSO: LIVRE" : `${preset.meter} · PARADO`;
+    elements.beatState.textContent = manual ? STRING_TOKENS.UI.FREE_COMPASS : `${preset.meter} · PARADO`;
     [elements.autoRhythmButton, elements.stageAutoRhythmButton].filter(Boolean).forEach(button => {
       button.disabled = manual;
       button.classList.toggle("active", store.state.rhythmPlaying);
-      button.textContent = store.state.rhythmPlaying ? "PARAR" : "AUTO";
+      button.textContent = store.state.rhythmPlaying ? STRING_TOKENS.UI.STOP : STRING_TOKENS.UI.AUTO;
     });
     [elements.rhythmVariationButton, elements.stageRhythmVariationButton].filter(Boolean).forEach(button => {
       button.disabled = manual;
       button.classList.toggle("active", store.state.rhythmVariation === "b");
-      button.textContent = `VAR. ${store.state.rhythmVariation.toUpperCase()}`;
+      button.textContent = `${STRING_TOKENS.UI.VAR} ${store.state.rhythmVariation.toUpperCase()}`;
     });
-    renderer.updateUI();
+    
   },
 
   bindFeatureControls() {
     elements.captureAsNote.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
       this.captureInNextPerformanceSlot();
-      store.state.pendingCapture = null;
+      store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
       elements.captureDialog.close();
     });
 
     elements.captureAsBase.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
       this.captureInNextBaseSlot();
-      store.state.pendingCapture = null;
+      store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
       elements.captureDialog.close();
     });
 
-    const captureAsRhythmBtn = document.getElementById("captureAsRhythm");
-    if (captureAsRhythmBtn) {
+    if (elements.captureAsRhythm) {
+      const captureAsRhythmBtn = elements.captureAsRhythm;
       captureAsRhythmBtn.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
         const snapshot = this.currentCaptureSnapshot();
         if (snapshot) {
           store.dispatch(STATE_ACTION_TOKENS.ADD_RHYTHM_TRACK, snapshot);
           elements.soundState.textContent = `RITMO · TRILHA ADICIONADA: ${snapshot.displayName}`;
         }
-        store.state.pendingCapture = null;
+        store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
         elements.captureDialog.close();
       });
     }
@@ -526,26 +487,21 @@ export const features = {
       if (!store.state.editingMemory) return;
       const { index, degrees } = store.state.editingMemory;
       this.storeMemory(index, degrees, elements.memoryNameInput.value);
-      store.state.editingMemory = null;
+      store.dispatch(STATE_ACTION_TOKENS.SET_EDITING_MEMORY, null);
       elements.memoryDialog.close();
     });
 
     document.querySelector("#resetMappings").addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
       // Missing personalDefaultBindings from old app, using tokens
-      store.state.bindings = { ...DEFAULT_BINDINGS };
-      store.state.remapping = null;
-      store.saveBindings();
-      renderer.renderKeys();
+      store.dispatch(STATE_ACTION_TOKENS.RESET_BINDINGS, null);
       this.renderMappings();
-      renderer.renderPerformanceMemories();
-      renderer.renderBaseMemories();
     });
 
     [elements.settingsDialog, elements.helpDialog, elements.memoryDialog, elements.captureDialog, elements.setDialog].forEach(dialog => {
       dialog.addEventListener(DOM_EVENTS_TOKENS.CLICK, event => {
         if (event.target === dialog) {
-          store.state.editingMemory = null;
-          store.state.pendingCapture = null;
+          store.dispatch(STATE_ACTION_TOKENS.SET_EDITING_MEMORY, null);
+          store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
           dialog.close();
         }
       });
@@ -555,8 +511,8 @@ export const features = {
       button.addEventListener(DOM_EVENTS_TOKENS.CLICK, () => {
         const dialog = button.closest("dialog");
         if (!dialog) return;
-        store.state.editingMemory = null;
-        store.state.pendingCapture = null;
+        store.dispatch(STATE_ACTION_TOKENS.SET_EDITING_MEMORY, null);
+        store.dispatch(STATE_ACTION_TOKENS.SET_PENDING_CAPTURE, null);
         dialog.close();
       });
     });
@@ -571,7 +527,7 @@ export const features = {
     }
     elements.rhythmPresetSelect.value = store.state.rhythmPreset;
     elements.stageRhythmPreset.value = store.state.rhythmPreset;
-    store.state.tempo = rhythmEngine.currentPreset().bpm;
+    store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, rhythmEngine.currentPreset().bpm);
     elements.tempoControl.value = store.state.tempo;
     elements.stageTempoControl.value = store.state.tempo;
 
@@ -590,7 +546,7 @@ export const features = {
       rhythmEngine.stopRhythm();
       store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_PRESET, elements.rhythmPresetSelect.value);
       store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_ENABLED, true);
-      store.state.rhythmVariation = "a";
+      store.dispatch(STATE_ACTION_TOKENS.SET_RHYTHM_VARIATION, "a");
       store.dispatch(STATE_ACTION_TOKENS.SET_TEMPO, rhythmEngine.currentPreset().bpm);
       elements.tempoControl.value = store.state.tempo;
       elements.stageRhythmPreset.value = store.state.rhythmPreset;
@@ -604,7 +560,7 @@ export const features = {
       elements.tempoControl.value = store.state.tempo;
       elements.stageTempoControl.value = store.state.tempo;
       if (store.state.rhythmPlaying && audioEngine.ctx) {
-        store.state.nextStepAt = audioEngine.ctx.currentTime + 0.04;
+        store.dispatch(STATE_ACTION_TOKENS.SET_NEXT_STEP_AT, audioEngine.ctx.currentTime + 0.04);
       }
       this.updateRhythmControls();
     });
@@ -665,10 +621,8 @@ export const features = {
       if (clearBtn) {
         event.stopPropagation();
         const index = Number(clearBtn.dataset.stageClear);
-        store.state.performanceMemories[index] = null;
-        if (store.state.activePerformanceSlot === index) store.state.activePerformanceSlot = null;
-        store.savePerformanceMemories();
-        renderer.renderPerformanceMemories();
+        store.dispatch(STATE_ACTION_TOKENS.CLEAR_PERFORMANCE_MEMORY, index);
+        
       } else if (recallBtn) {
         this.recallPerformanceMemory(Number(recallBtn.dataset.stageRecall));
       }
@@ -681,9 +635,8 @@ export const features = {
         event.stopPropagation();
         const index = Number(clearBtn.dataset.baseClear);
         if (store.state.activeBaseSlot === index) this.stopBase();
-        store.state.baseMemories[index] = null;
-        store.saveBaseMemories();
-        renderer.renderBaseMemories();
+        store.dispatch(STATE_ACTION_TOKENS.CLEAR_BASE_MEMORY, index);
+        
       } else if (recallBtn) {
         this.toggleBaseMemory(Number(recallBtn.dataset.baseRecall));
       }
@@ -708,9 +661,9 @@ export const features = {
         const tonicIndex = Number(btn.dataset.addTonic);
         audioEngine.dampVoices(MUSIC_TOKENS.SOUND_SETS[store.state.soundSet].engine === "piano" ? 0.24 : 0.12);
         store.dispatch(STATE_ACTION_TOKENS.SET_TONIC, tonicIndex);
-        store.state.smartPosition = null;
+        store.dispatch(STATE_ACTION_TOKENS.SET_SMART_POSITION, null);
         events.recallLinkedMemory(tonicIndex);
-        renderer.updateUI();
+        
         this.openCaptureDialog();
       } else if (smartBtn) {
         event.stopPropagation();

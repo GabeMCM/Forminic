@@ -1,0 +1,71 @@
+export const STRING_TOKENS = {
+  UI: {
+    SMART_TONIC_GRID_NOTICE: "NO MODO CAMPO, O TECLADO É FIXO",
+    CHOOSE_AT_LEAST_ONE_DEGREE: "ESCOLHA AO MENOS UM GRAU",
+    RENAME_MEMORY: "Renomear memória",
+    SAVE_MEMORY: "Salvar memória",
+    MEMORY_SAVED: "MEMÓRIA SALVA",
+    MEMORY_EMPTY: "VAZIA",
+    TONIC_PURE: "TÔNICA PURA",
+    FREE_COMPASS: "COMPASSO: LIVRE",
+    PEDAL: "PEDAL",
+    EXTEND_AFTER_RELEASE: "ALONGA APÓS SOLTAR",
+    RHYTHM_ON: "RITMO ON",
+    MANUAL: "MANUAL",
+    AUTO: "AUTO",
+    STOP: "PARAR",
+    VAR: "VAR.",
+    ACTIVE_RELEASE_TO_FREE: "ATIVO · SOLTE PARA LIBERAR",
+    DEACTIVATED_EXTENDS_END: "DESATIVADO · ALONGA O FIM",
+    NO_SET: "SEM CONJUNTO",
+    PRESS_KEY: "PRESSIONE UMA TECLA",
+    CHANGE: "ALTERAR",
+    BASE_EMPTY: "BASE VAZIA",
+    NOTE_EMPTY: "NOTA VAZIA",
+    PLAY: "TOCAR",
+    TOGGLE_ON_OFF: "LIGAR / DESLIGAR",
+    PANIC_AUDIO_STOPPED: "PÂNICO · ÁUDIO INTERROMPIDO",
+    RHYTHM_LAB: "LABORATÓRIO DE RITMO",
+    PERFORMANCE_FIELD: "CAMPO DE APRESENTAÇÃO",
+    GUITAR_COMPOSER: "COMPOSITOR DE VIOLÃO",
+    NOTE_CENTER: "CENTRO DE NOTAS",
+    CURRENT_RHYTHM: "RITMO ATUAL",
+    CURRENT_CHORD: "ACORDE ATUAL",
+    GUITAR: "VIOLÃO",
+    TONIC: "TÔNICA",
+    PLAYING_TOUCH_TO_STOP: "TOCANDO · TOQUE PARA PARAR",
+    BPM_TOUCH_TO_START: "BPM · TOQUE PARA INICIAR",
+    READY_NOTES: "NOTAS PRONTAS",
+    OCTAVE: "OITAVA",
+    DEGREES: "GRAUS",
+    PEDAL_ON: "PEDAL ON",
+    PEDAL_OFF: "PEDAL OFF",
+    NO_SAVED_MEMORY: "NENHUMA MEMÓRIA SALVA",
+    NO_NOTE_IN_CA: "NENHUMA NOTA NO CA",
+    NO_SAVED_BASE: "NENHUMA BASE SALVA",
+    CHOOSE_NEXT_NOTE: "ESCOLHA A PRÓXIMA NOTA"
+
+  },
+  EDITOR: {
+    CANNOT_DELETE_ONLY_NOTE: "Não é possível apagar a única nota do compasso.",
+    MAX_NOTES_REACHED: "Número máximo de notas atingido (32)",
+    INSTRUMENT_LABELS: {
+      "k": "Bumbo",
+      "s": "Caixa",
+      "h": "Chimbal F",
+      "o": "Chimbal A",
+      "c": "Prato",
+      "p": "Perc 1",
+      "t": "Perc 2",
+      "p2": "Perc 3",
+      "t2": "Perc 4"
+    }
+  },
+  RHYTHM: {
+    DRUM_KIT: "Bateria",
+    PERCUSSION: "Percussão"
+  },
+  ERRORS: {
+    AUDIO_CONTEXT_FAILED: "Não foi possível iniciar o áudio."
+  }
+};

@@ -295,7 +295,7 @@ export function initRhythmEditor() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlockId && store.state.workspace === 'rhythm') {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlockId && store.state.workspace === GLOBAL_TOKENS.WORKSPACE_RHYTHM) {
       document.querySelector('#clearRhythmEvent').click();
     }
   });

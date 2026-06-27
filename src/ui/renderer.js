@@ -1,10 +1,75 @@
 import { elements } from './elements.js';
 import { store } from '../state/state.js';
 import { GLOBAL_TOKENS, MUSIC_TOKENS, PERFORMANCE_EFFECTS } from '../tokens/master.tokens.js';
-import { STATE_MESSAGE_TOKENS } from '../state/state.tokens.js';
+import { STATE_MESSAGE_TOKENS, STATE_ACTION_TOKENS } from '../state/state.tokens.js';
 import { UI_RENDERER_TOKENS } from './renderer.tokens.js';
 
 export const renderer = {
+  init() {
+    store.subscribe(STATE_ACTION_TOKENS.SAVE_PERFORMANCE_MEMORY, () => this.renderPerformanceMemories());
+    store.subscribe(STATE_ACTION_TOKENS.CLEAR_PERFORMANCE_MEMORY, () => this.renderPerformanceMemories());
+    
+    store.subscribe(STATE_ACTION_TOKENS.SAVE_BASE_MEMORY, () => this.renderBaseMemories());
+    store.subscribe(STATE_ACTION_TOKENS.CLEAR_BASE_MEMORY, () => this.renderBaseMemories());
+    store.subscribe(STATE_ACTION_TOKENS.SET_ACTIVE_BASE_SLOT, () => this.renderBaseMemories());
+    
+    store.subscribe(STATE_ACTION_TOKENS.SAVE_MEMORY, () => {
+      this.renderMemories();
+      this.renderTonicLinks();
+      this.updateUI();
+    });
+    
+    const uiUpdates = [
+      STATE_ACTION_TOKENS.SET_TONIC, STATE_ACTION_TOKENS.SET_OCTAVE, 
+      STATE_ACTION_TOKENS.SET_DEGREES, STATE_ACTION_TOKENS.ADD_DEGREE, 
+      STATE_ACTION_TOKENS.REMOVE_DEGREE, STATE_ACTION_TOKENS.SET_SMART_POSITION, 
+      STATE_ACTION_TOKENS.SET_ACTIVE_PERFORMANCE_SLOT
+    ];
+    uiUpdates.forEach(action => {
+      store.subscribe(action, () => {
+        this.updateUI();
+        this.updateStageCurrent();
+      });
+    });
+
+    const structureUpdates = [
+      STATE_ACTION_TOKENS.SET_SMART_MODE, STATE_ACTION_TOKENS.SET_FIELD_LETTER,
+      STATE_ACTION_TOKENS.SET_FIELD_ACCIDENTAL, STATE_ACTION_TOKENS.SET_FIELD_MINOR
+    ];
+    structureUpdates.forEach(action => {
+      store.subscribe(action, () => {
+        this.renderKeys();
+      });
+    });
+
+    const setUpdates = [
+      STATE_ACTION_TOKENS.ADD_SET, STATE_ACTION_TOKENS.LOAD_SET,
+      STATE_ACTION_TOKENS.UPDATE_ACTIVE_SET, STATE_ACTION_TOKENS.DELETE_SET,
+      STATE_ACTION_TOKENS.REORDER_SET
+    ];
+    setUpdates.forEach(action => {
+      store.subscribe(action, () => {
+        this.renderSets();
+        this.renderPerformanceMemories();
+        this.renderBaseMemories();
+      });
+    });
+
+    store.subscribe(STATE_ACTION_TOKENS.UPDATE_BINDING, () => {
+      this.renderKeys();
+      this.renderPerformanceEffects();
+      this.renderPerformanceMemories();
+      this.renderBaseMemories();
+    });
+
+    store.subscribe(STATE_ACTION_TOKENS.RESET_BINDINGS, () => {
+      this.renderKeys();
+      this.renderPerformanceEffects();
+      this.renderPerformanceMemories();
+      this.renderBaseMemories();
+    });
+  },
+
   applyTheme(theme) {
     const light = theme === GLOBAL_TOKENS.THEME_LIGHT;
     document.body.dataset.theme = light ? GLOBAL_TOKENS.THEME_LIGHT : GLOBAL_TOKENS.THEME_DARK;
